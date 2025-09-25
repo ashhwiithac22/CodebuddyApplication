@@ -1,0 +1,49 @@
+/* frontend/src/app/components/coding-round/coding-round.component.css */
+
+.timer {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffa116;
+}
+
+.difficulty-easy {
+  background-color: #28a745 !important;
+}
+
+.difficulty-medium {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.difficulty-hard {
+  background-color: #dc3545 !important;
+}
+
+.code-editor {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  background-color: #2d2d2d;
+  color: #f8f9fa;
+  border: 1px solid #495057;
+}
+
+.output-container {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  min-height: 200px;
+  padding: 15px;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.nav-tabs .nav-link {
+  cursor: pointer;
+  color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+  color: #ffa116;
+  font-weight: bold;
+  border-bottom: 3px solid #ffa116;
+}

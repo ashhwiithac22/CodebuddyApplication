@@ -1,0 +1,157 @@
+<!-- frontend/src/app/components/progress-tracker/progress-tracker.html-->
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h4>Your Progress Dashboard</h4>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3 mb-3">
+              <div class="display-4 text-primary">{{ userProgress?.totalSolved || 0 }}</div>
+              <div class="text-muted">Problems Solved</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="display-4 text-success">{{ userProgress?.easySolved || 0 }}</div>
+              <div class="text-muted">Easy</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="display-4 text-warning">{{ userProgress?.mediumSolved || 0 }}</div>
+              <div class="text-muted">Medium</div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="display-4 text-danger">{{ userProgress?.hardSolved || 0 }}</div>
+              <div class="text-muted">Hard</div>
+            </div>
+          </div>
+
+          <!-- Replace charts with simple progress displays -->
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Daily Score Trend</h5>
+                </div>
+                <div class="card-body">
+                  <div *ngIf="userProgress?.dailyScores?.length > 0">
+                    <div *ngFor="let score of userProgress.dailyScores" class="d-flex justify-content-between mb-2">
+                      <span>{{ score.date }}</span>
+                      <span class="fw-bold">{{ score.score }} points</span>
+                    </div>
+                  </div>
+                  <div *ngIf="!userProgress?.dailyScores?.length" class="text-center text-muted">
+                    No daily scores yet
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Problems by Difficulty</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Easy</span>
+                      <span class="text-success">{{ userProgress?.easySolved || 0 }}</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 8px;">
+                      <div class="progress-bar bg-success" [style.width]="(userProgress?.easySolved / userProgress?.totalSolved * 100) + '%'"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Medium</span>
+                      <span class="text-warning">{{ userProgress?.mediumSolved || 0 }}</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 8px;">
+                      <div class="progress-bar bg-warning" [style.width]="(userProgress?.mediumSolved / userProgress?.totalSolved * 100) + '%'"></div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Hard</span>
+                      <span class="text-danger">{{ userProgress?.hardSolved || 0 }}</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 8px;">
+                      <div class="progress-bar bg-danger" [style.width]="(userProgress?.hardSolved / userProgress?.totalSolved * 100) + '%'"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5>Recent Activities</h5>
+            </div>
+            <div class="card-body">
+              <div *ngIf="userProgress?.recentActivities?.length === 0" class="text-center py-3">
+                <p class="text-muted">No recent activities</p>
+              </div>
+              <div *ngFor="let activity of userProgress?.recentActivities || []" class="d-flex align-items-center mb-3">
+                <div class="flex-shrink-0">
+                  <span [ngClass]="{
+                    'badge bg-success': activity.type === 'solved',
+                    'badge bg-warning': activity.type === 'attempted'
+                  }">
+                    {{ activity.type === 'solved' ? '✓' : '↻' }}
+                  </span>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                  <div class="fw-bold">{{ activity.problem }}</div>
+                  <small class="text-muted">{{ activity.difficulty }} • {{ activity.time }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h5>Leaderboard</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Rank</th>
+                      <th>User</th>
+                      <th>Score</th>
+                      <th>Solved</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let user of leaderboard" [class]="getRankClass(user.rank)">
+                      <td>
+                        <span class="badge bg-dark" *ngIf="user.rank <= 3">#{{ user.rank }}</span>
+                        <span *ngIf="user.rank > 3">{{ user.rank }}</span>
+                      </td>
+                      <td>
+                        <span *ngIf="user.rank === 4" class="fw-bold text-primary">You</span>
+                        <span *ngIf="user.rank !== 4">{{ user.username }}</span>
+                      </td>
+                      <td>{{ user.score }}</td>
+                      <td>{{ user.solved }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

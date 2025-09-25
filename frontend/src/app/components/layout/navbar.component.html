@@ -1,0 +1,49 @@
+<!-- nfrontend/src/app/components/layout/navbar.component.html-->
+<nav class="navbar">
+  <div class="navbar-container">
+    <a class="navbar-brand" routerLink="/dashboard">
+      <i class="fas fa-code"></i>
+      CodeBuddy
+    </a>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu">
+      <button class="hamburger-btn" (click)="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <div class="dropdown-menu" [class.show]="menuOpen">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <div class="user-details">
+            <strong>{{ username }}</strong>
+            <span>Logged In</span>
+          </div>
+        </div>
+        
+        <div class="dropdown-divider"></div>
+        
+        <a class="dropdown-item" routerLink="/progress" (click)="closeMenu()">
+          <i class="fas fa-chart-line"></i>
+          Track Progress
+        </a>
+        
+        <a class="dropdown-item" href="#" (click)="viewProfile(); $event.preventDefault(); closeMenu()">
+          <i class="fas fa-user"></i>
+          View Profile
+        </a>
+        
+        <div class="dropdown-divider"></div>
+        
+        <a class="dropdown-item logout-btn" href="#" (click)="logout(); $event.preventDefault(); closeMenu()">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </a>
+      </div>
+    </div>
+    <a class="dropdown-item" routerLink="/voice-interview" (click)="closeMenu()">
+  <i class="fas fa-microphone"></i>
+  Voice Interview
+</a>
+  </div>
+</nav>

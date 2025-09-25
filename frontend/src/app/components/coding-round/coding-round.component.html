@@ -1,0 +1,106 @@
+<!-- frontend/src/app/components/coding-round/coding-round.component.html-->
+<div class="container-fluid mt-3">
+  <div class="row">
+    <!-- Timer -->
+    <div class="col-12 mb-3">
+      <div class="card bg-dark text-white">
+        <div class="card-body text-center py-2">
+          <div class="timer">
+            <i class="fas fa-clock me-2"></i>
+            {{ formatTime(timeLeft) }}
+          </div>
+          <small class="text-warning" *ngIf="timeLeft < 300">
+            Less than 5 minutes remaining!
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Questions List -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5>Daily Questions</h5>
+        </div>
+        <div class="list-group list-group-flush">
+          <a *ngFor="let question of questions" 
+             href="javascript:void(0)" 
+             class="list-group-item list-group-item-action"
+             [class.active]="selectedQuestion?.id === question.id"
+             (click)="selectQuestion(question)">
+            <div class="d-flex justify-content-between align-items-center">
+              <span>{{ question.title }}</span>
+              <span class="badge {{ getDifficultyClass(question.difficulty) }}">
+                {{ question.difficulty }}
+              </span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="card-body">
+          <button class="btn btn-success w-100 mb-2" (click)="runCode()">
+            <i class="fas fa-play me-2"></i>Run Code
+          </button>
+          <button class="btn btn-primary w-100" (click)="submitCode()">
+            <i class="fas fa-paper-plane me-2"></i>Submit Solution
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link" [class.active]="activeTab === 'problem'" 
+                 (click)="activeTab = 'problem'">Problem</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [class.active]="activeTab === 'editor'" 
+                 (click)="activeTab = 'editor'">Code Editor</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [class.active]="activeTab === 'output'" 
+                 (click)="activeTab = 'output'">Output</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body">
+          <!-- Problem Description -->
+          <div *ngIf="activeTab === 'problem' && selectedQuestion">
+            <h4>{{ selectedQuestion.title }}</h4>
+            <span class="badge {{ getDifficultyClass(selectedQuestion.difficulty) }} mb-3">
+              {{ selectedQuestion.difficulty }}
+            </span>
+            
+            <p>{{ selectedQuestion.description }}</p>
+            
+            <h6>Example Test Cases:</h6>
+            <div *ngFor="let testCase of selectedQuestion.testCases; let i = index" class="bg-light p-3 rounded mb-2">
+              <strong>Input:</strong> {{ testCase.input }}<br>
+              <strong>Output:</strong> {{ testCase.output }}
+            </div>
+          </div>
+
+          <!-- Code Editor -->
+          <div *ngIf="activeTab === 'editor'">
+            <textarea class="form-control code-editor" rows="15" 
+                      [(ngModel)]="userCode" placeholder="Write your code here..."></textarea>
+          </div>
+
+          <!-- Output -->
+          <div *ngIf="activeTab === 'output'">
+            <div class="output-container">
+              <pre>{{ output || 'Run your code to see output here...' }}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+<!-- frontend/src/app/components/auth/login/login.component.html -->
+<div class="auth-container">
+  <div class="login-card">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <div class="logo">
+          <h1>Code<span>Buddy</span></h1>
+          <p class="tagline">Your coding companion for success</p>
+        </div>
+        
+        <div class="features-section">
+          <h2>Start your coding journey today</h2>
+          <ul class="features">
+            <li>
+              <i class="fas fa-code"></i>
+              <span>Access to hundreds of coding challenges</span>
+            </li>
+            <li>
+              <i class="fas fa-users"></i>
+              <span>Collaborate with other developers</span>
+            </li>
+            <li>
+              <i class="fas fa-chart-line"></i>
+              <span>Track your progress and improve your skills</span>
+            </li>
+            <li>
+              <i class="fas fa-comments"></i>
+              <span>Get feedback on your code from experts</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="testimonial">
+          <p class="quote">"CodeBuddy helped me land my dream job at Google. The practice problems and mock interviews were invaluable!"</p>
+          <p class="author">- Sarah Chen, Software Engineer</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Form Section -->
+    <div class="form-section">
+      <div class="form-container">
+        <div class="form-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in to continue your coding journey</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-with-icon">
+              <i class="fas fa-envelope"></i>
+              <input type="email" id="email" formControlName="email" placeholder="Enter your email address" 
+                     [class.is-invalid]="submitted && f['email'].errors">
+            </div>
+            <div *ngIf="submitted && f['email'].errors" class="error-message">
+              <div *ngIf="f['email'].errors?.['required']">Email is required</div>
+              <div *ngIf="f['email'].errors?.['email']">Please enter a valid email address</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" formControlName="password" placeholder="Enter your password"
+                     [class.is-invalid]="submitted && f['password'].errors">
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="error-message">
+              Password is required
+            </div>
+          </div>
+
+          <div *ngIf="error" class="error-message form-error" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ error }}
+          </div>
+
+          <button type="submit" class="login-button" [disabled]="loading">
+            <span *ngIf="loading" class="spinner"></span>
+            {{ loading ? 'Signing in...' : 'Sign In' }}
+          </button>
+        </form>
+
+        <div class="signup-link">
+          <p>Don't have an account? <a routerLink="/register" class="signup-button">Create account</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<!--frontend/src/app/components/topics/topic-list.component.html*/-->
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+          <h4><i class="fas fa-brain me-2"></i>Data Structures & Algorithms</h4>
+          <p class="mb-0">Select a topic to learn and practice</p>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <input type="text" class="form-control" placeholder="Search topics..." 
+                     [(ngModel)]="searchText" (input)="filterTopics()">
+            </div>
+            <div class="col-md-6">
+              <select class="form-select" [(ngModel)]="selectedCategory" (change)="filterTopics()">
+                <option *ngFor="let cat of categories" [value]="cat">
+                  {{ cat === 'all' ? 'All Categories' : cat }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading topics...</p>
+      </div>
+
+      <!-- Topics Grid -->
+      <div class="row justify-content-center">
+        <div *ngFor="let topic of filteredTopics" class="col-xl-3 col-lg-4 col-md-6 mb-4">
+          <div class="card topic-card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+              <h6 class="mb-0">{{ topic.name }}</h6>
+              <span class="badge bg-light text-dark">{{ topic.category }}</span>
+            </div>
+            <div class="card-body">
+              <p class="card-text small">{{ topic.description }}</p>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted">{{ topic.commonProblems.length }} problems</small>
+                <span class="badge bg-info">{{ topic.hints.length }}+ hints</span>
+              </div>
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar" [style.width]="(topic.hints.length / 50) * 100 + '%'"></div>
+              </div>
+              <small class="text-muted">{{ topic.hints.length }}/50 hints available</small>
+            </div>
+            <div class="card-footer bg-transparent d-flex justify-content-between">
+              <button class="btn btn-outline-primary btn-sm" (click)="viewTopicDetails(topic)">
+                <i class="fas fa-book me-1"></i>Learn
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="takeTest(topic)">
+                <i class="fas fa-play me-1"></i>Test
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && filteredTopics.length === 0" class="text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h4>No topics found</h4>
+        <p class="text-muted">Try adjusting your search or filter criteria</p>
+      </div>
+    </div>
+  </div>
+</div>

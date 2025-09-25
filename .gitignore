@@ -1,0 +1,28 @@
+# Angular
+.angular/
+dist/
+tmp/
+out-tsc/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+.env
+frontend/src/environments/environment.ts"env file.txt" 
+"backend/.env" 
+frontend/src/environments/environment.ts
+backend/.env

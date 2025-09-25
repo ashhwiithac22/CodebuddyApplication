@@ -1,0 +1,70 @@
+<!-- frontend/src/app/components/topics/topic-detail.component.html -->
+<!-- frontend/src/app/components/topics/topic-detail.component.html -->
+<div class="container mt-4" *ngIf="topic && !isLoading">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">
+            <i class="fas fa-book me-2"></i>{{ topic?.name }} - Learning Guide
+          </h4>
+          <span class="badge bg-light text-dark">{{ topic?.category }}</span>
+        </div>
+        <div class="card-body">
+          <p class="lead">{{ topic?.description }}</p>
+          
+          <div class="alert alert-info">
+            <i class="fas fa-lightbulb me-2"></i>
+            <strong>Pro Tip:</strong> Master these {{ topic?.hints?.length }} hints to solve any {{ topic?.name }} problem in coding interviews!
+          </div>
+        </div>
+      </div>
+
+      <!-- Hints Navigation -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Hint {{ activeHintIndex + 1 }} of {{ topic?.hints?.length }}</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="activeHint">
+            <h6 class="text-primary">{{ activeHint.title }}</h6>
+            <p>{{ activeHint.description }}</p>
+            
+            <div class="bg-dark text-light p-3 rounded mb-3">
+              <pre class="mb-0"><code>{{ activeHint.codeSnippet }}</code></pre>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+              <button class="btn btn-outline-primary" (click)="previousHint()" [disabled]="activeHintIndex === 0">
+                <i class="fas fa-arrow-left me-1"></i>Previous
+              </button>
+              <button class="btn btn-primary" (click)="nextHint()" [disabled]="activeHintIndex === (topic?.hints?.length || 1) - 1">
+                Next <i class="fas fa-arrow-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice Section -->
+      <div class="card" *ngIf="topic">
+        <div class="card-header">
+          <h5 class="mb-0">Ready to Test Your Knowledge?</h5>
+        </div>
+        <div class="card-body text-center">
+          <p class="mb-3">You've learned {{ topic.hints.length }} hints for {{ topic.name }}. Now test your understanding with real coding problems!</p>
+          <a class="btn btn-success btn-lg" [routerLink]="['/test', topic.id]">
+            <i class="fas fa-play-circle me-2"></i>Take Test Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="mt-3">Loading topic details...</p>
+</div>

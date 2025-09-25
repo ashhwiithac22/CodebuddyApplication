@@ -1,0 +1,78 @@
+<!-- frontend/src/app/components/auth/register/register.component.html -->
+<div class="container">
+  <div class="welcome-section">
+    <h1>Join CodeBuddy</h1>
+    <p>Create your account and start your coding journey with us. Access hundreds of challenges and join our developer community!</p>
+    <ul class="features">
+      <li>Access to hundreds of coding challenges</li>
+      <li>Collaborate with other developers</li>
+      <li>Track your progress and improve your skills</li>
+      <li>Get feedback on your code from experts</li>
+    </ul>
+  </div>
+  
+  <div class="login-section">
+    <div class="logo">
+      <h2>Code<span>Buddy</span></h2>
+    </div>
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" formControlName="username" placeholder="Choose a username" 
+               [class.is-invalid]="submitted && f['username'].errors">
+        <div *ngIf="submitted && f['username'].errors" class="error-message">
+          <div *ngIf="f['username'].errors?.['required']">Username is required</div>
+          <div *ngIf="f['username'].errors?.['minlength']">Username must be at least 3 characters</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" placeholder="Enter your email" 
+               [class.is-invalid]="submitted && f['email'].errors">
+        <div *ngIf="submitted && f['email'].errors" class="error-message">
+          <div *ngIf="f['email'].errors?.['required']">Email is required</div>
+          <div *ngIf="f['email'].errors?.['email']">Please enter a valid email</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" formControlName="password" placeholder="Create a password"
+               [class.is-invalid]="submitted && f['password'].errors">
+        <div *ngIf="submitted && f['password'].errors" class="error-message">
+          <div *ngIf="f['password'].errors?.['required']">Password is required</div>
+          <div *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm your password"
+               [class.is-invalid]="submitted && (f['confirmPassword'].errors || registerForm.errors?.['mismatch'])">
+        <div *ngIf="submitted && (f['confirmPassword'].errors || registerForm.errors?.['mismatch'])" class="error-message">
+          <div *ngIf="f['confirmPassword'].errors?.['required']">Please confirm your password</div>
+          <div *ngIf="registerForm.errors?.['mismatch']">Passwords do not match</div>
+        </div>
+      </div>
+      
+      <div *ngIf="error" class="error-message" id="errorMessage">{{ error }}</div>
+      
+      <button type="submit" class="login-button" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+        Register
+      </button>
+    </form>
+    
+    <div class="divider">
+      <span>OR</span>
+    </div>
+    
+    <button class="register-button" routerLink="/login">Back to Login</button>
+    
+    <div class="register-link">
+      Already have an account? <a routerLink="/login">Login here</a>
+    </div>
+  </div>
+</div>

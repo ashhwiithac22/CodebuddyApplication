@@ -1,0 +1,27 @@
+/* frontend/src/app/app.component.css*/
+.navbar-brand {
+  font-weight: bold;
+  color: #ffa116 !important;
+}
+
+.navbar-dark {
+  background-color: #1a1a1a !important;
+}
+
+.nav-link.active {
+  color: #ffa116 !important;
+  font-weight: bold;
+}
+
+.dropdown-menu {
+  background-color: #2d2d2d;
+}
+
+.dropdown-item {
+  color: #f8f9fa;
+}
+
+.dropdown-item:hover {
+  background-color: #ffa116;
+  color: #000;
+}

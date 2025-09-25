@@ -1,0 +1,237 @@
+<!-- frontend/src/app/components/dashboard/dashboard.component.html-->
+<app-navbar></app-navbar>
+<app-dashboard-nav></app-dashboard-nav>
+
+<div class="dashboard-container">
+  <!-- Welcome Header -->
+  <div class="welcome-section">
+    <div class="welcome-content">
+      <div class="user-greeting">
+        <h1>Welcome back, {{ username }}! 👋</h1>
+        <p class="greeting-subtitle">Ready to continue your coding journey? Choose your path below!</p>
+      </div>
+      <div class="motivation-card">
+        <i class="fas fa-rocket"></i>
+        <div class="motivation-text">
+          <strong>Daily Motivation</strong>
+          <span>"The expert in anything was once a beginner." - Helen Hayes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Content -->
+  <div class="dashboard-content">
+    <!-- Left Column - Stats & Progress -->
+    <div class="left-column">
+      <!-- Progress Overview -->
+      <div class="progress-overview">
+        <div class="section-header">
+          <h2>📊 Your Progress Overview</h2>
+          <span class="last-updated">Updated just now</span>
+        </div>
+        
+        <div class="stats-grid" *ngIf="!isLoading">
+          <div class="stat-item primary">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.totalSolved }}</div>
+              <div class="stat-label">Problems Solved</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+
+          <div class="stat-item success">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.easySolved }}</div>
+              <div class="stat-label">Easy Solved</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-seedling"></i>
+            </div>
+          </div>
+
+          <div class="stat-item warning">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.mediumSolved }}</div>
+              <div class="stat-label">Medium Solved</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-mountain"></i>
+            </div>
+          </div>
+
+          <div class="stat-item danger">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.hardSolved }}</div>
+              <div class="stat-label">Hard Solved</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-fire"></i>
+            </div>
+          </div>
+
+          <div class="stat-item info">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.streak }}</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+          </div>
+
+          <div class="stat-item secondary">
+            <div class="stat-content">
+              <div class="stat-number">{{ userProgress.totalScore }}</div>
+              <div class="stat-label">Total Points</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-star"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="loading-state" *ngIf="isLoading">
+          <div class="spinner"></div>
+          <p>Loading your amazing progress...</p>
+        </div>
+      </div>
+
+      <!-- Topics Progress -->
+      <div class="topics-section">
+        <div class="section-header">
+          <h2>📚 Learning Progress</h2>
+          <a routerLink="/topics" class="view-all-link">View All →</a>
+        </div>
+        
+        <div class="topics-list">
+          <div class="empty-state" *ngIf="topics.length === 0">
+            <i class="fas fa-book-open"></i>
+            <p>Start learning your first topic!</p>
+            <button class="explore-button" routerLink="/topics">Explore Topics</button>
+          </div>
+
+          <div class="topic-progress-item" *ngFor="let topic of topics.slice(0, 4)">
+            <div class="topic-header">
+              <h4>{{ topic.name }}</h4>
+              <span class="topic-stats">{{ topic.solved }}/{{ topic.total }} solved</span>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width]="getProgressPercentage(topic.solved, topic.total) + '%'"
+                     [class]="getProgressColor(getProgressPercentage(topic.solved, topic.total))">
+                </div>
+              </div>
+              <span class="progress-percent">{{ getProgressPercentage(topic.solved, topic.total) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Actions & Challenges -->
+    <div class="right-column">
+      <!-- Daily Challenge -->
+      <div class="daily-challenge-card">
+        <div class="challenge-header">
+          <div class="challenge-badge">
+            <i class="fas fa-calendar-day"></i>
+            Daily Challenge
+          </div>
+          <span class="difficulty-tag {{ dailyChallenge.difficulty?.toLowerCase() }}">
+            {{ dailyChallenge.difficulty }}
+          </span>
+        </div>
+        <div class="challenge-content">
+          <h3>{{ dailyChallenge.title }}</h3>
+          <p class="challenge-description">{{ dailyChallenge.description }}</p>
+          <div class="challenge-reward">
+            <i class="fas fa-gem"></i>
+            <span>Complete to earn 50 bonus points!</span>
+          </div>
+          <button class="challenge-button" routerLink="/coding-round">
+            <i class="fas fa-play"></i>
+            Start Challenge
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions-card">
+        <div class="section-header">
+          <h2>🚀 Quick Actions</h2>
+          <span>Get started quickly</span>
+        </div>
+        
+        <div class="actions-grid">
+          <a class="action-card learn-topics" routerLink="/topics">
+            <div class="action-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="action-content">
+              <h4>Learn Topics</h4>
+              <p>Study DSA & algorithms</p>
+            </div>
+            <div class="action-hover">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </a>
+
+          <a class="action-card take-interviews" routerLink="/voice-interview">
+            <div class="action-icon">
+              <i class="fas fa-microphone"></i>
+            </div>
+            <div class="action-content">
+              <h4>Take Interview</h4>
+              <p>Practice with AI interviewer</p>
+            </div>
+            <div class="action-hover">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </a>
+
+          <a class="action-card daily-challenge" routerLink="/coding-round">
+            <div class="action-icon">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="action-content">
+              <h4>Daily Challenge</h4>
+              <p>Solve today's problem</p>
+            </div>
+            <div class="action-hover">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </a>
+
+          <a class="action-card track-progress" routerLink="/progress">
+            <div class="action-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="action-content">
+              <h4>Track Progress</h4>
+              <p>View detailed insights</p>
+            </div>
+            <div class="action-hover">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Achievement Alert -->
+      <div class="achievement-alert" *ngIf="userProgress.totalSolved === 0">
+        <div class="alert-content">
+          <i class="fas fa-trophy"></i>
+          <div class="alert-text">
+            <strong>Start Your Journey!</strong>
+            <span>Solve your first problem to unlock achievements</span>
+          </div>
+        </div>
+        <button class="alert-button" routerLink="/coding-round">Start Coding</button>
+      </div>
+    </div>
+  </div>
+</div>

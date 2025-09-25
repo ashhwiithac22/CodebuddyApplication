@@ -1,0 +1,65 @@
+/* frontend/src/app/components/topics/topic-test.component.css */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.code-editor {
+  font-family: 'Fira Code', 'Monaco', 'Cascadia Code', monospace;
+  font-size: 14px;
+  background-color: #2d2d2d;
+  color: #f8f9fa;
+  border: 1px solid #495057;
+  border-radius: 6px;
+  padding: 15px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.code-editor:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.output-container {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  min-height: 120px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.output-container pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  margin: 0;
+  padding: 15px;
+}
+
+.badge {
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.form-select {
+  border-radius: 6px;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}

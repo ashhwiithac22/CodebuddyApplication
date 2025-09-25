@@ -1,0 +1,129 @@
+<div class="mock-interview-container">
+  <div class="interview-card">
+    <!-- Header Section -->
+    <div class="interview-header">
+      <div class="header-content">
+        <h1>AI Mock Interview</h1>
+        <p class="subtitle">Practice with our AI interviewer and get real-time feedback</p>
+      </div>
+    </div>
+
+    <div class="interview-content">
+      <!-- Topic Selection -->
+      <div *ngIf="!isInterviewStarted && !isInterviewEnded" class="topic-selection">
+        <div class="selection-content">
+          <div class="icon-container">
+            <i class="fas fa-microphone"></i>
+          </div>
+          <h2>Choose Interview Topic</h2>
+          <p class="description">
+            Select a topic for your mock interview. Our AI interviewer will ask relevant questions and provide real-time feedback.
+          </p>
+
+          <div class="topic-grid">
+            <div 
+              *ngFor="let topic of interviewTopics" 
+              class="topic-card"
+              [class.selected]="selectedTopic === topic.id"
+              (click)="selectedTopic = topic.id"
+            >
+              <div class="topic-icon">
+                <i class="fas" [class]="getTopicIcon(topic.id)"></i>
+              </div>
+              <h3>{{ topic.name }}</h3>
+            </div>
+          </div>
+
+          <button class="start-button" (click)="startInterview()">
+            <i class="fas fa-play"></i>
+            Start Interview
+          </button>
+        </div>
+      </div>
+
+      <!-- Interview Chat Interface -->
+      <div *ngIf="isInterviewStarted" class="chat-interface">
+        <div class="chat-header">
+          <div class="chat-info">
+            <h3>AI Interview: {{ getTopicName(selectedTopic) }}</h3>
+            <span class="status-indicator">
+              <i class="fas fa-circle"></i>
+              {{ isLoading ? 'AI is thinking...' : 'Active' }}
+            </span>
+          </div>
+          <button class="end-button" (click)="endInterview()" [disabled]="isLoading">
+            <i class="fas fa-stop"></i>
+            End Interview
+          </button>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" #messageContainer>
+          <div *ngFor="let message of messages" class="message" [class.ai-message]="message.type === 'ai'" [class.user-message]="message.type === 'user'">
+            <div class="message-avatar">
+              <i class="fas" [class]="message.type === 'ai' ? 'fa-robot' : 'fa-user'"></i>
+            </div>
+            <div class="message-content">
+              <div class="message-text">{{ message.content }}</div>
+              <div class="message-time">{{ formatTime(message.timestamp) }}</div>
+            </div>
+          </div>
+
+          <!-- Loading indicator -->
+          <div *ngIf="isLoading" class="message ai-message">
+            <div class="message-avatar">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+          <div class="input-wrapper">
+            <textarea 
+              [(ngModel)]="userInput" 
+              placeholder="Type your answer here..." 
+              (keydown.enter)="$event.preventDefault(); sendMessage()"
+              [disabled]="isLoading || isInterviewEnded"
+            ></textarea>
+            <button 
+              class="send-button" 
+              (click)="sendMessage()" 
+              [disabled]="!userInput.trim() || isLoading || isInterviewEnded"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interview Completed -->
+      <div *ngIf="isInterviewEnded" class="interview-completed">
+        <div class="completed-content">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2>Interview Completed!</h2>
+          <p>You've completed the mock interview. Would you like to review your performance or try another topic?</p>
+          <div class="action-buttons">
+            <button class="review-button" (click)="restartInterview()">
+              <i class="fas fa-chart-bar"></i>
+              Review Performance
+            </button>
+            <button class="restart-button" (click)="restartInterview()">
+              <i class="fas fa-redo"></i>
+              New Interview
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

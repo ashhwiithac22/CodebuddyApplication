@@ -1,0 +1,27 @@
+.code-editor-container {
+  border: 1px solid #495057;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.code-textarea {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  background-color: #2d2d2d;
+  color: #f8f9fa;
+  border: none;
+  resize: vertical;
+  padding: 15px;
+  line-height: 1.5;
+}
+
+.code-textarea:focus {
+  background-color: #2d2d2d;
+  color: #f8f9fa;
+  border: none;
+  box-shadow: none;
+}
+
+.code-textarea::placeholder {
+  color: #6c757d;
+}

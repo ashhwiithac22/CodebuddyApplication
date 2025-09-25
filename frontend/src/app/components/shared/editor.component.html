@@ -1,0 +1,10 @@
+<div class="code-editor-container">
+  <textarea 
+    class="form-control code-textarea" 
+    [value]="code" 
+    (input)="onCodeChange($event)"
+    [readonly]="readOnly"
+    placeholder="Write your code here..."
+    rows="15">
+  </textarea>
+</div>
