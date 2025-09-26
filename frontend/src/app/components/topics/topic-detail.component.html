@@ -1,5 +1,31 @@
-<!-- frontend/src/app/components/topics/topic-detail.component.html -->
-<!-- frontend/src/app/components/topics/topic-detail.component.html -->
+<!-- Topics Page Navigation Menu -->
+<nav class="dashboard-nav">
+  <div class="nav-container">
+    <div class="nav-menu">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/voice-interview" routerLinkActive="active">
+        <i class="fas fa-microphone"></i>
+        <span>Take interviews</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/coding-round" routerLinkActive="active">
+        <i class="fas fa-calendar-day"></i>
+        <span>Solve daily challenge</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/progress" routerLinkActive="active">
+        <i class="fas fa-chart-line"></i>
+        <span>Track your progress</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Existing content -->
 <div class="container mt-4" *ngIf="topic && !isLoading">
   <div class="row">
     <div class="col-12">

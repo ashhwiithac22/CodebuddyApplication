@@ -5,12 +5,11 @@ import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TextInterviewService, InterviewMessage, InterviewResponse } from '../../services/text-interview.service';
 import { NavbarComponent } from '../layout/navbar.component';
-import { InterviewsNavComponent } from './interviews-nav.component';
 
 @Component({
   selector: 'app-mock-interview',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent, InterviewsNavComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   templateUrl: './mock-interview.component.html',
   styleUrls: ['./mock-interview.component.css']
 })

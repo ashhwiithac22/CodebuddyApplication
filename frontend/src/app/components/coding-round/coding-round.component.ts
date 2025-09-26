@@ -2,14 +2,15 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QuestionService } from '../../services/question.service';
 import { TimerService } from '../../services/timer.service';
 import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common'; // ← ADD
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../layout/navbar.component'; 
+import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../layout/navbar.component';
 
 @Component({
   selector: 'app-coding-round',
   templateUrl: './coding-round.component.html',
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   styleUrls: ['./coding-round.component.css']
 })
 export class CodingRoundComponent implements OnInit, OnDestroy {

@@ -1,15 +1,15 @@
-//frontend/src/app/components/topics/topic-detail.component.ts
-// frontend/src/app/components/topics/topic-detail.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TopicService, Topic, Hint } from '../../services/topic.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from '../layout/navbar.component';
+
 
 @Component({
   selector: 'app-topic-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   templateUrl: './topic-detail.component.html',
   styleUrls: ['./topic-detail.component.css']
 })
