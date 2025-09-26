@@ -1,17 +1,18 @@
-// frontend/src/app/components/mock-interview/mock-interview.component.ts
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TextInterviewService, InterviewMessage, InterviewResponse } from '../../services/text-interview.service';
+import { NavbarComponent } from '../layout/navbar.component';
+import { InterviewsNavComponent } from './interviews-nav.component';
 
 @Component({
   selector: 'app-mock-interview',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent, InterviewsNavComponent],
   templateUrl: './mock-interview.component.html',
   styleUrls: ['./mock-interview.component.css']
-  // No need for providers array since service has providedIn: 'root'
 })
 export class MockInterviewComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer') private messageContainer!: ElementRef;
@@ -31,7 +32,7 @@ export class MockInterviewComponent implements OnInit, OnDestroy {
   isInterviewStarted = false;
   isInterviewEnded = false;
   userInput = '';
-  isLoading = false; // This belongs to component, not service
+  isLoading = false;
   messages: InterviewMessage[] = [];
   private messagesSubscription!: Subscription;
 

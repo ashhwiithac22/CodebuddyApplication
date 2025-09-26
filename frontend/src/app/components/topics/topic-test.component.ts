@@ -7,11 +7,16 @@ import { ProgressService } from '../../services/progress.service';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from '../layout/navbar.component'; // Make sure this path is correct
 
 @Component({
   selector: 'app-topic-test',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    NavbarComponent  // Make sure this is included here
+  ],
   templateUrl: './topic-test.component.html',
   styleUrls: ['./topic-test.component.css']
 })
@@ -40,7 +45,6 @@ export class TopicTestComponent implements OnInit {
   ngOnInit() {
     this.topicId = +this.route.snapshot.paramMap.get('id')!;
     
-    // Fix: Use getCurrentUser() instead of getCurrentUserId()
     const currentUser = this.authService.getCurrentUser();
     this.userId = currentUser?.id || '';
     
@@ -51,7 +55,6 @@ export class TopicTestComponent implements OnInit {
     this.topicService.getTopics().subscribe(topics => {
       this.topic = topics.find(t => t.id === this.topicId) || null;
       
-      // Load problems for this topic
       this.topicService.getProblems(this.topicId).subscribe(problems => {
         this.problems = problems;
         if (this.problems.length > 0) {
@@ -95,12 +98,10 @@ export class TopicTestComponent implements OnInit {
               passed: isCorrect
             });
             
-            // Check if all tests passed
             if (this.testResults.length === testCases.length) {
               this.isSolved = passed === testCases.length;
               
               if (this.isSolved && this.topic) {
-                // Update progress
                 this.progressService.updateProgress({
                   difficulty: this.currentProblem!.difficulty.toLowerCase(),
                   score: 5,
@@ -112,7 +113,6 @@ export class TopicTestComponent implements OnInit {
                 }).subscribe(() => {
                   this.output += `\n🎉 +5 points earned for solving "${this.currentProblem!.title}"!`;
                   
-                  // Check if all problems are solved
                   if (this.currentProblemIndex === this.problems.length - 1) {
                     this.awardTopicCompletion();
                   }
@@ -158,7 +158,6 @@ export class TopicTestComponent implements OnInit {
       this.output += `\n🎖️ You've earned the ${this.topic.name} Master badge!`;
       this.output += `\n➕ 25 points for topic completion!`;
       
-      // Update progress with topic completion
       this.progressService.completeTopic(this.topicId, this.topic.name).subscribe();
     }
   }
@@ -198,7 +197,7 @@ export class TopicTestComponent implements OnInit {
       'javascript': 63,
       'cpp': 54
     };
-    return languages[language.toLowerCase()] || 71; // Default to Python
+    return languages[language.toLowerCase()] || 71;
   }
 
   getPassedCount(): number {
@@ -207,9 +206,5 @@ export class TopicTestComponent implements OnInit {
 
   getTotalTestCases(): number {
     return this.currentProblem ? this.currentProblem.testCases.length : 0;
-  }
-
-  isLastProblem(): boolean {
-    return this.currentProblemIndex === this.problems.length - 1;
   }
 }

@@ -1,4 +1,38 @@
 <!-- frontend/src/app/components/topics/topic-test.component.html -->
+<app-navbar></app-navbar>
+
+<!-- Topic Test Page Specific Navigation -->
+<nav class="page-nav">
+  <div class="nav-container">
+    <div class="nav-menu">
+      <a class="nav-item" routerLink="/dashboard">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/topics">
+        <i class="fas fa-book"></i>
+        <span>Learn Topics</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/voice-interview">
+        <i class="fas fa-microphone"></i>
+        <span>Take Interviews</span>
+      </a>
+      
+      <a class="nav-item active" routerLink="/test">
+        <i class="fas fa-code"></i>
+        <span>Solve Problems</span>
+      </a>
+      
+      <a class="nav-item" routerLink="/progress">
+        <i class="fas fa-chart-line"></i>
+        <span>Track Your Progress</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
 <div class="container mt-4" *ngIf="!isLoading">
   <div class="row">
     <div class="col-12">

@@ -1,13 +1,16 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VoiceInterviewService, InterviewMessage, InterviewDomain } from '../../services/voice-interview.service';
+import { NavbarComponent } from '../layout/navbar.component';
+import { InterviewsNavComponent } from '../mock-interview/interviews-nav.component';
 
 @Component({
   selector: 'app-voice-interview',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent, InterviewsNavComponent],
   templateUrl: './voice-interview.component.html',
   styleUrls: ['./voice-interview.component.css']
 })
@@ -16,7 +19,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('audioVisualizer') private audioVisualizer!: ElementRef;
 
   // Component state
-  selectedDomain: string = 'fullstack';
+  selectedDomain: string = 'javascript';
   difficulty: string = 'medium';
   isInterviewStarted: boolean = false;
   isInterviewEnded: boolean = false;
@@ -31,13 +34,14 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
   // Computed properties for template
   currentDomain: InterviewDomain | undefined;
   userMessagesCount: number = 0;
+  totalQuestions: number = 5;
   
   // Subscriptions
   private messagesSubscription!: Subscription;
   private recordingSubscription!: Subscription;
   private aiSpeakingSubscription!: Subscription;
 
-  // Audio visualization - simplified approach
+  // Audio visualization
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
   private animationId: number | null = null;
@@ -50,7 +54,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
   ngOnInit(): void {
     // Subscribe to messages
     this.messagesSubscription = this.voiceInterviewService.messages$.subscribe(
-      messages => {
+      (messages: InterviewMessage[]) => {
         this.messages = messages;
         this.updateUserMessagesCount();
         this.scrollToBottom();
@@ -59,7 +63,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
 
     // Subscribe to recording state
     this.recordingSubscription = this.voiceInterviewService.audioRecording$.subscribe(
-      recording => {
+      (recording: boolean) => {
         this.isRecording = recording;
         if (recording) {
           this.startAudioVisualization();
@@ -71,7 +75,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
 
     // Subscribe to AI speaking state
     this.aiSpeakingSubscription = this.voiceInterviewService.aiSpeaking$.subscribe(
-      speaking => {
+      (speaking: boolean) => {
         this.isAiSpeaking = speaking;
       }
     );
@@ -99,7 +103,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
     this.userMessagesCount = this.messages.filter(m => m.type === 'user').length;
   }
 
-  // Initialize Web Audio API for visualization - simplified
+  // Initialize Web Audio API for visualization
   private initializeAudioContext(): void {
     try {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -124,7 +128,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
     this.voiceInterviewService.startVoiceInterview(this.selectedDomain, this.difficulty).subscribe({
       next: (response) => {
         this.isLoading = false;
-        console.log('Interview started successfully:', response);
+        console.log('Interview started successfully');
       },
       error: (error) => {
         this.isLoading = false;
@@ -148,12 +152,10 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
     this.isInterviewEnded = true;
     this.voiceInterviewService.endInterview().subscribe({
       next: (response) => {
-        const summary = response?.summary || "Thank you for participating in this voice interview!";
-        this.voiceInterviewService.speakMessage(summary);
+        console.log('Interview ended successfully');
       },
       error: (error) => {
         console.error('Error ending interview:', error);
-        this.voiceInterviewService.speakMessage("Interview completed. Thank you!");
       }
     });
   }
@@ -168,7 +170,7 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
     this.userMessagesCount = 0;
   }
 
-  // Audio visualization - simplified without Uint8Array type issues
+  // Audio visualization
   private startAudioVisualization(): void {
     if (!this.analyser || !this.audioVisualizer) return;
 
@@ -176,32 +178,27 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
-    const bufferLength = this.analyser.frequencyBinCount;
-
     const draw = () => {
       this.animationId = requestAnimationFrame(draw);
 
       if (!this.analyser) return;
 
-      // Create the Uint8Array inline to avoid type issues
+      const bufferLength = this.analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       this.analyser.getByteFrequencyData(dataArray);
 
       ctx.fillStyle = 'rgb(0, 0, 0)';
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const barWidth = (width / bufferLength) * 2.5;
-      let barHeight;
+      const barWidth = (canvas.width / bufferLength) * 2.5;
       let x = 0;
 
       for (let i = 0; i < bufferLength; i++) {
-        barHeight = dataArray[i] / 2;
-
+        const barHeight = dataArray[i] / 2;
         const hue = i * 360 / bufferLength;
+        
         ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
 
         x += barWidth + 1;
       }
@@ -282,5 +279,10 @@ export class VoiceInterviewComponent implements OnInit, OnDestroy, AfterViewInit
   isVoiceSupported(): boolean {
     return this.voiceInterviewService.isSpeechRecognitionSupported() && 
            this.voiceInterviewService.isSpeechSynthesisSupported();
+  }
+
+  // Get current question progress
+  getProgressPercentage(): number {
+    return Math.min((this.userMessagesCount / this.totalQuestions) * 100, 100);
   }
 }

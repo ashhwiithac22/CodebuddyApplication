@@ -3,12 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { TopicService, Topic, Problem } from '../../services/topic.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../layout/navbar.component'; 
+
 @Component({
   selector: 'app-topic-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent], // Make sure NavbarComponent is here
   templateUrl: './topic-list.component.html',
   styleUrls: ['./topic-list.component.css']
 })

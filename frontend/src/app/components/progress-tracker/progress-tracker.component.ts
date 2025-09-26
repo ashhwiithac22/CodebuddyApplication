@@ -1,12 +1,14 @@
+//frontend/src/app/components/progress-tracker/progress-tracker.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ProgressService } from '../../services/progress.service';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../layout/navbar.component'; 
 
+
 @Component({
   selector: 'app-progress-tracker',
   templateUrl: './progress-tracker.component.html',
-   imports: [CommonModule,NavbarComponent],
+    imports: [CommonModule, NavbarComponent], // Add PageNavComponent
   styleUrls: ['./progress-tracker.component.css']
 })
 export class ProgressTrackerComponent implements OnInit {
