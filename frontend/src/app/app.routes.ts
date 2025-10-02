@@ -7,8 +7,8 @@ import { CodingRoundComponent } from './components/coding-round/coding-round.com
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { TopicDetailComponent } from './components/topics/topic-detail.component';
-import { TopicTestComponent } from './components/topics/topic-test.component';
 import { AuthGuard } from './guards/auth.guard';
+import { TopicTestComponent } from './components/topics/topic-test.component';
 import { VoiceInterviewComponent } from './components/voice-interview/voice-interview.component';
 
 export const routes: Routes = [
@@ -21,8 +21,7 @@ export const routes: Routes = [
   { path: 'test/:id', component: TopicTestComponent, canActivate: [AuthGuard] },
   { path: 'coding-round', component: CodingRoundComponent, canActivate: [AuthGuard] },
   { path: 'mock-interview', component: MockInterviewComponent, canActivate: [AuthGuard] },
-    { path: 'voice-interview', component: VoiceInterviewComponent },
-  { path: 'voice-interview', component: VoiceInterviewComponent, canActivate: [AuthGuard] }, // Add this
+  { path: 'voice-interview', component: VoiceInterviewComponent, canActivate: [AuthGuard] }, // Fixed: removed duplicate
   { path: 'progress', component: ProgressTrackerComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }
 ];

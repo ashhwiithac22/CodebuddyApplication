@@ -1,11 +1,19 @@
-//frontend/src/app/components/topics/topic-test.component.ts
+// frontend/src/app/components/topics/topic-test.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TopicService, Topic, Question, TestResult } from '../../services/topic.service';
-import { UserService } from '../../services/user.service';  
+import { TopicService, Topic } from '../../services/topic.service';
+import { TestService, Question, TestResult, TestProgress } from '../../services/test.service';
 import { NavbarComponent } from '../layout/navbar.component';
+
+// Extended interface for test questions
+interface TestQuestion extends Question {
+  userAnswer: string;
+  isAnswered: boolean;
+  isCorrect: boolean;
+  points: number;
+}
 
 @Component({
   selector: 'app-topic-test',
@@ -15,9 +23,8 @@ import { NavbarComponent } from '../layout/navbar.component';
   styleUrls: ['./topic-test.component.css']
 })
 export class TopicTestComponent implements OnInit {
-  // All properties that are referenced in the template
   topic: Topic | null = null;
-  questions: any[] = [];
+  questions: TestQuestion[] = [];
   currentQuestionIndex: number = 0;
   totalQuestions: number = 25;
   score: number = 0;
@@ -25,15 +32,17 @@ export class TopicTestComponent implements OnInit {
   testCompleted: boolean = false;
   isLoading: boolean = true;
   topicId: string = '';
+  startTime: Date = new Date();
+  endTime: Date = new Date();
+  answeredQuestions: number = 0;
 
-  // Make String available in template
   String = String;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private topicService: TopicService,
-    private userService: UserService
+    private testService: TestService
   ) {}
 
   ngOnInit() {
@@ -42,75 +51,112 @@ export class TopicTestComponent implements OnInit {
   }
 
   loadTopicAndQuestions() {
-    // Create mock data for immediate testing
-    this.createMockTopic();
-    this.generateQuestions();
-    this.isLoading = false;
+    this.isLoading = true;
+    
+    this.topicService.getTopicById(this.topicId).subscribe(
+      (topic: Topic) => {
+        this.topic = topic;
+        
+        this.testService.getTopicQuestions(this.topicId).subscribe(
+          (questions: Question[]) => {
+            this.questions = questions.map((q, index) => ({
+              ...q,
+              userAnswer: '',
+              isAnswered: false,
+              isCorrect: false,
+              points: q.points || 2
+            } as TestQuestion));
+            this.isLoading = false;
+            this.startTime = new Date();
+            this.checkSavedProgress();
+          },
+          (error: any) => {
+            console.error('Error loading questions:', error);
+            this.generateMockQuestions();
+            this.isLoading = false;
+            this.startTime = new Date();
+          }
+        );
+      },
+      (error: any) => {
+        console.error('Error loading topic:', error);
+        this.createMockTopic();
+        this.generateMockQuestions();
+        this.isLoading = false;
+        this.startTime = new Date();
+      }
+    );
+  }
+
+  checkSavedProgress() {
+    const progress = this.testService.getTestProgress();
+    if (progress && progress.topicId === this.topicId) {
+      this.currentQuestionIndex = progress.currentQuestionIndex;
+      this.score = progress.score;
+      this.answeredQuestions = progress.answeredQuestions;
+      this.startTime = new Date(progress.startTime);
+      console.log('Resumed test from saved progress');
+    }
+  }
+
+  saveProgress() {
+    const progress: TestProgress = {
+      topicId: this.topicId,
+      currentQuestionIndex: this.currentQuestionIndex,
+      score: this.score,
+      answeredQuestions: this.answeredQuestions,
+      startTime: this.startTime
+    };
+    this.testService.saveTestProgress(progress);
   }
 
   createMockTopic() {
+    const topicNames: { [key: string]: string } = {
+      '1': 'Arrays & Lists', '2': 'HashSets', '3': 'HashMaps & Dictionaries',
+      '4': 'Strings', '5': 'Linked Lists', '6': 'Stacks', '7': 'Queues',
+      '8': 'Trees', '9': 'Graphs', '10': 'Heaps', '11': 'Sorting Algorithms',
+      '12': 'Searching Algorithms', '13': 'Dynamic Programming',
+      '14': 'Greedy Algorithms', '15': 'Backtracking'
+    };
+    
     this.topic = {
-      id: this.topicId, // Now string type
-      name: 'Data Structures',
-      description: 'Test your knowledge of data structures',
+      id: this.topicId,
+      name: topicNames[this.topicId] || 'Data Structures',
+      description: 'Test your knowledge with 25 challenging questions',
       category: 'DSA',
       commonProblems: [],
       hints: []
     };
   }
 
-  generateQuestions() {
+  generateMockQuestions() {
     this.questions = [];
-    
     for (let i = 1; i <= this.totalQuestions; i++) {
       if (i % 2 === 0) {
-        this.questions.push(this.generateMCQQuestion(i));
+        this.questions.push({
+          id: i,
+          type: 'mcq',
+          question: `Which approach is most efficient for ${this.topic?.name} problem ${i}?`,
+          options: ['Brute Force', 'Optimized Algorithm', 'Heuristic', 'Randomized'],
+          correctAnswer: 'Optimized Algorithm',
+          userAnswer: '',
+          isAnswered: false,
+          isCorrect: false,
+          points: 2
+        } as TestQuestion);
       } else {
-        this.questions.push(this.generateFillBlankQuestion(i));
+        this.questions.push({
+          id: i,
+          type: 'fillblank',
+          question: `The key operation in ${this.topic?.name} for problem ${i} is __________.`,
+          correctAnswer: 'optimization',
+          userAnswer: '',
+          isAnswered: false,
+          isCorrect: false,
+          points: 2
+        } as TestQuestion);
       }
     }
-  }
-
-  generateMCQQuestion(id: number): any {
-    const templates = [
-      {
-        question: `Which approach will you use for ${this.topic?.name} when dealing with large datasets?`,
-        options: ['Brute Force', 'Divide and Conquer', 'Greedy Method', 'Dynamic Programming'],
-        correctAnswer: 'Divide and Conquer'
-      }
-    ];
-
-    const template = templates[0];
-    
-    return {
-      id: id,
-      type: 'mcq',
-      question: template.question,
-      options: template.options,
-      correctAnswer: template.correctAnswer,
-      isAnswered: false,
-      points: 2
-    };
-  }
-
-  generateFillBlankQuestion(id: number): any {
-    const templates = [
-      {
-        question: `The key operation in ${this.topic?.name} is __________.`,
-        correctAnswer: 'searching'
-      }
-    ];
-
-    const template = templates[0];
-    
-    return {
-      id: id,
-      type: 'fillblank',
-      question: template.question,
-      correctAnswer: template.correctAnswer,
-      isAnswered: false,
-      points: 2
-    };
   }
 
   selectAnswer(questionIndex: number, answer: string) {
@@ -121,17 +167,21 @@ export class TopicTestComponent implements OnInit {
 
     question.userAnswer = answer;
     question.isAnswered = true;
+    this.answeredQuestions++;
 
     if (answer === question.correctAnswer) {
       question.isCorrect = true;
-      this.score += question.points;
+      this.score += question.points || 2;
     } else {
       question.isCorrect = false;
     }
 
+    this.saveProgress();
+
     setTimeout(() => {
       if (questionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
+        this.saveProgress();
       } else {
         this.completeTest();
       }
@@ -149,6 +199,7 @@ export class TopicTestComponent implements OnInit {
   nextQuestion() {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
+      this.saveProgress();
     } else {
       this.completeTest();
     }
@@ -157,17 +208,40 @@ export class TopicTestComponent implements OnInit {
   previousQuestion() {
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
+      this.saveProgress();
     }
   }
 
   completeTest() {
     this.testCompleted = true;
+    this.endTime = new Date();
     this.totalScore = this.score;
+    this.testService.clearTestProgress();
     this.saveTestResults();
   }
 
   saveTestResults() {
-    console.log('Test completed. Score:', this.totalScore);
+    const timeSpent = this.testService.calculateTimeSpent(this.startTime, this.endTime);
+    
+    const testResult: TestResult = {
+      topicId: this.topicId,
+      topicName: this.topic?.name || 'Unknown Topic',
+      score: this.totalScore,
+      totalQuestions: this.totalQuestions,
+      correctAnswers: this.getCorrectAnswersCount(),
+      completedAt: new Date(),
+      questions: this.questions,
+      timeSpent: timeSpent
+    };
+
+    this.testService.saveTestResult(testResult).subscribe(
+      (response: { success: boolean; message: string }) => {
+        console.log('Test results saved successfully:', response);
+      },
+      (error: any) => {
+        console.error('Error saving test results:', error);
+      }
+    );
   }
 
   retryTest() {
@@ -175,10 +249,14 @@ export class TopicTestComponent implements OnInit {
     this.score = 0;
     this.totalScore = 0;
     this.testCompleted = false;
-    this.generateQuestions();
+    this.answeredQuestions = 0;
+    this.startTime = new Date();
+    this.testService.clearTestProgress();
+    this.loadTopicAndQuestions();
   }
 
   backToTopics() {
+    this.testService.clearTestProgress();
     this.router.navigate(['/topics']);
   }
 
@@ -186,7 +264,7 @@ export class TopicTestComponent implements OnInit {
     return ((this.currentQuestionIndex + 1) / this.totalQuestions) * 100;
   }
 
-  getCurrentQuestion(): any {
+  getCurrentQuestion(): TestQuestion {
     return this.questions[this.currentQuestionIndex];
   }
 
@@ -195,11 +273,23 @@ export class TopicTestComponent implements OnInit {
   }
 
   getCorrectAnswersCount(): number {
-    return this.questions.filter((q: any) => q.isCorrect).length;
+    return this.questions.filter(q => q.isCorrect).length;
   }
 
   getAccuracy(): string {
     const accuracy = (this.getCorrectAnswersCount() / this.totalQuestions) * 100;
     return accuracy.toFixed(1);
+  }
+
+  getTimeSpent(): string {
+    return this.testService.calculateTimeSpent(this.startTime, this.endTime);
+  }
+
+  isToughQuestion(): boolean {
+    return this.currentQuestionIndex < 3;
+  }
+
+  getAnsweredCount(): number {
+    return this.questions.filter(q => q.isAnswered).length;
   }
 }

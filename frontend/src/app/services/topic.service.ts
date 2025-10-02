@@ -75,11 +75,21 @@ export class TopicService {
       // You might want to add proper error handling here
     );
   }
- 
-   saveTestResult(result: TestResult): Observable<any> {
-    return this.http.post(`${this.apiUrl}/test-results`, result);
+   getTopicQuestions(topicId: string): Observable<Question[]> {
+    const questions = this.generateTopicQuestions(topicId);
+    return of(questions).pipe(delay(500));
   }
 
+ 
+   saveTestResult(result: TestResult): Observable<any> {
+    this.storeTestResultLocally(result);
+    return of({ success: true, message: 'Test results saved locally' });
+  }
+  private storeTestResultLocally(result: TestResult) {
+    const existingResults = JSON.parse(localStorage.getItem('testResults') || '[]');
+    existingResults.push(result);
+    localStorage.setItem('testResults', JSON.stringify(existingResults));
+  }
   private getComprehensiveTopics(): Topic[] {
     return [
       {
