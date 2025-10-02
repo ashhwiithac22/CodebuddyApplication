@@ -2,9 +2,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 export interface Topic {
-  id: number;
+  id: string;
   name: string;
   category: string;
   description: string;
@@ -27,6 +28,25 @@ export interface Problem {
   defaultCode: { [key: string]: string };
   testCases: TestCase[];
 }
+export interface Question {
+  id: number;
+  type: 'mcq' | 'fillblank';
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  userAnswer?: string;
+  isCorrect?: boolean;
+}
+
+export interface TestResult {
+  topicId: string;
+  topicName: string;
+  score: number;
+  totalQuestions: number;
+  correctAnswers: number;
+  completedAt: Date;
+  questions: Question[];
+}
 
 export interface TestCase {
   input: string;
@@ -37,21 +57,33 @@ export interface TestCase {
   providedIn: 'root'
 })
 export class TopicService {
-  
-  constructor() { }
+  private apiUrl = 'http://localhost:3000/api'; // Adjust based on your backend URL
 
-  getTopics(): Observable<Topic[]> {
-    return of(this.getComprehensiveTopics()).pipe(delay(300));
+  constructor(private http: HttpClient) { }
+
+ getTopics(): Observable<Topic[]> {
+  // Use mock data instead of HTTP call
+  return of(this.getComprehensiveTopics()).pipe(delay(100));
+}
+
+  getTopicById(id: string): Observable<Topic> {
+    return this.http.get<Topic>(`${this.apiUrl}/topics/${id}`);
   }
-
-  getProblems(topicId: number): Observable<Problem[]> {
-    return of(this.getTopicProblems(topicId)).pipe(delay(300));
+    getTopicsWithFallback(): Observable<Topic[]> {
+    return this.http.get<Topic[]>(`${this.apiUrl}/topics`).pipe(
+      // If HTTP call fails, use mock data
+      // You might want to add proper error handling here
+    );
+  }
+ 
+   saveTestResult(result: TestResult): Observable<any> {
+    return this.http.post(`${this.apiUrl}/test-results`, result);
   }
 
   private getComprehensiveTopics(): Topic[] {
     return [
       {
-        id: 1,
+        id: '1',
         name: 'Arrays & Lists',
         category: 'DSA',
         description: 'Master array manipulation and list operations',
@@ -70,7 +102,7 @@ export class TopicService {
         ]
       },
       {
-        id: 2,
+        id: '2',
         name: 'HashSets',
         category: 'DSA',
         description: 'Unordered collections for unique elements with O(1) operations',
@@ -89,7 +121,7 @@ export class TopicService {
         ]
       },
       {
-        id: 3,
+        id: '3',
         name: 'HashMaps & Dictionaries',
         category: 'DSA',
         description: 'Key-value stores for efficient lookups and frequency counting',
@@ -108,7 +140,7 @@ export class TopicService {
         ]
       },
       {
-        id: 4,
+        id: '4',
         name: 'Strings',
         category: 'DSA',
         description: 'Text manipulation and pattern matching algorithms',
@@ -127,7 +159,7 @@ export class TopicService {
         ]
       },
       {
-        id: 5,
+        id: '5',
         name: 'Linked Lists',
         category: 'DSA',
         description: 'Pointer manipulation and node-based structures',
@@ -146,7 +178,7 @@ export class TopicService {
         ]
       },
       {
-      id: 6,
+      id: '6',
       name: 'Stacks',
       category: 'DSA',
       description: 'LIFO data structure for various algorithms',
@@ -166,7 +198,7 @@ export class TopicService {
     },
 
       {
-      id: 7,
+      id: '7',
       name: 'Queues',
       category: 'DSA',
       description: 'FIFO data structure for BFS and scheduling',
@@ -185,7 +217,7 @@ export class TopicService {
 ]
     },
     {
-      id: 8,
+      id: '8',
       name: 'Trees',
       category: 'DSA',
       description: 'Hierarchical data structures with nodes and edges',
@@ -205,7 +237,7 @@ export class TopicService {
     },
 
     {
-      id: 9,
+      id: '9',
       name: 'Graphs',
       category: 'DSA',
       description: 'Networks of interconnected nodes',
@@ -224,7 +256,7 @@ export class TopicService {
 ]
     },
       {
-      id: 10,
+      id: '10',
       name: 'Heaps',
       category: 'DSA',
       description: 'Priority queue implementations',
@@ -243,7 +275,7 @@ export class TopicService {
 ] 
       },
        {
-      id: 11,
+      id: '11',
       name: 'Sorting Algorithms',
       category: 'Algorithms',
       description: 'Efficient data organization techniques',
@@ -262,7 +294,7 @@ export class TopicService {
 ]
     },
      {
-      id: 12,
+      id: '12',
       name: 'Searching Algorithms',
       category: 'Algorithms',
       description: 'Finding elements in data structures efficiently',
@@ -281,7 +313,7 @@ export class TopicService {
 ]
     },
      {
-      id: 13,
+      id: '13',
       name: 'Dynamic Programming',
       category: 'Algorithms',
       description: 'Solving problems by breaking them into subproblems',
@@ -301,7 +333,7 @@ export class TopicService {
 
     },
      {
-      id: 14,
+      id: '14',
       name: 'Greedy Algorithms',
       category: 'Algorithms',
       description: 'Making locally optimal choices for global optimization',
@@ -321,7 +353,7 @@ export class TopicService {
 
     },
      {
-      id: 15,
+      id: '15',
       name: 'Backtracking',
       category: 'Algorithms',
       description: 'Systematic trial and error approach to problem solving',
@@ -6927,6 +6959,259 @@ private getBacktrackingHints(): Hint[] {
     "codeSnippet": "def minCut(s):\n    def isPalindrome(l,r):\n        while l<r: if s[l]!=s[r]: return False; l+=1;r-=1\n        return True\n    def backtrack(start,cuts):\n        nonlocal min_cuts\n        if start==len(s): min_cuts=min(min_cuts,cuts); return\n        for i in range(start,len(s)):\n            if isPalindrome(start,i): backtrack(i+1,cuts+1)\n    min_cuts=float('inf'); backtrack(0,-1); return min_cuts",
     "language": "python"
   }
+  ];
+}
+// Add these methods to your existing TopicService class in topic.service.ts
+
+private generateTopicQuestions(topicName: string): Question[] {
+  const questions: Question[] = [];
+  
+  // Add 3 tough interview-level questions (first 3 questions)
+  questions.push(...this.getToughInterviewQuestions(topicName));
+  
+  // Add 22 regular questions to make total 25
+  questions.push(...this.getRegularQuestions(topicName, 22));
+  
+  return questions;
+}
+
+private getToughInterviewQuestions(topicName: string): Question[] {
+  const toughQuestions: { [key: string]: Question[] } = {
+    'Arrays & Lists': [
+      {
+        id: 1,
+        type: 'mcq',
+        question: 'Which approach would you use to find the median of two sorted arrays of different sizes with O(log(min(m,n))) time complexity?',
+        options: [
+          'Merge both arrays and find median',
+          'Binary search on the smaller array',
+          'Quickselect algorithm',
+          'Heap-based approach'
+        ],
+        correctAnswer: 'Binary search on the smaller array'
+      },
+      {
+        id: 2,
+        type: 'fillblank',
+        question: 'The most efficient algorithm for finding the maximum subarray sum with at most K negative elements is __________.',
+        correctAnswer: 'sliding window with deque'
+      },
+      {
+        id: 3,
+        type: 'mcq',
+        question: 'In a rotating sorted array, what is the time complexity of finding the rotation point?',
+        options: [
+          'O(n)',
+          'O(log n)',
+          'O(n log n)',
+          'O(1)'
+        ],
+        correctAnswer: 'O(log n)'
+      }
+    ],
+    'HashSets': [
+      {
+        id: 1,
+        type: 'mcq',
+        question: 'What is the worst-case time complexity for finding the longest consecutive sequence in an unsorted array using HashSet?',
+        options: [
+          'O(n)',
+          'O(n log n)',
+          'O(n²)',
+          'O(1)'
+        ],
+        correctAnswer: 'O(n)'
+      },
+      {
+        id: 2,
+        type: 'fillblank',
+        question: 'To check if a Sudoku board is valid using HashSet, the space complexity is __________.',
+        correctAnswer: 'O(1)'
+      },
+      {
+        id: 3,
+        type: 'mcq',
+        question: 'Which data structure would you use to implement a HashSet with worst-case O(1) for all operations?',
+        options: [
+          'Binary Search Tree',
+          'Linked List',
+          'Hash Table with chaining',
+          'Array'
+        ],
+        correctAnswer: 'Hash Table with chaining'
+      }
+    ],
+    'HashMaps & Dictionaries': [
+      {
+        id: 1,
+        type: 'mcq',
+        question: 'What is the most efficient way to find the longest substring with at most K distinct characters?',
+        options: [
+          'Brute force all substrings',
+          'Sliding window with HashMap',
+          'Dynamic programming',
+          'Binary search'
+        ],
+        correctAnswer: 'Sliding window with HashMap'
+      },
+      {
+        id: 2,
+        type: 'fillblank',
+        question: 'The time complexity for grouping anagrams using sorted keys as HashMap keys is __________.',
+        correctAnswer: 'O(n * k log k)'
+      },
+      {
+        id: 3,
+        type: 'mcq',
+        question: 'In LRU Cache implementation, what is the purpose of using HashMap with Doubly Linked List?',
+        options: [
+          'To maintain insertion order',
+          'For O(1) access and O(1) updates',
+          'To handle collisions',
+          'For memory optimization'
+        ],
+        correctAnswer: 'For O(1) access and O(1) updates'
+      }
+    ],
+    'Strings': [
+      {
+        id: 1,
+        type: 'mcq',
+        question: 'What is the most efficient algorithm for finding the longest palindromic substring in a string?',
+        options: [
+          'Manacher\'s Algorithm',
+          'Dynamic Programming O(n²)',
+          'Expand around center O(n²)',
+          'Brute force O(n³)'
+        ],
+        correctAnswer: 'Manacher\'s Algorithm'
+      },
+      {
+        id: 2,
+        type: 'fillblank',
+        question: 'The Knuth-Morris-Pratt algorithm for string matching has __________ time complexity.',
+        correctAnswer: 'O(n + m)'
+      },
+      {
+        id: 3,
+        type: 'mcq',
+        question: 'Which algorithm would you use for multiple pattern searching in a text?',
+        options: [
+          'Aho-Corasick',
+          'KMP for each pattern',
+          'Rabin-Karp',
+          'Boyer-Moore'
+        ],
+        correctAnswer: 'Aho-Corasick'
+      }
+    ]
+    // Add similar tough questions for all 17 topics...
+  };
+  
+  return toughQuestions[topicName] || this.getDefaultToughQuestions(topicName);
+}
+
+private getRegularQuestions(topicName: string, count: number): Question[] {
+  const questions: Question[] = [];
+  const baseId = 4; // Start after tough questions
+  
+  for (let i = 0; i < count; i++) {
+    if (i % 2 === 0) {
+      questions.push(this.generateMCQ(topicName, baseId + i));
+    } else {
+      questions.push(this.generateFillBlank(topicName, baseId + i));
+    }
+  }
+  
+  return questions;
+}
+
+private generateMCQ(topicName: string, id: number): Question {
+  const templates = {
+    'Arrays & Lists': [
+      {
+        question: `What is the time complexity of accessing an element by index in an array?`,
+        options: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'],
+        correctAnswer: 'O(1)'
+      },
+      {
+        question: `Which algorithm is most efficient for sorting nearly sorted arrays?`,
+        options: ['Quick Sort', 'Merge Sort', 'Insertion Sort', 'Selection Sort'],
+        correctAnswer: 'Insertion Sort'
+      }
+    ],
+    'HashSets': [
+      {
+        question: `What is the average case time complexity for insertion in HashSet?`,
+        options: ['O(1)', 'O(n)', 'O(log n)', 'O(n log n)'],
+        correctAnswer: 'O(1)'
+      }
+    ]
+    // Add templates for all topics...
+  };
+  
+  const topicTemplates = templates[topicName as keyof typeof templates] || templates['Arrays & Lists'];
+  const template = topicTemplates[id % topicTemplates.length];
+  
+  return {
+    id: id,
+    type: 'mcq',
+    question: template.question,
+    options: template.options,
+    correctAnswer: template.correctAnswer
+  };
+}
+
+private generateFillBlank(topicName: string, id: number): Question {
+  const templates = {
+    'Arrays & Lists': [
+      {
+        question: `The __________ algorithm is used to find the maximum subarray sum.`,
+        correctAnswer: 'Kadane\'s'
+      }
+    ],
+    'HashSets': [
+      {
+        question: `A HashSet does not allow __________ elements.`,
+        correctAnswer: 'duplicate'
+      }
+    ]
+    // Add templates for all topics...
+  };
+  
+  const topicTemplates = templates[topicName as keyof typeof templates] || templates['Arrays & Lists'];
+  const template = topicTemplates[id % topicTemplates.length];
+  
+  return {
+    id: id,
+    type: 'fillblank',
+    question: template.question,
+    correctAnswer: template.correctAnswer
+  };
+}
+
+private getDefaultToughQuestions(topicName: string): Question[] {
+  return [
+    {
+      id: 1,
+      type: 'mcq',
+      question: `What is the most efficient approach for ${topicName} in large-scale systems?`,
+      options: ['Divide and Conquer', 'Brute Force', 'Greedy Method', 'Backtracking'],
+      correctAnswer: 'Divide and Conquer'
+    },
+    {
+      id: 2,
+      type: 'fillblank',
+      question: `The space complexity for optimal ${topicName} solution is __________.`,
+      correctAnswer: 'O(1)'
+    },
+    {
+      id: 3,
+      type: 'mcq',
+      question: `Which data structure complements ${topicName} for optimal performance?`,
+      options: ['Arrays', 'Hash Maps', 'Linked Lists', 'Trees'],
+      correctAnswer: 'Hash Maps'
+    }
   ];
 }
 

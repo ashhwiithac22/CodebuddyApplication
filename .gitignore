@@ -26,3 +26,4 @@ frontend/src/environments/environment.ts"env file.txt"
 "backend/.env" 
 frontend/src/environments/environment.ts
 backend/.env
+backend/node_modules/

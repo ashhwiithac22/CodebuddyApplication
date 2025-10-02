@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { TopicService, Topic, Hint } from '../../services/topic.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../layout/navbar.component';
-
 
 @Component({
   selector: 'app-topic-detail',
@@ -20,18 +19,34 @@ export class TopicDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private topicService: TopicService
+    private topicService: TopicService,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    const topicId = parseInt(this.route.snapshot.paramMap.get('id') || '1', 10);
-    this.loadTopic(topicId);
+    const topicId = this.route.snapshot.paramMap.get('id');
+    if (topicId) {
+      this.loadTopic(topicId);
+    }
   }
 
-  loadTopic(topicId: number) {
+  loadTopic(topicId: string) {
     this.topicService.getTopics().subscribe(
       (topics: Topic[]) => {
         this.topic = topics.find(t => t.id === topicId) || null;
+        
+        if (this.topic) {
+          console.log('Topic loaded:', this.topic.name);
+          console.log('Hints available:', this.topic.hints.length);
+          
+          // Initialize active hint
+          if (this.topic.hints && this.topic.hints.length > 0) {
+            this.activeHintIndex = 0;
+          }
+        } else {
+          console.log('Topic not found with ID:', topicId);
+        }
+        
         this.isLoading = false;
       },
       (error: any) => {
@@ -54,6 +69,25 @@ export class TopicDetailComponent implements OnInit {
   }
 
   get activeHint(): Hint | null {
-    return this.topic ? this.topic.hints[this.activeHintIndex] : null;
+    return this.topic && this.topic.hints && this.topic.hints.length > 0 
+      ? this.topic.hints[this.activeHintIndex] 
+      : null;
+  }
+
+  // Navigate to test page
+  takeTest() {
+    if (this.topic) {
+      this.router.navigate(['/test', this.topic.id]);
+    }
+  }
+
+  // Copy code to clipboard
+  copyCode(code: string) {
+    navigator.clipboard.writeText(code).then(() => {
+      // Show temporary feedback (you can add a toast notification here)
+      console.log('Code copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy code: ', err);
+    });
   }
 }

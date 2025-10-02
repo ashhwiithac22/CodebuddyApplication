@@ -1,210 +1,205 @@
-// frontend/src/app/components/topics/topic-test.component.ts
+//frontend/src/app/components/topics/topic-test.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { TopicService, Topic, Problem } from '../../services/topic.service';
-import { Judge0Service } from '../../services/judge0.service';
-import { ProgressService } from '../../services/progress.service';
-import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../layout/navbar.component'; // Make sure this path is correct
+import { TopicService, Topic, Question, TestResult } from '../../services/topic.service';
+import { UserService } from '../../services/user.service';  
+import { NavbarComponent } from '../layout/navbar.component';
 
 @Component({
   selector: 'app-topic-test',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule, 
-    NavbarComponent  // Make sure this is included here
-  ],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './topic-test.component.html',
   styleUrls: ['./topic-test.component.css']
 })
 export class TopicTestComponent implements OnInit {
-  topicId: number = 0;
+  // All properties that are referenced in the template
   topic: Topic | null = null;
-  problems: Problem[] = [];
-  currentProblem: Problem | null = null;
-  currentProblemIndex: number = 0;
-  userCode: string = '';
-  selectedLanguage: string = 'python';
-  output: string = '';
+  questions: any[] = [];
+  currentQuestionIndex: number = 0;
+  totalQuestions: number = 25;
+  score: number = 0;
+  totalScore: number = 0;
+  testCompleted: boolean = false;
   isLoading: boolean = true;
-  testResults: any[] = [];
-  isSolved: boolean = false;
-  userId: string = '';
+  topicId: string = '';
+
+  // Make String available in template
+  String = String;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private topicService: TopicService,
-    private judge0Service: Judge0Service,
-    private progressService: ProgressService,
-    private authService: AuthService
-  ) { }
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
-    this.topicId = +this.route.snapshot.paramMap.get('id')!;
-    
-    const currentUser = this.authService.getCurrentUser();
-    this.userId = currentUser?.id || '';
-    
-    this.loadTopicAndProblems();
+    this.topicId = this.route.snapshot.paramMap.get('id') || '';
+    this.loadTopicAndQuestions();
   }
 
-  loadTopicAndProblems() {
-    this.topicService.getTopics().subscribe(topics => {
-      this.topic = topics.find(t => t.id === this.topicId) || null;
-      
-      this.topicService.getProblems(this.topicId).subscribe(problems => {
-        this.problems = problems;
-        if (this.problems.length > 0) {
-          this.currentProblem = this.problems[0];
-          this.userCode = this.currentProblem.defaultCode[this.selectedLanguage] || '';
-        }
-        this.isLoading = false;
-      });
-    });
+  loadTopicAndQuestions() {
+    // Create mock data for immediate testing
+    this.createMockTopic();
+    this.generateQuestions();
+    this.isLoading = false;
   }
 
-  runTests() {
-    if (!this.currentProblem) return;
-    
-    this.output = 'Running tests...';
-    this.testResults = [];
-    this.isLoading = true;
-    
-    const testCases = this.currentProblem.testCases;
-    let passed = 0;
-    
-    testCases.forEach((testCase: any, index: number) => {
-      const sourceCode = this.userCode;
-      const languageId = this.getLanguageId(this.selectedLanguage);
-      const stdin = testCase.input;
-      
-      this.judge0Service.submitCode(sourceCode, languageId, stdin).subscribe(
-        (response: any) => {
-          if (response.stdout) {
-            const output = response.stdout.trim();
-            const expected = testCase.output.trim();
-            const isCorrect = output === expected;
-            
-            if (isCorrect) passed++;
-            
-            this.testResults.push({
-              testCase: index + 1,
-              input: testCase.input,
-              expected: testCase.output,
-              output: output,
-              passed: isCorrect
-            });
-            
-            if (this.testResults.length === testCases.length) {
-              this.isSolved = passed === testCases.length;
-              
-              if (this.isSolved && this.topic) {
-                this.progressService.updateProgress({
-                  difficulty: this.currentProblem!.difficulty.toLowerCase(),
-                  score: 5,
-                  topic: {
-                    id: this.topicId,
-                    name: this.topic.name
-                  },
-                  problemId: this.currentProblem!.id
-                }).subscribe(() => {
-                  this.output += `\n🎉 +5 points earned for solving "${this.currentProblem!.title}"!`;
-                  
-                  if (this.currentProblemIndex === this.problems.length - 1) {
-                    this.awardTopicCompletion();
-                  }
-                });
-              }
-              
-              this.isLoading = false;
-            }
-          } else if (response.stderr) {
-            this.testResults.push({
-              testCase: index + 1,
-              input: testCase.input,
-              expected: testCase.output,
-              output: `Error: ${response.stderr}`,
-              passed: false
-            });
-            
-            if (this.testResults.length === testCases.length) {
-              this.isLoading = false;
-            }
-          }
-        },
-        (error: any) => {
-          this.testResults.push({
-            testCase: index + 1,
-            input: testCase.input,
-            expected: testCase.output,
-            output: 'Error: ' + error.message,
-            passed: false
-          });
-          
-          if (this.testResults.length === testCases.length) {
-            this.isLoading = false;
-          }
-        }
-      );
-    });
-  }
-
-  awardTopicCompletion() {
-    if (this.topic) {
-      this.output += `\n\n🏆 Congratulations! You've completed all problems in ${this.topic.name}!`;
-      this.output += `\n🎖️ You've earned the ${this.topic.name} Master badge!`;
-      this.output += `\n➕ 25 points for topic completion!`;
-      
-      this.progressService.completeTopic(this.topicId, this.topic.name).subscribe();
-    }
-  }
-
-  nextProblem() {
-    if (this.currentProblemIndex < this.problems.length - 1) {
-      this.currentProblemIndex++;
-      this.currentProblem = this.problems[this.currentProblemIndex];
-      this.userCode = this.currentProblem.defaultCode[this.selectedLanguage] || '';
-      this.testResults = [];
-      this.isSolved = false;
-      this.output = '';
-    }
-  }
-
-  previousProblem() {
-    if (this.currentProblemIndex > 0) {
-      this.currentProblemIndex--;
-      this.currentProblem = this.problems[this.currentProblemIndex];
-      this.userCode = this.currentProblem.defaultCode[this.selectedLanguage] || '';
-      this.testResults = [];
-      this.isSolved = false;
-      this.output = '';
-    }
-  }
-
-  onLanguageChange() {
-    if (this.currentProblem) {
-      this.userCode = this.currentProblem.defaultCode[this.selectedLanguage] || '';
-    }
-  }
-
-  getLanguageId(language: string): number {
-    const languages: { [key: string]: number } = {
-      'python': 71,
-      'java': 62,
-      'javascript': 63,
-      'cpp': 54
+  createMockTopic() {
+    this.topic = {
+      id: this.topicId, // Now string type
+      name: 'Data Structures',
+      description: 'Test your knowledge of data structures',
+      category: 'DSA',
+      commonProblems: [],
+      hints: []
     };
-    return languages[language.toLowerCase()] || 71;
   }
 
-  getPassedCount(): number {
-    return this.testResults.filter(result => result.passed).length;
+  generateQuestions() {
+    this.questions = [];
+    
+    for (let i = 1; i <= this.totalQuestions; i++) {
+      if (i % 2 === 0) {
+        this.questions.push(this.generateMCQQuestion(i));
+      } else {
+        this.questions.push(this.generateFillBlankQuestion(i));
+      }
+    }
   }
 
-  getTotalTestCases(): number {
-    return this.currentProblem ? this.currentProblem.testCases.length : 0;
+  generateMCQQuestion(id: number): any {
+    const templates = [
+      {
+        question: `Which approach will you use for ${this.topic?.name} when dealing with large datasets?`,
+        options: ['Brute Force', 'Divide and Conquer', 'Greedy Method', 'Dynamic Programming'],
+        correctAnswer: 'Divide and Conquer'
+      }
+    ];
+
+    const template = templates[0];
+    
+    return {
+      id: id,
+      type: 'mcq',
+      question: template.question,
+      options: template.options,
+      correctAnswer: template.correctAnswer,
+      isAnswered: false,
+      points: 2
+    };
+  }
+
+  generateFillBlankQuestion(id: number): any {
+    const templates = [
+      {
+        question: `The key operation in ${this.topic?.name} is __________.`,
+        correctAnswer: 'searching'
+      }
+    ];
+
+    const template = templates[0];
+    
+    return {
+      id: id,
+      type: 'fillblank',
+      question: template.question,
+      correctAnswer: template.correctAnswer,
+      isAnswered: false,
+      points: 2
+    };
+  }
+
+  selectAnswer(questionIndex: number, answer: string) {
+    if (this.testCompleted) return;
+
+    const question = this.questions[questionIndex];
+    if (question.isAnswered) return;
+
+    question.userAnswer = answer;
+    question.isAnswered = true;
+
+    if (answer === question.correctAnswer) {
+      question.isCorrect = true;
+      this.score += question.points;
+    } else {
+      question.isCorrect = false;
+    }
+
+    setTimeout(() => {
+      if (questionIndex < this.questions.length - 1) {
+        this.currentQuestionIndex++;
+      } else {
+        this.completeTest();
+      }
+    }, 1000);
+  }
+
+  submitFillBlankAnswer(inputElement: HTMLInputElement) {
+    const answer = inputElement.value.trim();
+    if (answer) {
+      this.selectAnswer(this.currentQuestionIndex, answer);
+      inputElement.value = '';
+    }
+  }
+
+  nextQuestion() {
+    if (this.currentQuestionIndex < this.questions.length - 1) {
+      this.currentQuestionIndex++;
+    } else {
+      this.completeTest();
+    }
+  }
+
+  previousQuestion() {
+    if (this.currentQuestionIndex > 0) {
+      this.currentQuestionIndex--;
+    }
+  }
+
+  completeTest() {
+    this.testCompleted = true;
+    this.totalScore = this.score;
+    this.saveTestResults();
+  }
+
+  saveTestResults() {
+    console.log('Test completed. Score:', this.totalScore);
+  }
+
+  retryTest() {
+    this.currentQuestionIndex = 0;
+    this.score = 0;
+    this.totalScore = 0;
+    this.testCompleted = false;
+    this.generateQuestions();
+  }
+
+  backToTopics() {
+    this.router.navigate(['/topics']);
+  }
+
+  getProgressPercentage(): number {
+    return ((this.currentQuestionIndex + 1) / this.totalQuestions) * 100;
+  }
+
+  getCurrentQuestion(): any {
+    return this.questions[this.currentQuestionIndex];
+  }
+
+  isLastQuestion(): boolean {
+    return this.currentQuestionIndex === this.questions.length - 1;
+  }
+
+  getCorrectAnswersCount(): number {
+    return this.questions.filter((q: any) => q.isCorrect).length;
+  }
+
+  getAccuracy(): string {
+    const accuracy = (this.getCorrectAnswersCount() / this.totalQuestions) * 100;
+    return accuracy.toFixed(1);
   }
 }

@@ -1,135 +1,177 @@
-<!-- frontend/src/app/components/topics/topic-test.component.html -->
 <app-navbar></app-navbar>
 
-<!-- Topic Test Page Specific Navigation -->
-<nav class="page-nav">
+<nav class="dashboard-nav">
   <div class="nav-container">
     <div class="nav-menu">
-      <a class="nav-item" routerLink="/dashboard">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
         <i class="fas fa-home"></i>
         <span>Dashboard</span>
       </a>
-      
-      <a class="nav-item" routerLink="/topics">
+      <a class="nav-item" routerLink="/topics" routerLinkActive="active">
         <i class="fas fa-book"></i>
-        <span>Learn Topics</span>
+        <span>Topics</span>
       </a>
-      
-      <a class="nav-item" routerLink="/voice-interview">
+      <a class="nav-item" routerLink="/voice-interview" routerLinkActive="active">
         <i class="fas fa-microphone"></i>
-        <span>Take Interviews</span>
+        <span>Interviews</span>
       </a>
-      
-      <a class="nav-item active" routerLink="/test">
-        <i class="fas fa-code"></i>
-        <span>Solve Problems</span>
-      </a>
-      
-      <a class="nav-item" routerLink="/progress">
+      <a class="nav-item" routerLink="/progress" routerLinkActive="active">
         <i class="fas fa-chart-line"></i>
-        <span>Track Your Progress</span>
+        <span>Progress</span>
       </a>
     </div>
   </div>
 </nav>
 
-<div class="container mt-4" *ngIf="!isLoading">
-  <div class="row">
-    <div class="col-12">
-      <!-- Header -->
-      <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0">
-            <i class="fas fa-code me-2"></i>{{ topic?.name }} - Coding Test
-          </h4>
-          <small>Problem {{ currentProblemIndex + 1 }} of {{ problems.length }}</small>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ currentProblem?.title }}</h5>
-          <p class="card-text">{{ currentProblem?.description }}</p>
-          <span class="badge" [ngClass]="{
-            'bg-success': currentProblem?.difficulty === 'Easy',
-            'bg-warning': currentProblem?.difficulty === 'Medium',
-            'bg-danger': currentProblem?.difficulty === 'Hard'
-          }">
-            {{ currentProblem?.difficulty }}
-          </span>
+<div class="test-container" *ngIf="!isLoading">
+  <div class="test-header">
+    <div class="header-content">
+      <h1>{{ topic?.name }} - Knowledge Test</h1>
+      <p>Test your understanding with 25 questions. Earn 2 points for each correct answer.</p>
+    </div>
+    <div class="test-info">
+      <div class="info-card">
+        <i class="fas fa-question-circle"></i>
+        <span>Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}</span>
+      </div>
+      <div class="info-card">
+        <i class="fas fa-star"></i>
+        <span>Score: {{ score }} points</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span>Test Progress</span>
+      <span>{{ getProgressPercentage().toFixed(0) }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width]="getProgressPercentage() + '%'"></div>
+    </div>
+  </div>
+
+  <div class="test-content" *ngIf="!testCompleted && questions.length > 0">
+    <div class="question-card">
+      <div class="question-header">
+        <h3>{{ getCurrentQuestion().question }}</h3>
+        <span class="question-type">{{ getCurrentQuestion().type === 'mcq' ? 'Multiple Choice' : 'Fill in the Blank' }}</span>
+      </div>
+
+      <div *ngIf="getCurrentQuestion().type === 'mcq'" class="options-container">
+        <div *ngFor="let option of getCurrentQuestion().options; let i = index" 
+             class="option-card"
+             [class.correct]="getCurrentQuestion().isAnswered && option === getCurrentQuestion().correctAnswer"
+             [class.incorrect]="getCurrentQuestion().isAnswered && option === getCurrentQuestion().userAnswer && option !== getCurrentQuestion().correctAnswer"
+             [class.disabled]="getCurrentQuestion().isAnswered"
+             (click)="selectAnswer(currentQuestionIndex, option)">
+          
+          <div class="option-content">
+            <div class="option-letter">{{ String.fromCharCode(65 + i) }}</div>
+            <div class="option-text">{{ option }}</div>
+          </div>
+          
+          <div class="option-feedback" *ngIf="getCurrentQuestion().isAnswered">
+            <div *ngIf="option === getCurrentQuestion().correctAnswer" class="correct-feedback">
+              <i class="fas fa-check"></i> Correct! +2 points
+            </div>
+            <div *ngIf="option === getCurrentQuestion().userAnswer && option !== getCurrentQuestion().correctAnswer" 
+                  class="incorrect-feedback">
+              <i class="fas fa-times"></i> Wrong answer
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Code Editor -->
-      <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h6 class="mb-0">Code Editor</h6>
-          <select class="form-select form-select-sm w-auto" [(ngModel)]="selectedLanguage" (change)="onLanguageChange()">
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="javascript">JavaScript</option>
-            <option value="cpp">C++</option>
-          </select>
+      <div *ngIf="getCurrentQuestion().type === 'fillblank'" class="fillblank-section">
+        <div class="fillblank-input">
+          <input type="text" 
+                 #answerInput
+                 [disabled]="getCurrentQuestion().isAnswered"
+                 placeholder="Type your answer here..."
+                 (keyup.enter)="submitFillBlankAnswer(answerInput)"
+                 class="form-control">
+          <button class="submit-btn" 
+                  [disabled]="getCurrentQuestion().isAnswered"
+                  (click)="submitFillBlankAnswer(answerInput)">
+            Submit
+          </button>
         </div>
-        <div class="card-body p-0">
-          <textarea class="form-control code-editor" [(ngModel)]="userCode" rows="15" 
-                    placeholder="Write your code here..."></textarea>
+        
+        <div class="fillblank-feedback" *ngIf="getCurrentQuestion().isAnswered">
+          <div *ngIf="getCurrentQuestion().isCorrect" class="correct-feedback">
+            <i class="fas fa-check"></i> Correct! +2 points
+          </div>
+          <div *ngIf="!getCurrentQuestion().isCorrect" class="incorrect-feedback">
+            <i class="fas fa-times"></i> Correct answer: "{{ getCurrentQuestion().correctAnswer }}"
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Actions -->
-      <div class="d-flex justify-content-between mb-4">
-        <div>
-          <button class="btn btn-outline-primary me-2" (click)="previousProblem()" 
-                  [disabled]="currentProblemIndex === 0">
-            <i class="fas fa-arrow-left me-1"></i>Previous
-          </button>
-          <button class="btn btn-primary" (click)="nextProblem()" 
-                  [disabled]="currentProblemIndex === problems.length - 1">
-            Next <i class="fas fa-arrow-right ms-1"></i>
-          </button>
-        </div>
-        <button class="btn btn-success" (click)="runTests()" [disabled]="isLoading">
-          <i class="fas fa-play me-1"></i>
-          {{ isLoading ? 'Running...' : 'Run Tests' }}
+    <div class="navigation-buttons">
+      <button class="btn btn-outline" (click)="previousQuestion()" [disabled]="currentQuestionIndex === 0">
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      
+      <div class="navigation-center">
+        <button *ngIf="!isLastQuestion() && !getCurrentQuestion().isAnswered" class="btn btn-primary" disabled>
+          Select an answer to continue
+        </button>
+        
+        <button *ngIf="!isLastQuestion() && getCurrentQuestion().isAnswered" class="btn btn-primary" (click)="nextQuestion()">
+          Next Question <i class="fas fa-arrow-right"></i>
+        </button>
+        
+        <button *ngIf="isLastQuestion() && getCurrentQuestion().isAnswered" class="btn btn-success" (click)="completeTest()">
+          Complete Test <i class="fas fa-check"></i>
         </button>
       </div>
+      
+      <button class="btn btn-outline" (click)="backToTopics()">
+        <i class="fas fa-times"></i> Exit Test
+      </button>
+    </div>
+  </div>
 
-      <!-- Results -->
-      <div class="card" *ngIf="testResults.length > 0">
-        <div class="card-header">
-          <h6 class="mb-0">Test Results</h6>
+  <div *ngIf="testCompleted" class="results-container">
+    <div class="results-card">
+      <div class="results-header">
+        <div class="trophy-icon">
+          <i class="fas fa-trophy"></i>
         </div>
-        <div class="card-body">
-          <div class="output-container">
-            <pre>{{ output }}</pre>
-          </div>
-
-          <div class="mt-3">
-            <div *ngFor="let result of testResults" class="mb-2 p-2 rounded" 
-                 [ngClass]="{'bg-light': !result.passed, 'bg-success text-white': result.passed}">
-              <strong>Test Case {{ result.testCase }}:</strong> 
-              {{ result.passed ? '✅ PASSED' : '❌ FAILED' }}
-              <div *ngIf="!result.passed" class="mt-1 small">
-                <div><strong>Input:</strong> {{ result.input }}</div>
-                <div><strong>Expected:</strong> {{ result.expected }}</div>
-                <div><strong>Your Output:</strong> {{ result.output }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="progress mt-3" *ngIf="testResults.length > 0">
-            <div class="progress-bar" [ngClass]="{'bg-success': isSolved, 'bg-warning': !isSolved}" 
-                 [style.width]="(getPassedCount() / getTotalTestCases()) * 100 + '%'">
-              {{ getPassedCount() }}/{{ getTotalTestCases() }} tests passed
-            </div>
-          </div>
+        <h2>Test Completed!</h2>
+        <p>You've completed the {{ topic?.name }} test</p>
+      </div>
+      
+      <div class="results-stats">
+        <div class="stat-item">
+          <div class="stat-value">{{ totalScore }}</div>
+          <div class="stat-label">Total Points</div>
         </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ getCorrectAnswersCount() }}/{{ totalQuestions }}</div>
+          <div class="stat-label">Correct Answers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ getAccuracy() }}%</div>
+          <div class="stat-label">Accuracy</div>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn btn-outline" (click)="backToTopics()">
+          <i class="fas fa-book"></i> Back to Topics
+        </button>
+        <button class="btn btn-primary" (click)="retryTest()">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="isLoading" class="text-center py-5">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p class="mt-3">Loading test problems...</p>
+<div *ngIf="isLoading" class="loading-container">
+  <div class="spinner"></div>
+  <p>Loading test questions...</p>
 </div>

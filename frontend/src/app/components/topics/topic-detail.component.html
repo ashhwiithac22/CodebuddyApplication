@@ -1,4 +1,7 @@
 <!-- Topics Page Navigation Menu -->
+<app-navbar></app-navbar>
+
+<!-- Topic Detail Navigation Menu -->
 <nav class="dashboard-nav">
   <div class="nav-container">
     <div class="nav-menu">
@@ -6,91 +9,170 @@
         <i class="fas fa-home"></i>
         <span>Dashboard</span>
       </a>
-      
+      <a class="nav-item" routerLink="/topics" routerLinkActive="active">
+        <i class="fas fa-book"></i>
+        <span>Topics</span>
+      </a>
       <a class="nav-item" routerLink="/voice-interview" routerLinkActive="active">
         <i class="fas fa-microphone"></i>
-        <span>Take interviews</span>
+        <span>Interviews</span>
       </a>
-      
-      <a class="nav-item" routerLink="/coding-round" routerLinkActive="active">
-        <i class="fas fa-calendar-day"></i>
-        <span>Solve daily challenge</span>
-      </a>
-      
       <a class="nav-item" routerLink="/progress" routerLinkActive="active">
         <i class="fas fa-chart-line"></i>
-        <span>Track your progress</span>
+        <span>Progress</span>
       </a>
     </div>
   </div>
 </nav>
 
-<!-- Existing content -->
-<div class="container mt-4" *ngIf="topic && !isLoading">
+<div class="container mt-4" *ngIf="!isLoading && topic">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/topics">Topics</a></li>
+      <li class="breadcrumb-item active">{{ topic.name }}</li>
+    </ol>
+  </nav>
+
+  <!-- Topic Header -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-1">{{ topic.name }}</h3>
+          <span class="badge bg-light text-dark">{{ topic.category }}</span>
+        </div>
+        <button class="btn btn-success btn-lg" (click)="takeTest()">
+          <i class="fas fa-play me-2"></i>Take Test
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="lead">{{ topic.description }}</p>
+    </div>
+  </div>
+
   <div class="row">
-    <div class="col-12">
-      <div class="card mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">
-            <i class="fas fa-book me-2"></i>{{ topic?.name }} - Learning Guide
-          </h4>
-          <span class="badge bg-light text-dark">{{ topic?.category }}</span>
+    <!-- Left Column - Common Problems -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-list-check me-2"></i>Common Problems
+          </h5>
         </div>
         <div class="card-body">
-          <p class="lead">{{ topic?.description }}</p>
+          <div *ngIf="topic.commonProblems && topic.commonProblems.length > 0; else noProblems">
+            <div class="list-group">
+              <div *ngFor="let problem of topic.commonProblems; let i = index" 
+                   class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ problem }}</span>
+                <span class="badge bg-primary rounded-pill">{{ i + 1 }}</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noProblems>
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-info-circle fa-2x mb-3"></i>
+              <p>No common problems available for this topic.</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Learning Hints -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-lightbulb me-2"></i>Learning Hints
+          </h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="topic.hints && topic.hints.length > 0; else noHints">
+            <!-- Hint Navigation Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Hint {{ activeHintIndex + 1 }} of {{ topic.hints.length }}</h5>
+              <div class="btn-group">
+                <button class="btn btn-outline-primary btn-sm" 
+                        (click)="previousHint()" 
+                        [disabled]="activeHintIndex === 0">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <button class="btn btn-outline-primary btn-sm" 
+                        (click)="nextHint()" 
+                        [disabled]="activeHintIndex === (topic.hints.length - 1)">
+                  Next <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Current Hint Content -->
+            <div *ngIf="activeHint" class="hint-content">
+              <h6 class="text-primary">{{ activeHint.title }}</h6>
+              <p class="mb-3">{{ activeHint.description }}</p>
+              
+              <!-- Fixed Code Snippet Section -->
+              <div *ngIf="activeHint.codeSnippet" class="code-snippet-container mt-3">
+                <div class="code-header d-flex justify-content-between align-items-center bg-dark text-white px-3 py-2 rounded-top">
+                  <span class="small">
+                    <i class="fas fa-code me-1"></i>Code Example
+                    <span class="badge bg-secondary ms-2">{{ activeHint.language }}</span>
+                  </span>
+                  <button class="btn btn-sm btn-outline-light" (click)="copyCode(activeHint.codeSnippet || '')">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+                <pre class="bg-light p-3 rounded-bottom border border-top-0 mb-0"><code class="language-javascript">{{ activeHint.codeSnippet }}</code></pre>
+              </div>
+            </div>
+          </div>
           
-          <div class="alert alert-info">
-            <i class="fas fa-lightbulb me-2"></i>
-            <strong>Pro Tip:</strong> Master these {{ topic?.hints?.length }} hints to solve any {{ topic?.name }} problem in coding interviews!
-          </div>
+          <ng-template #noHints>
+            <div class="text-center text-muted py-4">
+              <i class="fas fa-lightbulb fa-2x mb-3"></i>
+              <p>No hints available for this topic.</p>
+            </div>
+          </ng-template>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Hints Navigation -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Hint {{ activeHintIndex + 1 }} of {{ topic?.hints?.length }}</h5>
-        </div>
-        <div class="card-body">
-          <div *ngIf="activeHint">
-            <h6 class="text-primary">{{ activeHint.title }}</h6>
-            <p>{{ activeHint.description }}</p>
-            
-            <div class="bg-dark text-light p-3 rounded mb-3">
-              <pre class="mb-0"><code>{{ activeHint.codeSnippet }}</code></pre>
-            </div>
-            
-            <div class="d-flex justify-content-between">
-              <button class="btn btn-outline-primary" (click)="previousHint()" [disabled]="activeHintIndex === 0">
-                <i class="fas fa-arrow-left me-1"></i>Previous
-              </button>
-              <button class="btn btn-primary" (click)="nextHint()" [disabled]="activeHintIndex === (topic?.hints?.length || 1) - 1">
-                Next <i class="fas fa-arrow-right ms-1"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Practice Section -->
-      <div class="card" *ngIf="topic">
-        <div class="card-header">
-          <h5 class="mb-0">Ready to Test Your Knowledge?</h5>
-        </div>
-        <div class="card-body text-center">
-          <p class="mb-3">You've learned {{ topic.hints.length }} hints for {{ topic.name }}. Now test your understanding with real coding problems!</p>
-          <a class="btn btn-success btn-lg" [routerLink]="['/test', topic.id]">
-            <i class="fas fa-play-circle me-2"></i>Take Test Now
-          </a>
-        </div>
+  <!-- Action Buttons -->
+  <div class="row mt-4">
+    <div class="col-12 text-center">
+      <div class="d-grid gap-2 d-md-block">
+        <button class="btn btn-primary btn-lg me-md-2" (click)="takeTest()">
+          <i class="fas fa-play-circle me-2"></i>Start Test
+        </button>
+        <button class="btn btn-outline-secondary btn-lg" routerLink="/topics">
+          <i class="fas fa-arrow-left me-2"></i>Back to Topics
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="isLoading" class="text-center py-5">
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+<!-- Loading State -->
+<div *ngIf="isLoading" class="container mt-4">
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3">Loading topic details...</p>
   </div>
-  <p class="mt-3">Loading topic details...</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="!isLoading && !topic" class="container mt-4">
+  <div class="text-center py-5">
+    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+    <h3>Topic Not Found</h3>
+    <p class="text-muted">The requested topic could not be found.</p>
+    <button class="btn btn-primary" routerLink="/topics">
+      <i class="fas fa-arrow-left me-2"></i>Back to Topics
+    </button>
+  </div>
 </div>

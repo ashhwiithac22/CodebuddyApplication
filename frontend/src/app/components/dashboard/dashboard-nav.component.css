@@ -1,0 +1,95 @@
+/* frontend/src/app/components/dashboard/dashboard-nav.component.css */
+.dashboard-nav {
+  background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+  padding: 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 2rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-bottom-color: #4cc9f0;
+}
+
+.nav-item i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-item span {
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+  
+  .nav-menu {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0.5rem 0;
+  }
+  
+  .nav-item {
+    padding: 1rem 1.5rem;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  
+  .nav-item span {
+    display: none;
+  }
+  
+  .nav-item i {
+    font-size: 1.2rem;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-menu {
+    gap: 0.25rem;
+  }
+  
+  .nav-item {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0 0.25rem;
+  }
+}
