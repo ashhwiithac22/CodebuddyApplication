@@ -1,4 +1,3 @@
-// frontend/src/app/services/test.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -10,6 +9,7 @@ export interface Question {
   options?: string[];
   correctAnswer: string;
   userAnswer?: string;
+  isAnswered?: boolean;
   isCorrect?: boolean;
   points?: number;
 }
@@ -42,13 +42,11 @@ export class TestService {
 
   constructor() { }
 
-  // Get questions for a specific topic
   getTopicQuestions(topicId: string): Observable<Question[]> {
     const questions = this.generateTopicQuestions(topicId);
     return of(questions).pipe(delay(500));
   }
 
-  // Save test results
   saveTestResult(result: TestResult): Observable<{ success: boolean; message: string }> {
     try {
       const existingResults = this.getStoredTestResults();
@@ -60,49 +58,34 @@ export class TestService {
     }
   }
 
-  // Get all test results for a user
   getTestResults(): TestResult[] {
     return this.getStoredTestResults();
   }
 
-  // Get test results for a specific topic
   getTopicTestResults(topicId: string): TestResult[] {
     const allResults = this.getStoredTestResults();
     return allResults.filter(result => result.topicId === topicId);
   }
 
-  // Get user's best score for a topic
   getBestScore(topicId: string): number {
     const topicResults = this.getTopicTestResults(topicId);
     if (topicResults.length === 0) return 0;
     return Math.max(...topicResults.map(result => result.score));
   }
 
-  // Get user's average score for a topic
-  getAverageScore(topicId: string): number {
-    const topicResults = this.getTopicTestResults(topicId);
-    if (topicResults.length === 0) return 0;
-    const total = topicResults.reduce((sum, result) => sum + result.score, 0);
-    return total / topicResults.length;
-  }
-
-  // Save test progress (for resuming tests)
   saveTestProgress(progress: TestProgress): void {
     localStorage.setItem(this.PROGRESS_KEY, JSON.stringify(progress));
   }
 
-  // Get test progress
   getTestProgress(): TestProgress | null {
     const progress = localStorage.getItem(this.PROGRESS_KEY);
     return progress ? JSON.parse(progress) : null;
   }
 
-  // Clear test progress
   clearTestProgress(): void {
     localStorage.removeItem(this.PROGRESS_KEY);
   }
 
-  // Calculate time spent
   calculateTimeSpent(startTime: Date, endTime: Date): string {
     const timeDiff = endTime.getTime() - startTime.getTime();
     const minutes = Math.floor(timeDiff / 60000);
@@ -110,35 +93,11 @@ export class TestService {
     return `${minutes}m ${seconds}s`;
   }
 
-  // Generate test analytics
-  getTestAnalytics(): {
-    totalTests: number;
-    averageScore: number;
-    topicsCompleted: number;
-    totalPoints: number;
-  } {
-    const results = this.getStoredTestResults();
-    const totalTests = results.length;
-    const averageScore = totalTests > 0 ? results.reduce((sum, r) => sum + r.score, 0) / totalTests : 0;
-    const uniqueTopics = new Set(results.map(r => r.topicId)).size;
-    const totalPoints = results.reduce((sum, r) => sum + r.score, 0);
-
-    return {
-      totalTests,
-      averageScore: Math.round(averageScore),
-      topicsCompleted: uniqueTopics,
-      totalPoints
-    };
-  }
-
-  // Private method to get stored test results
   private getStoredTestResults(): TestResult[] {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (!stored) return [];
-
       const results = JSON.parse(stored);
-      // Convert completedAt string back to Date object
       return results.map((result: any) => ({
         ...result,
         completedAt: new Date(result.completedAt)
@@ -149,7 +108,6 @@ export class TestService {
     }
   }
 
-  // Question database for all topics
   private generateTopicQuestions(topicId: string): Question[] {
     const questionGenerators: { [key: string]: () => Question[] } = {
       '1': () => this.getArrayQuestions(),
@@ -168,7 +126,6 @@ export class TestService {
       '14': () => this.getGreedyQuestions(),
       '15': () => this.getBacktrackingQuestions()
     };
-
     return questionGenerators[topicId]?.() || this.getDefaultQuestions();
   }
 
@@ -176,192 +133,142 @@ export class TestService {
   private getArrayQuestions(): Question[] {
     return [
       {
-        id: 1,
-        type: 'mcq',
-        question: 'What is the time complexity of finding the median of two sorted arrays using binary search?',
-        options: ['O(1)', 'O(log(min(m,n)))', 'O(n)', 'O(n log n)'],
-        correctAnswer: 'O(log(min(m,n)))',
-        points: 2
-      },
-      {
-        id: 2,
-        type: 'fillblank',
-        question: 'The maximum subarray sum problem can be solved in O(n) time using __________ algorithm.',
-        correctAnswer: 'Kadane\'s',
-        points: 2
-      },
-      {
-        id: 3,
-        type: 'mcq',
-        question: 'Which approach is most efficient for rotating an array by k positions without extra space?',
-        options: ['Using temporary array', 'Reversal algorithm', 'Bubble rotate', 'Juggling algorithm'],
-        correctAnswer: 'Reversal algorithm',
-        points: 2
-      },
-      {
-        id: 4,
-        type: 'mcq',
+        id: 1, type: 'mcq', points: 2,
         question: 'What is the time complexity of accessing an element by index in an array?',
         options: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'],
-        correctAnswer: 'O(1)',
-        points: 2
+        correctAnswer: 'O(1)'
       },
       {
-        id: 5,
-        type: 'fillblank',
-        question: 'The __________ algorithm is used to find all pairs in an array that sum to a target.',
-        correctAnswer: 'two-pointer',
-        points: 2
+        id: 2, type: 'fillblank', points: 2,
+        question: 'The algorithm used to find the maximum subarray sum in O(n) time is called __________.',
+        correctAnswer: 'Kadane\'s Algorithm'
       },
       {
-        id: 6,
-        type: 'mcq',
-        question: 'Which data structure would you use for O(1) insertions and deletions at both ends?',
-        options: ['Array', 'Linked List', 'Deque', 'Stack'],
-        correctAnswer: 'Deque',
-        points: 2
+        id: 3, type: 'mcq', points: 2,
+        question: 'What is the worst-case time complexity of searching in an unsorted array',
+        options: ['O(1)', 'O(n)', 'O(log n)', 'O(n log n)'],
+        correctAnswer: 'O(n)'
       },
       {
-        id: 7,
-        type: 'fillblank',
+        id: 4, type: 'mcq', points: 2,
+        question: 'Which technique helps rearrange positive and negative numbers alternatively in O(n) time?',
+        options: ['sorting', 'Two Pointer', 'Hashing', 'Divide and Conquer'],
+        correctAnswer: 'Two Pointer'
+      },
+      {
+        id: 5, type: 'fillblank', points: 2,
+        question: 'To detect duplicates in an array efficiently, the best approach is _',
+        correctAnswer: 'HashSet'
+      },
+      {
+        id: 6, type: 'mcq', points: 2,
+        question: 'You have an array [0,1,0,2,1,0,1,3,2,1,2,1]. Which algorithm is typically used to compute trapped rainwater?',
+        options: ['Two Pointers','Stack','Dynamic Programming','All of the above'],
+        correctAnswer: 'All of the above'
+      },
+      {
+        id: 7, type: 'fillblank', points: 2,
         question: 'The Dutch National Flag problem is solved using __________ partitioning.',
-        correctAnswer: 'three-way',
-        points: 2
+        correctAnswer: 'three-way'
       },
       {
-        id: 8,
-        type: 'mcq',
-        question: 'What is the best sorting algorithm for nearly sorted arrays?',
-        options: ['Quick Sort', 'Merge Sort', 'Insertion Sort', 'Selection Sort'],
-        correctAnswer: 'Insertion Sort',
-        points: 2
+        id: 8, type: 'mcq', points: 2,
+        question: 'How do you find the majority element (appears > n/2 times) in an array efficiently?',
+        options: ['Brute Force Count', 'Sorting', 'Boyer-Moore Voting Algorithm', 'Binary Search'],
+        correctAnswer: 'Boyer-Moore Voting Algorithm'
       },
       {
-        id: 9,
-        type: 'fillblank',
+        id: 9, type: 'fillblank', points: 2,
         question: 'The __________ technique is used to find the smallest subarray with sum ≥ target.',
-        correctAnswer: 'sliding window',
-        points: 2
+        correctAnswer: 'sliding window'
       },
       {
-        id: 10,
-        type: 'mcq',
-        question: 'Which algorithm finds the kth largest element in O(n) average time?',
-        options: ['Quickselect', 'Heapsort', 'Merge Sort', 'Binary Search'],
-        correctAnswer: 'Quickselect',
-        points: 2
+        id: 10, type: 'mcq', points: 2,
+        question: 'Find first missing positive integer”, which approach is efficient?',
+        options: ['Hashing', 'Sorting','In-place marking','Both A and C'],
+        correctAnswer: 'Both A and C'
       },
       {
-        id: 11,
-        type: 'fillblank',
+        id: 11, type: 'fillblank', points: 2,
         question: 'The __________ problem involves finding the maximum profit from stock prices.',
-        correctAnswer: 'best time to buy and sell stock',
-        points: 2
+        correctAnswer: 'best time to buy and sell stock'
       },
       {
-        id: 12,
-        type: 'mcq',
-        question: 'What is the space complexity of merge sort?',
-        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
-        correctAnswer: 'O(n)',
-        points: 2
+        id: 12, type: 'mcq', points: 2,
+        question: 'How do you merge two sorted arrays into a sorted array efficiently?',
+        options: ['Brute force insert', 'Two Pointers', 'Sorting the combined array', 'Recursion'],
+        correctAnswer: 'Sorting the combined array'
       },
       {
-        id: 13,
-        type: 'fillblank',
+        id: 13, type: 'fillblank', points: 2,
         question: 'The __________ method is used to solve the "Product of Array Except Self" problem.',
-        correctAnswer: 'prefix and suffix products',
-        points: 2
+        correctAnswer: 'prefix and suffix products'
       },
       {
-        id: 14,
-        type: 'mcq',
-        question: 'Which approach is best for finding duplicate numbers in an array?',
-        options: ['Floyd\'s Tortoise and Hare', 'Binary Search', 'Sorting', 'Hash Set'],
-        correctAnswer: 'Floyd\'s Tortoise and Hare',
-        points: 2
+        id: 14, type: 'mcq', points: 2,
+        question: 'You are given an array of heights. Which approach computes water trapped between bars using O(n) space?',
+        options: ['Brute Force','Prefix-Suffix max arrays', 'Stack', 'Two Pointers'],
+        correctAnswer: 'Stack'
       },
       {
-        id: 15,
-        type: 'fillblank',
-        question: 'The __________ algorithm finds the next permutation in lexicographical order.',
-        correctAnswer: 'next permutation',
-        points: 2
+        id: 15, type: 'fillblank', points: 2,
+        question: '________is used to solve subarray product less than k.',
+        correctAnswer: 'Sliding Window'
       },
       {
-        id: 16,
-        type: 'mcq',
-        question: 'What is the time complexity of the two-sum problem using hash map?',
-        options: ['O(1)', 'O(n)', 'O(n²)', 'O(log n)'],
-        correctAnswer: 'O(n)',
-        points: 2
+        id: 16, type: 'mcq', points: 2,
+        question: 'For “Buy and Sell Stock once”, which approach is optimal?',
+        options: ['Brute force O(n²)', 'Track min and max while traversing', 'Sorting', 'Sliding window'],
+        correctAnswer: 'Sorting'
       },
       {
-        id: 17,
-        type: 'fillblank',
+        id: 17, type: 'fillblank', points: 2,
         question: 'The __________ technique is used to find the container with most water.',
-        correctAnswer: 'two-pointer',
-        points: 2
+        correctAnswer: 'two-pointer'
       },
       {
-        id: 18,
-        type: 'mcq',
-        question: 'Which algorithm is most efficient for finding the majority element?',
-        options: ['Boyer-Moore', 'Sorting', 'Hash Map', 'Divide and Conquer'],
-        correctAnswer: 'Boyer-Moore',
-        points: 2
+        id: 18, type: 'mcq', points: 2,
+        question: 'You need largest sum of contiguous subarray. Which approach?',
+        options: ['Kadane’s Algorithm', 'Sliding Window', 'Hash Map', 'Stack'],
+        correctAnswer: 'Kadane’s Algorithm'
       },
       {
-        id: 19,
-        type: 'fillblank',
-        question: 'The __________ method merges overlapping intervals efficiently.',
-        correctAnswer: 'sort and merge',
-        points: 2
+        id: 19, type: 'fillblank', points: 2,
+        question: 'To rearrange positives and negatives alternatively, ________ approach works.',
+        correctAnswer: 'Two Pointer'
       },
       {
-        id: 20,
-        type: 'mcq',
-        question: 'What is the best data structure for range sum queries with updates?',
-        options: ['Array', 'Segment Tree', 'Linked List', 'Stack'],
-        correctAnswer: 'Segment Tree',
-        points: 2
+        id: 20, type: 'mcq', points: 2,
+        question: 'For Longest Increasing Subsequence, which approach is efficient?',
+        options: ['DP O(n²)', 'Binary search + DP O(n log n)', 'Sorting', 'Brute force'],
+        correctAnswer: 'Binary search + DP O(n log n)'
       },
       {
-        id: 21,
-        type: 'fillblank',
-        question: 'The __________ algorithm finds the longest increasing subsequence.',
-        correctAnswer: 'dynamic programming',
-        points: 2
+        id: 21, type: 'fillblank', points: 2,
+        question: 'To find peak element,_______can be applied.',
+        correctAnswer: 'Binary Search'
       },
       {
-        id: 22,
-        type: 'mcq',
-        question: 'Which approach is used for trapping rain water problem?',
-        options: ['Two Pointer', 'Dynamic Programming', 'Stack', 'All of the above'],
-        correctAnswer: 'All of the above',
-        points: 2
+        id: 22, type: 'mcq', points: 2,
+        question: 'For “Stock buy and sell multiple transactions”, which approach?',
+        options: ['DP', 'Greedy', 'Nested loops', 'All of the above'],
+        correctAnswer: 'Greedy'
       },
       {
-        id: 23,
-        type: 'fillblank',
-        question: 'The __________ method finds the first missing positive integer.',
-        correctAnswer: 'cyclic sort',
-        points: 2
+        id: 23, type: 'fillblank', points: 2,
+        question: ' _______is often used to count frequency of elements in an array.',
+        correctAnswer: 'HashMap'
       },
       {
-        id: 24,
-        type: 'mcq',
+        id: 24, type: 'mcq', points: 2,
         question: 'What is the time complexity of finding all triplets that sum to zero?',
         options: ['O(n)', 'O(n²)', 'O(n³)', 'O(n log n)'],
-        correctAnswer: 'O(n²)',
-        points: 2
+        correctAnswer: 'O(n²)'
       },
       {
-        id: 25,
-        type: 'fillblank',
+        id: 25, type: 'fillblank', points: 2,
         question: 'The __________ technique is used for subarray sum equals k problem.',
-        correctAnswer: 'prefix sum',
-        points: 2
+        correctAnswer: 'prefix sum'
       }
     ];
   }
@@ -370,103 +277,204 @@ export class TestService {
   private getHashSetQuestions(): Question[] {
     return [
       {
-        id: 1,
-        type: 'mcq',
+        id: 1, type: 'mcq', points: 2,
         question: 'What is the worst-case time complexity for finding the longest consecutive sequence using HashSet?',
         options: ['O(n)', 'O(n log n)', 'O(n²)', 'O(1)'],
-        correctAnswer: 'O(n)',
-        points: 2
+        correctAnswer: 'O(n)'
       },
       {
-        id: 2,
-        type: 'fillblank',
+        id: 2, type: 'fillblank', points: 2,
         question: 'To check Sudoku validity using HashSet, the space complexity is __________.',
-        correctAnswer: 'O(1)',
-        points: 2
+        correctAnswer: 'O(1)'
       },
       {
-        id: 3,
-        type: 'mcq',
+        id: 3, type: 'mcq', points: 2,
         question: 'Which approach is best for finding duplicate elements in an array?',
         options: ['Sorting', 'HashSet', 'Nested loops', 'Binary Search'],
-        correctAnswer: 'HashSet',
-        points: 2
+        correctAnswer: 'HashSet'
       },
-      // ... Add remaining 22 questions for HashSet
       {
-        id: 4,
-        type: 'fillblank',
+        id: 4, type: 'fillblank', points: 2,
         question: 'A HashSet does not allow __________ elements.',
-        correctAnswer: 'duplicate',
-        points: 2
+        correctAnswer: 'duplicate'
       },
-      // Continue with similar pattern for remaining questions...
+      {
+        id: 5, type: 'mcq', points: 2,
+        question: 'What is the average case time complexity for insertion in HashSet?',
+        options: ['O(1)', 'O(n)', 'O(log n)', 'O(n log n)'],
+        correctAnswer: 'O(1)'
+      },
+      {
+        id: 6, type: 'fillblank', points: 2,
+        question: 'The __________ method checks if an element exists in HashSet.',
+        correctAnswer: 'contains'
+      },
+      {
+        id: 7, type: 'mcq', points: 2,
+        question: 'Which data structure is HashSet typically built upon?',
+        options: ['Array', 'Linked List', 'Hash Table', 'Tree'],
+        correctAnswer: 'Hash Table'
+      },
+      {
+        id: 8, type: 'fillblank', points: 2,
+        question: 'The __________ problem uses HashSet to find unique elements.',
+        correctAnswer: 'intersection of two arrays'
+      },
+      {
+        id: 9, type: 'mcq', points: 2,
+        question: 'What is the worst-case time complexity for HashSet operations?',
+        options: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'],
+        correctAnswer: 'O(n)'
+      },
+      {
+        id: 10, type: 'fillblank', points: 2,
+        question: 'The __________ number problem uses HashSet for cycle detection.',
+        correctAnswer: 'happy'
+      },
+      {
+        id: 11, type: 'mcq', points: 2,
+        question: 'Which method removes all elements from HashSet?',
+        options: ['clear()', 'removeAll()', 'delete()', 'empty()'],
+        correctAnswer: 'clear()'
+      },
+      {
+        id: 12, type: 'fillblank', points: 2,
+        question: 'The __________ jewels problem uses HashSet for O(1) lookups.',
+        correctAnswer: 'jewels and stones'
+      },
+      {
+        id: 13, type: 'mcq', points: 2,
+        question: 'What is the load factor in HashSet?',
+        options: ['Ratio of elements to capacity', 'Hash function', 'Collision rate', 'Memory usage'],
+        correctAnswer: 'Ratio of elements to capacity'
+      },
+      {
+        id: 14, type: 'fillblank', points: 2,
+        question: 'The __________ method returns the size of HashSet.',
+        correctAnswer: 'size'
+      },
+      {
+        id: 15, type: 'mcq', points: 2,
+        question: 'Which collision resolution technique is commonly used in HashSet?',
+        options: ['Chaining', 'Linear Probing', 'Quadratic Probing', 'All of the above'],
+        correctAnswer: 'All of the above'
+      },
+      {
+        id: 16, type: 'fillblank', points: 2,
+        question: 'The __________ problem finds if a number is in HashSet.',
+        correctAnswer: 'contains duplicate'
+      },
+      {
+        id: 17, type: 'mcq', points: 2,
+        question: 'What is the default initial capacity of HashSet in Java?',
+        options: ['10', '16', '32', '64'],
+        correctAnswer: '16'
+      },
+      {
+        id: 18, type: 'fillblank', points: 2,
+        question: 'The __________ method adds an element to HashSet.',
+        correctAnswer: 'add'
+      },
+      {
+        id: 19, type: 'mcq', points: 2,
+        question: 'Which interface does HashSet implement?',
+        options: ['Set', 'List', 'Map', 'Collection'],
+        correctAnswer: 'Set'
+      },
+      {
+        id: 20, type: 'fillblank', points: 2,
+        question: 'The __________ problem uses HashSet to distribute candies.',
+        correctAnswer: 'distribute candies'
+      },
+      {
+        id: 21, type: 'mcq', points: 2,
+        question: 'What happens when HashSet reaches its load factor?',
+        options: ['It resizes', 'It stops accepting elements', 'It throws an error', 'It slows down'],
+        correctAnswer: 'It resizes'
+      },
+      {
+        id: 22, type: 'fillblank', points: 2,
+        question: 'The __________ method removes an element from HashSet.',
+        correctAnswer: 'remove'
+      },
+      {
+        id: 23, type: 'mcq', points: 2,
+        question: 'Which is faster for membership testing: Array or HashSet?',
+        options: ['HashSet', 'Array', 'Same speed', 'Depends on size'],
+        correctAnswer: 'HashSet'
+      },
+      {
+        id: 24, type: 'fillblank', points: 2,
+        question: 'The __________ problem finds missing number using HashSet.',
+        correctAnswer: 'missing number'
+      },
+      {
+        id: 25, type: 'mcq', points: 2,
+        question: 'What is the time complexity to convert an array to HashSet?',
+        options: ['O(n)', 'O(1)', 'O(n²)', 'O(log n)'],
+        correctAnswer: 'O(n)'
+      }
     ];
   }
 
-  // Add similar methods for other topics...
-  private getHashMapQuestions(): Question[] { return this.generateDefaultQuestions('HashMaps & Dictionaries'); }
-  private getStringQuestions(): Question[] { return this.generateDefaultQuestions('Strings'); }
-  private getLinkedListQuestions(): Question[] { return this.generateDefaultQuestions('Linked Lists'); }
-  private getStackQuestions(): Question[] { return this.generateDefaultQuestions('Stacks'); }
-  private getQueueQuestions(): Question[] { return this.generateDefaultQuestions('Queues'); }
-  private getTreeQuestions(): Question[] { return this.generateDefaultQuestions('Trees'); }
-  private getGraphQuestions(): Question[] { return this.generateDefaultQuestions('Graphs'); }
-  private getHeapQuestions(): Question[] { return this.generateDefaultQuestions('Heaps'); }
-  private getSortingQuestions(): Question[] { return this.generateDefaultQuestions('Sorting Algorithms'); }
-  private getSearchingQuestions(): Question[] { return this.generateDefaultQuestions('Searching Algorithms'); }
-  private getDynamicProgrammingQuestions(): Question[] { return this.generateDefaultQuestions('Dynamic Programming'); }
-  private getGreedyQuestions(): Question[] { return this.generateDefaultQuestions('Greedy Algorithms'); }
-  private getBacktrackingQuestions(): Question[] { return this.generateDefaultQuestions('Backtracking'); }
+  // Add similar complete implementations for other topics...
+  private getHashMapQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getStringQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getLinkedListQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getStackQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getQueueQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getTreeQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getGraphQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getHeapQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getSortingQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getSearchingQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getDynamicProgrammingQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getGreedyQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
+  private getBacktrackingQuestions(): Question[] { 
+    return this.getHashSetQuestions(); // Using same questions for demo
+  }
 
   private generateDefaultQuestions(topicName: string): Question[] {
     const questions: Question[] = [];
     
-    // Add 3 tough questions
-    questions.push(
-      {
-        id: 1,
-        type: 'mcq',
-        question: `What is the most efficient approach for ${topicName} in large-scale systems?`,
-        options: ['Divide and Conquer', 'Brute Force', 'Greedy Method', 'Backtracking'],
-        correctAnswer: 'Divide and Conquer',
-        points: 2
-      },
-      {
-        id: 2,
-        type: 'fillblank',
-        question: `The space complexity for optimal ${topicName} solution is __________.`,
-        correctAnswer: 'O(1)',
-        points: 2
-      },
-      {
-        id: 3,
-        type: 'mcq',
-        question: `Which data structure complements ${topicName} for optimal performance?`,
-        options: ['Arrays', 'Hash Maps', 'Linked Lists', 'Trees'],
-        correctAnswer: 'Hash Maps',
-        points: 2
-      }
-    );
-
-    // Add 22 regular questions
-    for (let i = 4; i <= 25; i++) {
+    // Add 25 questions
+    for (let i = 1; i <= 25; i++) {
       if (i % 2 === 0) {
         questions.push({
-          id: i,
-          type: 'mcq',
+          id: i, type: 'mcq', points: 2,
           question: `Which algorithm is best for ${topicName} problem ${i}?`,
           options: ['Algorithm A', 'Algorithm B', 'Algorithm C', 'Algorithm D'],
-          correctAnswer: 'Algorithm B',
-          points: 2
+          correctAnswer: 'Algorithm B'
         });
       } else {
         questions.push({
-          id: i,
-          type: 'fillblank',
+          id: i, type: 'fillblank', points: 2,
           question: `The key operation in ${topicName} for problem ${i} is __________.`,
-          correctAnswer: 'optimization',
-          points: 2
+          correctAnswer: 'optimization'
         });
       }
     }
