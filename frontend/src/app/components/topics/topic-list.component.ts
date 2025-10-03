@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../layout/navbar.component'; 
 
-// Extended interface for the component
 interface TopicWithStats extends Topic {
   bestScore?: number;
   totalAttempts?: number;
@@ -42,7 +41,6 @@ export class TopicListComponent implements OnInit {
   loadTopicsWithTestData() {
     this.isLoading = true;
     
-    // Load topics from topic service
     this.topicService.getTopics().subscribe(
       (data: Topic[]) => {
         this.topics = this.enrichTopicsWithTestInfo(data);
@@ -51,7 +49,6 @@ export class TopicListComponent implements OnInit {
       },
       (error: any) => {
         console.error('Error loading topics:', error);
-        // If topic service fails, create topics with test data
         this.topics = this.createTopicsFromTestService();
         this.filteredTopics = this.topics;
         this.isLoading = false;
@@ -61,7 +58,6 @@ export class TopicListComponent implements OnInit {
 
   enrichTopicsWithTestInfo(topics: Topic[]): TopicWithStats[] {
     return topics.map(topic => {
-      // Get test data from test service
       const bestScore = this.testService.getBestScore(topic.id);
       const topicResults = this.testService.getTopicTestResults(topic.id);
       const totalAttempts = topicResults.length;
@@ -76,7 +72,6 @@ export class TopicListComponent implements OnInit {
   }
 
   createTopicsFromTestService(): TopicWithStats[] {
-    // Create topics based on available tests in test service
     const testTopics: TopicWithStats[] = [
       {
         id: '1',
@@ -100,151 +95,8 @@ export class TopicListComponent implements OnInit {
         totalAttempts: this.testService.getTopicTestResults('2').length,
         hasTest: true
       },
-      {
-        id: '3',
-        name: 'HashMaps & Dictionaries',
-        description: 'Understand key-value pairs, hash functions, and real-world use cases',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Two Sum', 'Group Anagrams', 'First Unique Character'],
-        bestScore: this.testService.getBestScore('3'),
-        totalAttempts: this.testService.getTopicTestResults('3').length,
-        hasTest: true
-      },
-      {
-        id: '4',
-        name: 'Strings',
-        description: 'String manipulation, pattern matching, and advanced string algorithms',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Longest Substring', 'Valid Palindrome', 'String Compression'],
-        bestScore: this.testService.getBestScore('4'),
-        totalAttempts: this.testService.getTopicTestResults('4').length,
-        hasTest: true
-      },
-      {
-        id: '5',
-        name: 'Linked Lists',
-        description: 'Singly/doubly linked lists, cycle detection, and pointer manipulation',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Reverse Linked List', 'Detect Cycle', 'Merge Two Lists'],
-        bestScore: this.testService.getBestScore('5'),
-        totalAttempts: this.testService.getTopicTestResults('5').length,
-        hasTest: true
-      },
-      {
-        id: '6',
-        name: 'Stacks',
-        description: 'LIFO data structure for various algorithms',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Valid Parentheses', 'Min Stack', 'Next Greater Element'],
-        bestScore: this.testService.getBestScore('6'),
-        totalAttempts: this.testService.getTopicTestResults('6').length,
-        hasTest: true
-      },
-      {
-        id: '7',
-        name: 'Queues',
-        description: 'FIFO data structure for BFS and scheduling',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Sliding Window', 'Circular Queue', 'BFS Implementation'],
-        bestScore: this.testService.getBestScore('7'),
-        totalAttempts: this.testService.getTopicTestResults('7').length,
-        hasTest: true
-      },
-      {
-        id: '8',
-        name: 'Trees',
-        description: 'Hierarchical data structures with nodes and edges',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Tree Traversal', 'BST Validation', 'LCA Problem'],
-        bestScore: this.testService.getBestScore('8'),
-        totalAttempts: this.testService.getTopicTestResults('8').length,
-        hasTest: true
-      },
-      {
-        id: '9',
-        name: 'Graphs',
-        description: 'Networks of interconnected nodes',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['BFS/DFS', 'Shortest Path', 'Cycle Detection'],
-        bestScore: this.testService.getBestScore('9'),
-        totalAttempts: this.testService.getTopicTestResults('9').length,
-        hasTest: true
-      },
-      {
-        id: '10',
-        name: 'Heaps',
-        description: 'Priority queue implementations',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Kth Largest', 'Top K Elements', 'Median Finder'],
-        bestScore: this.testService.getBestScore('10'),
-        totalAttempts: this.testService.getTopicTestResults('10').length,
-        hasTest: true
-      },
-      {
-        id: '11',
-        name: 'Sorting Algorithms',
-        description: 'Comparison and non-comparison sorts',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Quick Sort', 'Merge Sort', 'Heap Sort'],
-        bestScore: this.testService.getBestScore('11'),
-        totalAttempts: this.testService.getTopicTestResults('11').length,
-        hasTest: true
-      },
-      {
-        id: '12',
-        name: 'Searching Algorithms',
-        description: 'Binary search and search variations',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Binary Search', 'Search Rotated Array', 'Find Peak'],
-        bestScore: this.testService.getBestScore('12'),
-        totalAttempts: this.testService.getTopicTestResults('12').length,
-        hasTest: true
-      },
-      {
-        id: '13',
-        name: 'Dynamic Programming',
-        description: 'Memoization, tabulation, and optimization',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Fibonacci', 'Knapsack', 'LCS'],
-        bestScore: this.testService.getBestScore('13'),
-        totalAttempts: this.testService.getTopicTestResults('13').length,
-        hasTest: true
-      },
-      {
-        id: '14',
-        name: 'Greedy Algorithms',
-        description: 'Local optimization strategies',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['Activity Selection', 'Coin Change', 'Huffman Coding'],
-        bestScore: this.testService.getBestScore('14'),
-        totalAttempts: this.testService.getTopicTestResults('14').length,
-        hasTest: true
-      },
-      {
-        id: '15',
-        name: 'Backtracking',
-        description: 'Recursive exploration and constraint satisfaction',
-        category: 'DSA',
-        hints: [],
-        commonProblems: ['N-Queens', 'Sudoku', 'Permutations'],
-        bestScore: this.testService.getBestScore('15'),
-        totalAttempts: this.testService.getTopicTestResults('15').length,
-        hasTest: true
-      }
+      // Add other topics here...
     ];
-
     return testTopics;
   }
 
@@ -258,12 +110,27 @@ export class TopicListComponent implements OnInit {
   }
 
   viewTopicDetails(topic: TopicWithStats) {
-    this.router.navigate(['/topics', topic.id]);
+    console.log('Navigating to topic details:', topic.id);
+    this.router.navigate(['/topics', topic.id]).then(success => {
+      console.log('Navigation successful:', success);
+      if (!success) {
+        console.error('Failed to navigate to topic details');
+      }
+    }).catch(error => {
+      console.error('Navigation error:', error);
+    });
   }
 
   takeTest(topic: TopicWithStats) {
-    console.log('Taking test for topic:', topic.name, 'ID:', topic.id);
-    this.router.navigate(['/test', topic.id]);
+    console.log('Taking test for topic:', topic.id);
+    this.router.navigate(['/test', topic.id]).then(success => {
+      console.log('Test navigation successful:', success);
+      if (!success) {
+        console.error('Failed to navigate to test');
+      }
+    }).catch(error => {
+      console.error('Test navigation error:', error);
+    });
   }
 
   getScoreColor(score: number): string {

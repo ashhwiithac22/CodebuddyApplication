@@ -1,4 +1,3 @@
-// frontend/src/app/components/topics/topic-test.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -7,7 +6,6 @@ import { TopicService, Topic } from '../../services/topic.service';
 import { TestService, Question, TestResult, TestProgress } from '../../services/test.service';
 import { NavbarComponent } from '../layout/navbar.component';
 
-// Extended interface for test questions
 interface TestQuestion extends Question {
   userAnswer: string;
   isAnswered: boolean;
@@ -36,8 +34,6 @@ export class TopicTestComponent implements OnInit {
   endTime: Date = new Date();
   answeredQuestions: number = 0;
 
-  String = String;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -47,7 +43,12 @@ export class TopicTestComponent implements OnInit {
 
   ngOnInit() {
     this.topicId = this.route.snapshot.paramMap.get('id') || '';
+    console.log('Loading test for topic ID:', this.topicId);
     this.loadTopicAndQuestions();
+  }
+
+  getOptionLetter(index: number): string {
+    return String.fromCharCode(65 + index);
   }
 
   loadTopicAndQuestions() {
@@ -72,7 +73,6 @@ export class TopicTestComponent implements OnInit {
             } as TestQuestion));
             this.isLoading = false;
             this.startTime = new Date();
-            this.checkSavedProgress();
           },
           (error: any) => {
             console.error('Error loading questions:', error);
@@ -90,28 +90,6 @@ export class TopicTestComponent implements OnInit {
         this.startTime = new Date();
       }
     );
-  }
-
-  checkSavedProgress() {
-    const progress = this.testService.getTestProgress();
-    if (progress && progress.topicId === this.topicId) {
-      this.currentQuestionIndex = progress.currentQuestionIndex;
-      this.score = progress.score;
-      this.answeredQuestions = progress.answeredQuestions;
-      this.startTime = new Date(progress.startTime);
-      console.log('Resumed test from saved progress');
-    }
-  }
-
-  saveProgress() {
-    const progress: TestProgress = {
-      topicId: this.topicId,
-      currentQuestionIndex: this.currentQuestionIndex,
-      score: this.score,
-      answeredQuestions: this.answeredQuestions,
-      startTime: this.startTime
-    };
-    this.testService.saveTestProgress(progress);
   }
 
   createMockTopic() {
@@ -180,12 +158,9 @@ export class TopicTestComponent implements OnInit {
       question.isCorrect = false;
     }
 
-    this.saveProgress();
-
     setTimeout(() => {
       if (questionIndex < this.questions.length - 1) {
         this.currentQuestionIndex++;
-        this.saveProgress();
       } else {
         this.completeTest();
       }
@@ -203,7 +178,6 @@ export class TopicTestComponent implements OnInit {
   nextQuestion() {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
-      this.saveProgress();
     } else {
       this.completeTest();
     }
@@ -212,7 +186,6 @@ export class TopicTestComponent implements OnInit {
   previousQuestion() {
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
-      this.saveProgress();
     }
   }
 
@@ -260,8 +233,13 @@ export class TopicTestComponent implements OnInit {
   }
 
   backToTopics() {
+    console.log('Navigating back to topics');
     this.testService.clearTestProgress();
-    this.router.navigate(['/topics']);
+    this.router.navigate(['/topics']).then(success => {
+      console.log('Navigation to topics successful:', success);
+    }).catch(error => {
+      console.error('Navigation to topics failed:', error);
+    });
   }
 
   getProgressPercentage(): number {
@@ -287,13 +265,5 @@ export class TopicTestComponent implements OnInit {
 
   getTimeSpent(): string {
     return this.testService.calculateTimeSpent(this.startTime, this.endTime);
-  }
-
-  isToughQuestion(): boolean {
-    return this.currentQuestionIndex < 3;
-  }
-
-  getAnsweredCount(): number {
-    return this.questions.filter(q => q.isAnswered).length;
   }
 }

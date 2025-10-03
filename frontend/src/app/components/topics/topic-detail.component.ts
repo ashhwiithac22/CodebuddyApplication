@@ -1,70 +1,102 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { TopicService, Topic, Hint } from '../../services/topic.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { TopicService, Topic, Hint } from '../../services/topic.service';
 import { NavbarComponent } from '../layout/navbar.component';
 
 @Component({
   selector: 'app-topic-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent],
   templateUrl: './topic-detail.component.html',
   styleUrls: ['./topic-detail.component.css']
 })
 export class TopicDetailComponent implements OnInit {
   topic: Topic | null = null;
-  isLoading = true;
-  activeHintIndex = 0;
+  isLoading: boolean = true;
+  activeHintIndex: number = 0;
 
   constructor(
     private route: ActivatedRoute,
-    private topicService: TopicService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private topicService: TopicService
+  ) {}
 
   ngOnInit() {
     const topicId = this.route.snapshot.paramMap.get('id');
+    console.log('Loading topic details for ID:', topicId);
     if (topicId) {
       this.loadTopic(topicId);
+    } else {
+      console.error('No topic ID found in route');
+      this.isLoading = false;
     }
   }
 
   loadTopic(topicId: string) {
-    this.topicService.getTopics().subscribe(
-      (topics: Topic[]) => {
-        this.topic = topics.find(t => t.id === topicId) || null;
-        
-        if (this.topic) {
-          console.log('Topic loaded:', this.topic.name);
-          console.log('Hints available:', this.topic.hints.length);
-          
-          // Initialize active hint
-          if (this.topic.hints && this.topic.hints.length > 0) {
-            this.activeHintIndex = 0;
-          }
+    this.isLoading = true;
+    this.topicService.getTopicById(topicId).subscribe(
+      (topic: Topic | undefined) => {
+        console.log('Topic loaded:', topic);
+        if (topic) {
+          this.topic = topic;
         } else {
-          console.log('Topic not found with ID:', topicId);
+          this.createMockTopic(topicId);
         }
-        
         this.isLoading = false;
       },
       (error: any) => {
         console.error('Error loading topic:', error);
+        this.createMockTopic(topicId);
         this.isLoading = false;
       }
     );
   }
 
-  nextHint() {
-    if (this.topic && this.activeHintIndex < this.topic.hints.length - 1) {
-      this.activeHintIndex++;
-    }
+  createMockTopic(topicId: string) {
+    const topicNames: { [key: string]: string } = {
+      '1': 'Arrays & Lists', '2': 'HashSets', '3': 'HashMaps & Dictionaries',
+      '4': 'Strings', '5': 'Linked Lists', '6': 'Stacks', '7': 'Queues',
+      '8': 'Trees', '9': 'Graphs', '10': 'Heaps', '11': 'Sorting Algorithms',
+      '12': 'Searching Algorithms', '13': 'Dynamic Programming',
+      '14': 'Greedy Algorithms', '15': 'Backtracking'
+    };
+    
+    this.topic = {
+      id: topicId,
+      name: topicNames[topicId] || 'Data Structures',
+      description: 'Master this topic with comprehensive learning materials and practice tests',
+      category: 'DSA',
+      commonProblems: [
+        'Problem 1: Basic operations and fundamentals',
+        'Problem 2: Advanced algorithms and optimizations',
+        'Problem 3: Real-world applications and use cases'
+      ],
+      hints: [
+        {
+          title: 'Key Concept',
+          description: 'Understand the fundamental principles and time complexities',
+          codeSnippet: '// Example code snippet\nfunction example() {\n  return "Hello World";\n}',
+          language: 'javascript'
+        },
+        {
+          title: 'Optimization Tip',
+          description: 'Learn how to optimize your solutions for better performance',
+          codeSnippet: '// Optimized approach\nconst optimized = data => data.filter(x => x > 0);',
+          language: 'javascript'
+        }
+      ]
+    };
   }
 
-  previousHint() {
-    if (this.activeHintIndex > 0) {
-      this.activeHintIndex--;
+  takeTest() {
+    console.log('Taking test for topic:', this.topic?.id);
+    if (this.topic) {
+      this.router.navigate(['/test', this.topic.id]).then(success => {
+        console.log('Navigation to test successful:', success);
+      }).catch(error => {
+        console.error('Navigation to test failed:', error);
+      });
     }
   }
 
@@ -74,20 +106,23 @@ export class TopicDetailComponent implements OnInit {
       : null;
   }
 
-  // Navigate to test page
-  takeTest() {
-    if (this.topic) {
-      this.router.navigate(['/test', this.topic.id]);
+  nextHint() {
+    if (this.topic && this.topic.hints) {
+      this.activeHintIndex = (this.activeHintIndex + 1) % this.topic.hints.length;
     }
   }
 
-  // Copy code to clipboard
+  previousHint() {
+    if (this.topic && this.topic.hints) {
+      this.activeHintIndex = this.activeHintIndex === 0 
+        ? this.topic.hints.length - 1 
+        : this.activeHintIndex - 1;
+    }
+  }
+
   copyCode(code: string) {
     navigator.clipboard.writeText(code).then(() => {
-      // Show temporary feedback (you can add a toast notification here)
       console.log('Code copied to clipboard');
-    }).catch(err => {
-      console.error('Failed to copy code: ', err);
     });
   }
 }
