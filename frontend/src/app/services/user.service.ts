@@ -1,7 +1,19 @@
+//frontend/src/app/services/user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TestResult } from './topic.service'; // Import the interface
+
+
+
+export interface TestResult {
+  id?: string;
+  topicId: string;
+  score: number;
+  totalQuestions: number;
+  correctAnswers: number;
+  timestamp: Date;
+  topicName?: string;
+}
 
 @Injectable({
   providedIn: 'root'

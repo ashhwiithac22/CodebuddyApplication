@@ -1,5 +1,5 @@
 // frontend/src/app/components/topics/topic-test.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +42,7 @@ export class TopicTestComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private topicService: TopicService,
-    private testService: TestService
+    @Inject(TestService) private testService: TestService
   ) {}
 
   ngOnInit() {
@@ -54,8 +54,12 @@ export class TopicTestComponent implements OnInit {
     this.isLoading = true;
     
     this.topicService.getTopicById(this.topicId).subscribe(
-      (topic: Topic) => {
-        this.topic = topic;
+      (topic: Topic | undefined) => {
+        if (topic) {
+          this.topic = topic;
+        } else {
+          this.createMockTopic();
+        }
         
         this.testService.getTopicQuestions(this.topicId).subscribe(
           (questions: Question[]) => {
