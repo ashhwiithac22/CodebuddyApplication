@@ -9,14 +9,14 @@
 .whiteboard-header {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   text-align: center;
   color: white;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .whiteboard-header h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   margin-bottom: 0.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
@@ -29,44 +29,44 @@
   font-size: 1.1rem;
   opacity: 0.9;
   font-weight: 400;
+  margin: 0;
 }
 
 .whiteboard-content {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 450px 1fr;
   gap: 0;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 120px);
 }
 
-/* Question Panel - Glass Morphism */
+/* Question Panel - Improved Layout */
 .question-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 1.5rem;
   overflow-y: auto;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.08);
 }
 
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .question-meta {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .difficulty-tag {
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -91,9 +91,9 @@
 .category-badge {
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
   font-weight: 600;
   width: fit-content;
 }
@@ -102,59 +102,54 @@
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  gap: 0.4rem;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .next-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
-}
-
-.next-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
 .question-content h3 {
   color: #1f2937;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   line-height: 1.3;
 }
 
 .question-description {
-  color: #4b5563;
-  line-height: 1.7;
-  margin-bottom: 2rem;
+  color: #374151;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
   font-size: 0.95rem;
   background: #f8fafc;
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1.25rem;
+  border-radius: 10px;
   border-left: 4px solid #3b82f6;
   white-space: pre-line;
+  font-family: 'Inter', sans-serif;
 }
 
 .examples-section,
 .constraints-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .examples-section h4,
 .constraints-section h4 {
   color: #1f2937;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -163,37 +158,41 @@
 
 .examples-section h4::before {
   content: '📋';
+  font-size: 1.1rem;
 }
 
 .constraints-section h4::before {
   content: '⚡';
+  font-size: 1.1rem;
 }
 
 .example {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
   border: 1px solid #bae6fd;
+  font-size: 0.9rem;
 }
 
 .example code {
   font-family: 'Fira Code', 'Courier New', monospace;
   color: #0369a1;
-  font-size: 0.9rem;
   font-weight: 500;
 }
 
 .constraints-section ul {
-  padding-left: 1rem;
+  padding-left: 0.5rem;
+  margin: 0;
 }
 
 .constraints-section li {
   color: #4b5563;
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
   position: relative;
   padding-left: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .constraints-section li::before {
@@ -201,36 +200,37 @@
   color: #3b82f6;
   font-weight: bold;
   position: absolute;
-  left: -1rem;
+  left: -0.5rem;
 }
 
-/* Whiteboard Panel */
+/* Whiteboard Panel - Improved Layout */
 .whiteboard-panel {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.98);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
-/* Enhanced Toolbar */
+/* Enhanced Toolbar - Better Organization */
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  flex-wrap: wrap;
 }
 
 .tool-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  min-width: 120px;
 }
 
 .tool-group label {
@@ -243,14 +243,14 @@
 
 .color-picker {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 .color-btn {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #e5e7eb;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #e5e7eb;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -258,14 +258,14 @@
 }
 
 .color-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.1);
   border-color: #9ca3af;
 }
 
 .color-btn.active {
   border-color: #3b82f6;
-  transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .color-btn.active::after {
@@ -275,30 +275,29 @@
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: bold;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .tool-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .tool-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
   border: 2px solid #e5e7eb;
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #4b5563;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
 .tool-btn:hover {
@@ -312,12 +311,12 @@
   border-color: #3b82f6;
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .width-picker {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   align-items: center;
 }
 
@@ -325,11 +324,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border: 2px solid #e5e7eb;
   background: white;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -342,7 +341,7 @@
 .width-btn.active {
   border-color: #3b82f6;
   background: #eff6ff;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .width-dot {
@@ -351,19 +350,18 @@
 }
 
 .action-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   border: 2px solid #e5e7eb;
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #4b5563;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  gap: 0.4rem;
 }
 
 .clear-btn {
@@ -376,45 +374,45 @@
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   border-color: #dc2626;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
 }
 
-/* Canvas Container */
+/* Canvas Container - Larger Size */
 .canvas-container {
   flex: 1;
-  border: 2px dashed #d1d5db;
-  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
   overflow: hidden;
-  background: #fafafa;
-  margin-bottom: 1.5rem;
+  background: #ffffff;
+  margin-bottom: 1rem;
   position: relative;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+  min-height: 500px;
 }
 
 .drawing-canvas {
   width: 100%;
   height: 100%;
   display: block;
-  background: white;
+  background: #ffffff;
   cursor: crosshair;
   transition: cursor 0.2s ease;
 }
 
 .drawing-mode {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="%23000000"/></svg>') 12 12, crosshair;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="4" fill="%23000000"/></svg>') 10 10, crosshair;
 }
 
 .erasing-mode {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="white" stroke="%23374151" stroke-width="2"/></svg>') 16 16, not-allowed;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="white" stroke="%23374151" stroke-width="1.5"/></svg>') 12 12, not-allowed;
 }
 
 /* Canvas Tips */
 .canvas-tips {
   background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   color: #1e40af;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -425,7 +423,7 @@
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   font-weight: 500;
 }
 
@@ -434,8 +432,8 @@
   border: none;
   color: #1e40af;
   cursor: pointer;
-  font-size: 1rem;
-  padding: 0.25rem;
+  font-size: 0.9rem;
+  padding: 0.2rem;
   border-radius: 4px;
   transition: background 0.2s ease;
 }
@@ -447,13 +445,13 @@
 /* Loading State */
 .loading-state {
   text-align: center;
-  padding: 3rem;
+  padding: 2rem;
   color: #6b7280;
 }
 
 .loading-state .spinner {
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border: 3px solid #e5e7eb;
   border-top: 3px solid #3b82f6;
   border-radius: 50%;
@@ -469,12 +467,15 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
   .whiteboard-content {
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 400px 1fr;
   }
   
   .toolbar {
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .tool-group {
+    min-width: 100px;
   }
 }
 
@@ -485,28 +486,28 @@
   }
   
   .question-panel {
-    max-height: 50vh;
+    max-height: 40vh;
     border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid #e5e7eb;
   }
   
   .whiteboard-panel {
-    min-height: 60vh;
+    min-height: 50vh;
   }
 }
 
 @media (max-width: 768px) {
   .whiteboard-header {
-    padding: 1.5rem 1rem;
+    padding: 1rem 1.5rem;
   }
   
   .whiteboard-header h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   
   .question-panel,
   .whiteboard-panel {
-    padding: 1.5rem;
+    padding: 1rem;
   }
   
   .toolbar {
@@ -520,10 +521,11 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    min-width: auto;
   }
   
   .color-picker,
   .width-picker {
-    justify-content: center;
+    justify-content: flex-start;
   }
 }

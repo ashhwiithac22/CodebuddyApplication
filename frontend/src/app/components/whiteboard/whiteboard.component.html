@@ -51,9 +51,9 @@
     <div class="whiteboard-panel">
       <!-- Enhanced Toolbar -->
       <div class="toolbar">
-        <!-- Colors -->
+        <!-- Colors Section -->
         <div class="tool-group">
-          <label>Colors</label>
+          <label>COLORS</label>
           <div class="color-picker">
             <button 
               *ngFor="let color of colors"
@@ -66,9 +66,9 @@
           </div>
         </div>
 
-        <!-- Tools -->
+        <!-- Tools Section -->
         <div class="tool-group">
-          <label>Tools</label>
+          <label>TOOLS</label>
           <div class="tool-buttons">
             <button 
               class="tool-btn"
@@ -87,9 +87,9 @@
           </div>
         </div>
 
-        <!-- Line Width -->
+        <!-- Brush Size Section -->
         <div class="tool-group">
-          <label>Brush Size</label>
+          <label>BRUSH SIZE</label>
           <div class="width-picker">
             <button 
               *ngFor="let width of lineWidths"
@@ -102,8 +102,9 @@
           </div>
         </div>
 
-        <!-- Actions -->
+        <!-- Actions Section -->
         <div class="tool-group">
+          <label>ACTIONS</label>
           <button class="action-btn clear-btn" (click)="clearCanvas()">
             <i class="fas fa-broom"></i>
             Clear Canvas
@@ -111,7 +112,7 @@
         </div>
       </div>
 
-      <!-- Canvas Area -->
+      <!-- Canvas Area - Larger and Cleaner -->
       <div class="canvas-container">
         <canvas 
           #canvas
@@ -127,7 +128,7 @@
       <div class="canvas-tips" *ngIf="showTips">
         <p>
           <i class="fas fa-lightbulb"></i>
-          <strong>Pro Tip:</strong> Draw data structures, write pseudocode, or visualize algorithm flow
+          <strong>Pro Tip:</strong> Use different colors for different elements - blue for pointers, red for errors, green for solutions
         </p>
         <button class="tips-toggle" (click)="toggleTips()" aria-label="Hide tips">
           <i class="fas fa-times"></i>
