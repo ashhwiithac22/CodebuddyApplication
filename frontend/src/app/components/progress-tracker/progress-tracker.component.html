@@ -1,6 +1,5 @@
 <!--frontend/src/app/components/progress-tracker/progress-tracker.component.html-->
 <!-- Add Navbar -->
-<!-- Add Navbar -->
 <app-navbar></app-navbar>
 
 <!-- Track Progress Page Navigation Menu -->
@@ -30,157 +29,156 @@
   </div>
 </nav>
 
-<!-- Existing content remains the same -->
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <div class="card mb-4">
-        <div class="card-header">
-          <h4>Your Progress Dashboard</h4>
-        </div>
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-md-3 mb-3">
-              <div class="display-4 text-primary">{{ userProgress?.totalSolved || 0 }}</div>
-              <div class="text-muted">Problems Solved</div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <div class="display-4 text-success">{{ userProgress?.easySolved || 0 }}</div>
-              <div class="text-muted">Easy</div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <div class="display-4 text-warning">{{ userProgress?.mediumSolved || 0 }}</div>
-              <div class="text-muted">Medium</div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <div class="display-4 text-danger">{{ userProgress?.hardSolved || 0 }}</div>
-              <div class="text-muted">Hard</div>
-            </div>
-          </div>
+<div class="progress-tracker-container">
+  <div class="progress-card">
+    <!-- Header Section -->
+    <div class="progress-header">
+      <div class="header-content">
+        <h1>
+          <i class="fas fa-chart-line"></i>
+          Your Progress Dashboard
+        </h1>
+        <p class="progress-subtitle">Track your learning journey and monitor your improvement over time</p>
+      </div>
+    </div>
 
-          <!-- Replace charts with simple progress displays -->
-          <div class="row mt-4">
-            <div class="col-md-6">
-              <div class="card">
-                <div class="card-header">
-                  <h5>Daily Score Trend</h5>
-                </div>
-                <div class="card-body">
-                  <div *ngIf="userProgress?.dailyScores?.length > 0">
-                    <div *ngFor="let score of userProgress.dailyScores" class="d-flex justify-content-between mb-2">
-                      <span>{{ score.date }}</span>
-                      <span class="fw-bold">{{ score.score }} points</span>
-                    </div>
-                  </div>
-                  <div *ngIf="!userProgress?.dailyScores?.length" class="text-center text-muted">
-                    No daily scores yet
-                  </div>
-                </div>
+    <div class="progress-content">
+      <!-- Stats Overview -->
+      <div class="stats-overview">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">{{ userProgress?.totalSolved || 0 }}</div>
+            <div class="stat-label">Problems Solved</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ userProgress?.easySolved || 0 }}</div>
+            <div class="stat-label">Easy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ userProgress?.mediumSolved || 0 }}</div>
+            <div class="stat-label">Medium</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ userProgress?.hardSolved || 0 }}</div>
+            <div class="stat-label">Hard</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Sections -->
+      <div class="progress-sections">
+        <!-- Daily Score Trend -->
+        <div class="progress-section">
+          <div class="section-header">
+            <h3><i class="fas fa-calendar-day"></i>Daily Score Trend</h3>
+          </div>
+          <div class="daily-scores">
+            <div *ngIf="userProgress?.dailyScores?.length > 0; else noScores">
+              <div *ngFor="let score of userProgress.dailyScores" class="score-item">
+                <span class="score-date">{{ score.date }}</span>
+                <span class="score-value">{{ score.score }} points</span>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="card">
-                <div class="card-header">
-                  <h5>Problems by Difficulty</h5>
-                </div>
-                <div class="card-body">
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                      <span>Easy</span>
-                      <span class="text-success">{{ userProgress?.easySolved || 0 }}</span>
-                    </div>
-                    <div class="progress mb-2" style="height: 8px;">
-                      <div class="progress-bar bg-success" [style.width]="(userProgress?.easySolved / userProgress?.totalSolved * 100) + '%'"></div>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                      <span>Medium</span>
-                      <span class="text-warning">{{ userProgress?.mediumSolved || 0 }}</span>
-                    </div>
-                    <div class="progress mb-2" style="height: 8px;">
-                      <div class="progress-bar bg-warning" [style.width]="(userProgress?.mediumSolved / userProgress?.totalSolved * 100) + '%'"></div>
-                    </div>
-                  </div>
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                      <span>Hard</span>
-                      <span class="text-danger">{{ userProgress?.hardSolved || 0 }}</span>
-                    </div>
-                    <div class="progress mb-2" style="height: 8px;">
-                      <div class="progress-bar bg-danger" [style.width]="(userProgress?.hardSolved / userProgress?.totalSolved * 100) + '%'"></div>
-                    </div>
-                  </div>
-                </div>
+            <ng-template #noScores>
+              <div class="no-scores">
+                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                <p>No daily scores yet</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Problems by Difficulty -->
+        <div class="progress-section">
+          <div class="section-header">
+            <h3><i class="fas fa-signal"></i>Problems by Difficulty</h3>
+          </div>
+          <div class="difficulty-progress">
+            <div class="difficulty-item">
+              <div class="difficulty-header">
+                <span class="difficulty-name">Easy</span>
+                <span class="difficulty-count easy">{{ userProgress?.easySolved || 0 }}</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-fill easy" 
+                     [style.width]="(userProgress?.easySolved / userProgress?.totalSolved * 100) + '%'"></div>
+              </div>
+            </div>
+            <div class="difficulty-item">
+              <div class="difficulty-header">
+                <span class="difficulty-name">Medium</span>
+                <span class="difficulty-count medium">{{ userProgress?.mediumSolved || 0 }}</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-fill medium" 
+                     [style.width]="(userProgress?.mediumSolved / userProgress?.totalSolved * 100) + '%'"></div>
+              </div>
+            </div>
+            <div class="difficulty-item">
+              <div class="difficulty-header">
+                <span class="difficulty-name">Hard</span>
+                <span class="difficulty-count hard">{{ userProgress?.hardSolved || 0 }}</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-fill hard" 
+                     [style.width]="(userProgress?.hardSolved / userProgress?.totalSolved * 100) + '%'"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Activities -->
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5>Recent Activities</h5>
+      <!-- Bottom Sections -->
+      <div class="bottom-sections">
+        <!-- Recent Activities -->
+        <div class="activity-card">
+          <h4><i class="fas fa-clock-rotate-left"></i>Recent Activities</h4>
+          <div class="activities-list">
+            <div *ngIf="userProgress?.recentActivities?.length === 0; else activitiesList" class="no-activities">
+              <i class="fas fa-inbox fa-2x mb-2"></i>
+              <p>No recent activities</p>
             </div>
-            <div class="card-body">
-              <div *ngIf="userProgress?.recentActivities?.length === 0" class="text-center py-3">
-                <p class="text-muted">No recent activities</p>
-              </div>
-              <div *ngFor="let activity of userProgress?.recentActivities || []" class="d-flex align-items-center mb-3">
-                <div class="flex-shrink-0">
-                  <span [ngClass]="{
-                    'badge bg-success': activity.type === 'solved',
-                    'badge bg-warning': activity.type === 'attempted'
-                  }">
-                    {{ activity.type === 'solved' ? '✓' : '↻' }}
-                  </span>
+            <ng-template #activitiesList>
+              <div *ngFor="let activity of userProgress?.recentActivities || []" class="activity-item">
+                <div class="activity-icon" [class]="activity.type === 'solved' ? 'solved' : 'attempted'">
+                  <i [class]="activity.type === 'solved' ? 'fas fa-check' : 'fas fa-redo'"></i>
                 </div>
-                <div class="flex-grow-1 ms-3">
-                  <div class="fw-bold">{{ activity.problem }}</div>
-                  <small class="text-muted">{{ activity.difficulty }} • {{ activity.time }}</small>
+                <div class="activity-details">
+                  <div class="activity-problem">{{ activity.problem }}</div>
+                  <div class="activity-meta">{{ activity.difficulty }} • {{ activity.time }}</div>
                 </div>
               </div>
-            </div>
+            </ng-template>
           </div>
         </div>
 
         <!-- Leaderboard -->
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h5>Leaderboard</h5>
-            </div>
-            <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-dark">
-                    <tr>
-                      <th>Rank</th>
-                      <th>User</th>
-                      <th>Score</th>
-                      <th>Solved</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let user of leaderboard" [class]="getRankClass(user.rank)">
-                      <td>
-                        <span class="badge bg-dark" *ngIf="user.rank <= 3">#{{ user.rank }}</span>
-                        <span *ngIf="user.rank > 3">{{ user.rank }}</span>
-                      </td>
-                      <td>
-                        <span *ngIf="user.rank === 4" class="fw-bold text-primary">You</span>
-                        <span *ngIf="user.rank !== 4">{{ user.username }}</span>
-                      </td>
-                      <td>{{ user.score }}</td>
-                      <td>{{ user.solved }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        <div class="leaderboard-card">
+          <h4><i class="fas fa-trophy"></i>Leaderboard</h4>
+          <div class="table-responsive">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>User</th>
+                  <th>Score</th>
+                  <th>Solved</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of leaderboard" [class]="'rank-' + user.rank">
+                  <td class="rank-cell">
+                    <span *ngIf="user.rank <= 3">#{{ user.rank }}</span>
+                    <span *ngIf="user.rank > 3">{{ user.rank }}</span>
+                  </td>
+                  <td class="user-cell" [class.you]="user.rank === 4">
+                    <span>{{ user.username }}</span>
+                  </td>
+                  <td class="score-cell">{{ user.score }}</td>
+                  <td class="solved-cell">{{ user.solved }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
