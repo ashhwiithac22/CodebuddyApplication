@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ProgressService } from '../../services/progress.service';
 import { TopicService } from '../../services/topic.service';
 import { AuthService } from '../../services/auth.service';
-import { WhiteboardService } from '../../services/whiteboard.service'; // Add this import
+
 import { NavbarComponent } from '../layout/navbar.component';
 import { DashboardNavComponent } from './dashboard-nav.component';
 
@@ -40,7 +40,6 @@ export class DashboardComponent implements OnInit {
     private progressService: ProgressService,
     private topicService: TopicService,
     private authService: AuthService,
-    private whiteboardService: WhiteboardService // Add this
   ) { }
 
   ngOnInit() {
@@ -48,7 +47,7 @@ export class DashboardComponent implements OnInit {
     this.username = this.getUsername();
     this.loadUserProgress();
     this.loadTopics();
-    this.loadWhiteboardChallenge();
+
   }
 
   // Get username from current user or return default
@@ -100,22 +99,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadWhiteboardChallenge() {
-    this.whiteboardService.getDailyWhiteboardChallenge().subscribe({
-      next: (challenge) => {
-        this.whiteboardChallenge = challenge;
-      },
-      error: (error) => {
-        console.error('Error loading whiteboard challenge:', error);
-        // Default challenge if API fails
-        this.whiteboardChallenge = {
-          title: 'Binary Tree Traversal',
-          difficulty: 'Medium',
-          description: 'Explain different traversal methods and draw example trees.'
-        };
-      }
-    });
-  }
 
   getProgressPercentage(solved: number, total: number): number {
     return total > 0 ? Math.round((solved / total) * 100) : 0;

@@ -1,139 +1,157 @@
 <!--frontend/src/app/components/whiteboard/whiteboard.component.html-->
-<div class="whiteboard-container">
+<div class="whiteboard-page">
   <!-- Header -->
-  <div class="whiteboard-header">
-    <h1>🎨 Interactive Whiteboard</h1>
-    <p>Think visually. Solve strategically. Interview confidently.</p>
-  </div>
-
-  <div class="whiteboard-content">
-    <!-- Left Panel - Question -->
-    <div class="question-panel">
-      <div class="question-header">
-        <div class="question-meta">
-          <span class="difficulty-tag {{ getDifficultyClass(currentQuestion.difficulty) }}">
-            {{ currentQuestion.difficulty }}
-          </span>
-          <span class="category-badge">{{ currentQuestion.category }}</span>
-        </div>
-        <button class="next-btn" (click)="nextQuestion()" [disabled]="isLoading">
-          <i class="fas fa-sync-alt"></i>
-          New Challenge
-        </button>
-      </div>
-
-      <div class="question-content" *ngIf="!isLoading">
-        <h3>{{ currentQuestion.title }}</h3>
-        <p class="question-description">{{ currentQuestion.description }}</p>
-        
-        <div class="examples-section" *ngIf="currentQuestion.examples && currentQuestion.examples.length > 0">
-          <h4>Test Cases & Examples</h4>
-          <div class="example" *ngFor="let example of currentQuestion.examples">
-            <code>{{ example }}</code>
-          </div>
-        </div>
-        
-        <div class="constraints-section" *ngIf="currentQuestion.constraints && currentQuestion.constraints.length > 0">
-          <h4>Constraints & Requirements</h4>
-          <ul>
-            <li *ngFor="let constraint of currentQuestion.constraints">{{ constraint }}</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="loading-state" *ngIf="isLoading">
-        <div class="spinner"></div>
-        <p>Loading your whiteboard challenge...</p>
-      </div>
+  <header class="page-header">
+    <div class="header-container">
+      <h1 class="header-title">
+        <i class="fas fa-palette"></i>
+        CodeBuddy Whiteboard
+      </h1>
+      <p class="header-subtitle">Visualize your algorithm solutions with interactive drawing</p>
     </div>
+  </header>
 
-    <!-- Right Panel - Whiteboard -->
-    <div class="whiteboard-panel">
-      <!-- Enhanced Toolbar -->
-      <div class="toolbar">
-        <!-- Colors Section -->
-        <div class="tool-group">
-          <label>COLORS</label>
-          <div class="color-picker">
-            <button 
-              *ngFor="let color of colors"
-              class="color-btn"
-              [class.active]="currentColor === color && currentTool === 'pen'"
-              [style.background]="color"
-              (click)="selectColor(color)"
-              [attr.aria-label]="'Select ' + color + ' color'">
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Problem Section -->
+    <section class="problem-section" *ngIf="!isLoading">
+      <div class="problem-card">
+        <div class="problem-header">
+          <div class="problem-meta">
+            <span class="difficulty-badge {{ getDifficultyClass(currentQuestion.difficulty) }}">
+              {{ currentQuestion.difficulty }}
+            </span>
+            <span class="category-tag">{{ currentQuestion.category }}</span>
+            <button class="new-problem-btn" (click)="nextQuestion()">
+              <i class="fas fa-sync"></i>
+              New Problem
             </button>
           </div>
+          <h2 class="problem-title">{{ currentQuestion.title }}</h2>
         </div>
 
-        <!-- Tools Section -->
-        <div class="tool-group">
-          <label>TOOLS</label>
-          <div class="tool-buttons">
-            <button 
-              class="tool-btn"
-              [class.active]="currentTool === 'pen'"
-              (click)="selectTool('pen')">
-              <i class="fas fa-pen"></i>
-              Draw
-            </button>
-            <button 
-              class="tool-btn"
-              [class.active]="currentTool === 'eraser'"
-              (click)="selectTool('eraser')">
-              <i class="fas fa-eraser"></i>
-              Erase
-            </button>
+        <div class="problem-body">
+          <div class="description-section">
+            <h3 class="section-title">
+              <i class="fas fa-tasks"></i>
+              Problem Description
+            </h3>
+            <div class="description-content">
+              <p>{{ currentQuestion.description }}</p>
+            </div>
+          </div>
+
+          <div class="details-grid">
+            <div class="examples-section" *ngIf="currentQuestion.examples && currentQuestion.examples.length > 0">
+              <h3 class="section-title">
+                <i class="fas fa-code"></i>
+                Examples
+              </h3>
+              <div class="examples-list">
+                <div class="example-item" *ngFor="let example of currentQuestion.examples; let i = index">
+                  <span class="example-number">Example {{ i + 1 }}</span>
+                  <div class="example-code">{{ example }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="constraints-section" *ngIf="currentQuestion.constraints && currentQuestion.constraints.length > 0">
+              <h3 class="section-title">
+                <i class="fas fa-exclamation-circle"></i>
+                Constraints
+              </h3>
+              <ul class="constraints-list">
+                <li *ngFor="let constraint of currentQuestion.constraints">
+                  <i class="fas fa-check"></i>
+                  {{ constraint }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="instruction-box">
+            <i class="fas fa-pencil-alt"></i>
+            <div class="instruction-text">
+              <strong>Your Task:</strong> Write pseudocode or draw your solution approach in the whiteboard below
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Brush Size Section -->
-        <div class="tool-group">
-          <label>BRUSH SIZE</label>
-          <div class="width-picker">
-            <button 
-              *ngFor="let width of lineWidths"
-              class="width-btn"
-              [class.active]="lineWidth === width"
-              (click)="setLineWidth(width)"
-              [attr.aria-label]="'Set brush size to ' + width">
-              <div class="width-dot" [style.width.px]="width" [style.height.px]="width"></div>
-            </button>
+    <!-- Loading State -->
+    <section class="loading-section" *ngIf="isLoading">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading your coding challenge...</p>
+      </div>
+    </section>
+
+    <!-- Whiteboard Section -->
+    <section class="whiteboard-section">
+      <div class="whiteboard-container">
+        <!-- Tools Sidebar -->
+        <aside class="tools-sidebar">
+          <div class="tools-group">
+            <div class="colors-container">
+              <button
+                *ngFor="let color of colors"
+                class="color-btn"
+                [class.active]="currentColor === color.value"
+                [style.background]="color.value"
+                (click)="selectColor(color.value)"
+                [title]="color.name">
+                <i class="fas fa-check" *ngIf="currentColor === color.value"></i>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Actions Section -->
-        <div class="tool-group">
-          <label>ACTIONS</label>
-          <button class="action-btn clear-btn" (click)="clearCanvas()">
-            <i class="fas fa-broom"></i>
-            Clear Canvas
-          </button>
+          <div class="tools-group">
+            <h3 class="tools-title">Tools</h3>
+            <div class="tools-container">
+              <button
+                class="tool-btn"
+                [class.active]="currentTool === 'pen'"
+                (click)="selectTool('pen')">
+                <i class="fas fa-pen"></i>
+                <span>Pen</span>
+              </button>
+              <button
+                class="tool-btn"
+                [class.active]="currentTool === 'eraser'"
+                (click)="selectTool('eraser')">
+                <i class="fas fa-eraser"></i>
+                <span>Eraser</span>
+              </button>
+              <button class="tool-btn clear-btn" (click)="clearCanvas()">
+                <i class="fas fa-broom"></i>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+          <div class="canvas-container">
+            <canvas
+              #canvas
+              class="drawing-canvas"
+              [class.pen-mode]="currentTool === 'pen'"
+              [class.eraser-mode]="currentTool === 'eraser'">
+              Your browser doesn't support the canvas element.
+            </canvas>
+          </div>
         </div>
       </div>
 
-      <!-- Canvas Area - Larger and Cleaner -->
-      <div class="canvas-container">
-        <canvas 
-          #canvas
-          class="drawing-canvas"
-          [class.drawing-mode]="currentTool === 'pen'"
-          [class.erasing-mode]="currentTool === 'eraser'"
-          aria-label="Whiteboard drawing area">
-          Your browser does not support the canvas element. Please upgrade to a modern browser.
-        </canvas>
+      <!-- Tips Section -->
+      <div class="tips-section">
+        <div class="tip-item">
+          <i class="fas fa-undo"></i>
+          <span>Use the eraser to correct mistakes or the clear button to start over</span>
+        </div>
       </div>
-
-      <!-- Interactive Tips -->
-      <div class="canvas-tips" *ngIf="showTips">
-        <p>
-          <i class="fas fa-lightbulb"></i>
-          <strong>Pro Tip:</strong> Use different colors for different elements - blue for pointers, red for errors, green for solutions
-        </p>
-        <button class="tips-toggle" (click)="toggleTips()" aria-label="Hide tips">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>

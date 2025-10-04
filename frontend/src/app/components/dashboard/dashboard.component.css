@@ -682,56 +682,79 @@
   color: currentColor;
 }
 
-/* Update Whiteboard Action Card to match others */
-.action-card.whiteboard-practice {
+/* Add whiteboard action card styles */
+.action-card.whiteboard-action {
   background: #f8fafc;
   color: #2d3748;
   border: 2px solid transparent;
 }
 
-.action-card.whiteboard-practice:hover {
+.action-card.whiteboard-action:hover {
   border-color: #667eea;
   background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
   transform: translateY(-3px) scale(1.02);
   box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
 }
 
-.action-card.whiteboard-practice .action-icon {
+.action-card.whiteboard-action .action-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
-.action-card.whiteboard-practice:hover .action-hover {
+.action-card.whiteboard-action:hover .action-hover {
   color: #667eea;
 }
 
-/* Update Whiteboard Challenge Card to match Daily Challenge style */
+/* Whiteboard Challenge Card Styles */
 .whiteboard-challenge-card {
-  background: linear-gradient(135deg, #7209b7 0%, #4361ee 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 30px rgba(114, 9, 183, 0.3);
-  margin-bottom: 25px;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.whiteboard-challenge-card .challenge-header {
+.whiteboard-challenge-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+}
+
+.challenge-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
 }
 
-.whiteboard-challenge-card .challenge-badge {
+.challenge-badge {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
   font-size: 0.9rem;
   opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
 }
 
-.whiteboard-challenge-card .difficulty-tag {
+.difficulty-tag {
   padding: 0.4rem 1rem;
   border-radius: 20px;
   font-weight: 600;
@@ -739,48 +762,64 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.whiteboard-challenge-card .difficulty-tag.easy { background: rgba(76, 201, 240, 0.3); }
-.whiteboard-challenge-card .difficulty-tag.medium { background: rgba(249, 199, 79, 0.3); }
-.whiteboard-challenge-card .difficulty-tag.hard { background: rgba(249, 65, 68, 0.3); }
+.difficulty-tag.easy { background: rgba(76, 201, 240, 0.3); }
+.difficulty-tag.medium { background: rgba(249, 199, 79, 0.3); }
+.difficulty-tag.hard { background: rgba(249, 65, 68, 0.3); }
 
-.whiteboard-challenge-card .challenge-content h3 {
+.challenge-content {
+  position: relative;
+  z-index: 2;
+}
+
+.challenge-content h3 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
+  line-height: 1.3;
 }
 
-.whiteboard-challenge-card .challenge-description {
+.challenge-description {
   opacity: 0.9;
   line-height: 1.5;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
 }
 
-.whiteboard-challenge-card .challenge-features {
+.challenge-features {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.whiteboard-challenge-card .feature {
+.feature {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
   opacity: 0.9;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
-.whiteboard-challenge-card .challenge-reward {
+.challenge-reward {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
 }
 
-.whiteboard-challenge-card .challenge-button {
+.challenge-button {
   width: 100%;
   background: white;
-  color: #7209b7;
+  color: #667eea;
   border: none;
   padding: 1rem 2rem;
   border-radius: 12px;
@@ -791,9 +830,81 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  position: relative;
+  z-index: 2;
 }
 
-.whiteboard-challenge-card .challenge-button:hover {
+.challenge-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+  background: #f8fafc;
+}
+
+/* Enhanced Whiteboard Action Card */
+.action-card.whiteboard-action {
+  background: #f8fafc;
+  color: #0a3072;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-card.whiteboard-action::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.action-card.whiteboard-action:hover::before {
+  left: 100%;
+}
+
+.action-card.whiteboard-action:hover {
+  border-color: #071a6b;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+}
+
+.action-card.whiteboard-action .action-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.action-card.whiteboard-action:hover .action-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.action-card.whiteboard-action:hover .action-hover {
+  color: #0f2174;
+  transform: translateX(6px);
+}
+
+/* Responsive adjustments for whiteboard card */
+@media (max-width: 768px) {
+  .whiteboard-challenge-card {
+    padding: 1.5rem;
+  }
+  
+  .challenge-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .challenge-features {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .feature {
+    width: 100%;
+    justify-content: center;
+  }
 }

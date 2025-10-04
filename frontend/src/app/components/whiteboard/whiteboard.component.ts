@@ -1,5 +1,5 @@
 //frontend/src/app/components/whiteboard/whiteboard.component.ts
-import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { WhiteboardService } from '../../services/whiteboard.service';
 import { WhiteboardQuestion } from '../../models/whiteboard-question.model';
 
@@ -15,197 +15,209 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
   private isDrawing = false;
   private lastX = 0;
   private lastY = 0;
-  
-  // Tools and colors - Added pink and more vibrant colors
+
+  // Tools configuration
   currentTool: 'pen' | 'eraser' = 'pen';
   currentColor = '#000000';
-  lineWidth = 3;
-  
-  colors: string[] = [
-    '#000000', // Black
-    '#2563eb', // Blue
-    '#ec4899', // Pink
-    '#dc2626', // Red
-    '#16a34a', // Green
-    '#9333ea', // Violet
-    '#f59e0b', // Orange
-    '#0891b2'  // Cyan
+  currentBrushSize = 4;
+
+  // Color options
+  colors = [
+    { name: 'Black', value: '#000000' },
+    { name: 'Red', value: '#dc2626' },
+    { name: 'Blue', value: '#2563eb' },
+    { name: 'Green', value: '#16a34a' },
+    { name: 'Pink', value: '#ec4899' },
+    { name: 'Violet', value: '#9333ea' },
+    { name: 'Orange', value: '#ea580c' }
   ];
-  
-  lineWidths = [2, 4, 6, 8, 12];
-  
-  // Current question with default values
+
+  // Brush sizes
+  brushSizes = [2, 4, 6, 8, 12];
+
+  // Current question
   currentQuestion: WhiteboardQuestion = {
     id: '1',
-    title: 'Loading...',
-    description: 'Please wait while we load your challenge.',
+    title: 'Loading Challenge...',
+    description: 'Please wait while we load your coding challenge.',
     category: 'General',
     difficulty: 'medium',
     type: 'pseudocode',
     examples: [],
     constraints: []
   };
-  
+
   isLoading = true;
-  showTips = true;
 
   constructor(private whiteboardService: WhiteboardService) {}
-  
+
   ngOnInit() {
     this.loadDailyChallenge();
   }
-  
+
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.initializeCanvas();
-    }, 100);
+    this.initializeCanvas();
   }
 
-  @HostListener('window:resize')
-  onResize() {
-    setTimeout(() => {
-      this.initializeCanvas();
-    }, 100);
-  }
-  
   private initializeCanvas() {
-    if (!this.canvas?.nativeElement) {
-      console.error('Canvas element not found');
-      return;
-    }
-
-    const canvasEl = this.canvas.nativeElement;
-    this.ctx = canvasEl.getContext('2d');
+    const canvas = this.canvas.nativeElement;
+    this.ctx = canvas.getContext('2d');
     
     if (!this.ctx) {
-      console.error('Could not get canvas context');
+      console.error('Failed to get canvas context');
       return;
     }
-    
-    // Set canvas size to match container - make it larger
-    const container = canvasEl.parentElement;
+
+    // Set canvas size
+    const container = canvas.parentElement;
     if (container) {
-      canvasEl.width = container.clientWidth;
-      canvasEl.height = container.clientHeight - 10; // Small margin
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
     }
-    
-    // Set default styles
-    this.ctx.lineJoin = 'round';
-    this.ctx.lineCap = 'round';
-    this.ctx.lineWidth = this.lineWidth;
-    this.ctx.strokeStyle = this.currentColor;
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
-    
+
+    // Set initial styles
+    this.setupCanvasStyle();
     this.setupEventListeners();
   }
-  
-  private setupEventListeners() {
-    const canvasEl = this.canvas.nativeElement;
-    
-    // Remove any existing listeners first
-    canvasEl.removeEventListener('mousedown', this.startDrawing.bind(this));
-    canvasEl.removeEventListener('mousemove', this.draw.bind(this));
-    canvasEl.removeEventListener('mouseup', this.stopDrawing.bind(this));
-    canvasEl.removeEventListener('mouseout', this.stopDrawing.bind(this));
-    
-    // Mouse events
-    canvasEl.addEventListener('mousedown', (e) => this.startDrawing(e));
-    canvasEl.addEventListener('mousemove', (e) => this.draw(e));
-    canvasEl.addEventListener('mouseup', () => this.stopDrawing());
-    canvasEl.addEventListener('mouseout', () => this.stopDrawing());
-    
-    // Prevent context menu
-    canvasEl.addEventListener('contextmenu', (e) => e.preventDefault());
-  }
-  
-  private startDrawing(e: MouseEvent) {
+
+  private setupCanvasStyle() {
     if (!this.ctx) return;
+
+    this.ctx.lineJoin = 'round';
+    this.ctx.lineCap = 'round';
+    this.ctx.lineWidth = this.currentBrushSize;
+    this.ctx.strokeStyle = this.currentColor;
     
+    // Clear canvas with white background
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+  }
+
+  private setupEventListeners() {
+    const canvas = this.canvas.nativeElement;
+
+    // Mouse events
+    canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+    canvas.addEventListener('mousemove', this.draw.bind(this));
+    canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+    canvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', this.handleTouchStart.bind(this));
+    canvas.addEventListener('touchmove', this.handleTouchMove.bind(this));
+    canvas.addEventListener('touchend', this.stopDrawing.bind(this));
+  }
+
+  private startDrawing(e: MouseEvent) {
     this.isDrawing = true;
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
+    const canvas = this.canvas.nativeElement;
+    const rect = canvas.getBoundingClientRect();
+    
     this.lastX = e.clientX - rect.left;
     this.lastY = e.clientY - rect.top;
-    
-    // Start a new path immediately
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.lastX, this.lastY);
+
+    // Start new path
+    if (this.ctx) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.lastX, this.lastY);
+    }
   }
-  
+
   private draw(e: MouseEvent) {
     if (!this.isDrawing || !this.ctx) return;
-    
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
+
+    const canvas = this.canvas.nativeElement;
+    const rect = canvas.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
-    
+
+    // Draw line
     this.ctx.lineTo(currentX, currentY);
     this.ctx.stroke();
-    
+
     this.lastX = currentX;
     this.lastY = currentY;
   }
-  
+
   private stopDrawing() {
-    if (!this.isDrawing || !this.ctx) return;
-    
     this.isDrawing = false;
-    this.ctx.closePath();
+    if (this.ctx) {
+      this.ctx.closePath();
+    }
   }
-  
+
+  private handleTouchStart(e: TouchEvent) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const canvas = this.canvas.nativeElement;
+    const rect = canvas.getBoundingClientRect();
+
+    this.isDrawing = true;
+    this.lastX = touch.clientX - rect.left;
+    this.lastY = touch.clientY - rect.top;
+
+    if (this.ctx) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.lastX, this.lastY);
+    }
+  }
+
+  private handleTouchMove(e: TouchEvent) {
+    e.preventDefault();
+    if (!this.isDrawing || !this.ctx) return;
+
+    const touch = e.touches[0];
+    const canvas = this.canvas.nativeElement;
+    const rect = canvas.getBoundingClientRect();
+    const currentX = touch.clientX - rect.left;
+    const currentY = touch.clientY - rect.top;
+
+    this.ctx.lineTo(currentX, currentY);
+    this.ctx.stroke();
+
+    this.lastX = currentX;
+    this.lastY = currentY;
+  }
+
   // Public methods for template
   selectTool(tool: 'pen' | 'eraser') {
     this.currentTool = tool;
-    
-    if (!this.ctx) {
-      this.initializeCanvas();
-      return;
-    }
-    
-    if (tool === 'pen') {
+    this.updateCanvasTool();
+  }
+
+  selectColor(color: string) {
+    this.currentColor = color;
+    this.currentTool = 'pen'; // Switch to pen when color selected
+    this.updateCanvasTool();
+  }
+
+  setBrushSize(size: number) {
+    this.currentBrushSize = size;
+    this.updateCanvasTool();
+  }
+
+  private updateCanvasTool() {
+    if (!this.ctx) return;
+
+    if (this.currentTool === 'pen') {
       this.ctx.globalCompositeOperation = 'source-over';
       this.ctx.strokeStyle = this.currentColor;
-      this.ctx.lineWidth = this.lineWidth;
+      this.ctx.lineWidth = this.currentBrushSize;
     } else {
       this.ctx.globalCompositeOperation = 'destination-out';
       this.ctx.strokeStyle = 'rgba(255,255,255,1)';
-      this.ctx.lineWidth = this.lineWidth * 3; // Larger eraser
+      this.ctx.lineWidth = this.currentBrushSize * 2; // Larger eraser
     }
   }
-  
-  selectColor(color: string) {
-    this.currentColor = color;
-    this.currentTool = 'pen'; // Switch to pen when color is selected
-    
-    if (this.ctx) {
-      this.ctx.globalCompositeOperation = 'source-over';
-      this.ctx.strokeStyle = color;
-      this.ctx.lineWidth = this.lineWidth;
-    }
-  }
-  
-  setLineWidth(width: number) {
-    this.lineWidth = width;
-    if (this.ctx) {
-      this.ctx.lineWidth = width;
-    }
-  }
-  
+
   clearCanvas() {
-    if (!this.ctx) {
-      this.initializeCanvas();
-      return;
-    }
+    if (!this.ctx) return;
     
-    const canvasEl = this.canvas.nativeElement;
+    const canvas = this.canvas.nativeElement;
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+    this.ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
-  
-  toggleTips() {
-    this.showTips = !this.showTips;
-  }
-  
+
   loadDailyChallenge() {
     this.isLoading = true;
     this.whiteboardService.getDailyWhiteboardChallenge().subscribe({
@@ -216,64 +228,21 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
       error: (error) => {
         console.error('Error loading challenge:', error);
         this.isLoading = false;
-        // Fallback to show that questions are loading
-        this.currentQuestion = {
-          id: '1',
-          title: 'Reverse a Linked List',
-          description: `Design an algorithm to reverse a singly linked list. Consider edge cases like empty lists, single-node lists, and large lists.
-
-STEPS TO SOLVE:
-1. Initialize three pointers: previous (null), current (head), and next
-2. Traverse through the list
-3. For each node:
-   - Store the next node
-   - Reverse the current node's pointer to point to previous
-   - Move previous to current
-   - Move current to next
-4. Return the new head (which is the previous pointer)
-
-TIME COMPLEXITY: O(n) where n is the number of nodes
-SPACE COMPLEXITY: O(1) for iterative approach
-
-EDGE CASES:
-- Empty list (head is null)
-- Single node list
-- Already reversed list
-- List with cycles`,
-          category: 'Data Structures',
-          difficulty: 'medium',
-          type: 'pseudocode',
-          examples: [
-            'Input: 1 → 2 → 3 → 4 → 5 → NULL',
-            'Output: 5 → 4 → 3 → 2 → 1 → NULL',
-            'Edge Case: Empty list → NULL',
-            'Edge Case: Single node → Same node'
-          ],
-          constraints: [
-            'Cannot modify node values, only change pointers',
-            'Must use O(1) extra space',
-            'Should handle lists with up to 10^4 nodes'
-          ]
-        };
       }
     });
   }
-  
+
+  nextQuestion() {
+    this.loadDailyChallenge();
+    this.clearCanvas();
+  }
+
   getDifficultyClass(difficulty: string): string {
-    if (!difficulty) return 'difficulty-medium';
-    
     switch (difficulty.toLowerCase()) {
       case 'easy': return 'difficulty-easy';
       case 'medium': return 'difficulty-medium';
       case 'hard': return 'difficulty-hard';
       default: return 'difficulty-medium';
     }
-  }
-  
-  nextQuestion() {
-    this.loadDailyChallenge();
-    setTimeout(() => {
-      this.clearCanvas();
-    }, 100);
   }
 }

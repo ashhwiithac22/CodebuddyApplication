@@ -1,6 +1,5 @@
 //frontend/src/app/components/whiteboard/whiteboard.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { WhiteboardQuestion } from '../models/whiteboard-question.model';
 
@@ -12,132 +11,118 @@ export class WhiteboardService {
     {
       id: '1',
       title: 'Reverse a Linked List',
-      description: `Design an algorithm to reverse a singly linked list. Consider edge cases like empty lists, single-node lists, and large lists. Explain your approach step by step and analyze the time and space complexity.
+      description: `PROBLEM: Reverse a singly linked list in-place without using extra space.
 
-Key Points to Address:
-• How will you handle the pointer reassignments?
-• What is the time complexity of your solution?
-• How would you handle a circular linked list?
-• Can you optimize for space complexity?`,
+APPROACH:
+We use three pointers: previous, current, and next.
+1. Start with previous = null, current = head
+2. While current is not null:
+   - Store next node: next = current.next
+   - Reverse pointer: current.next = previous
+   - Move pointers: previous = current, current = next
+3. Return previous (new head)
+
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(1)
+
+EXAMPLE:
+Input: 1 → 2 → 3 → 4 → 5 → NULL
+Output: 5 → 4 → 3 → 2 → 1 → NULL
+
+EDGE CASES:
+- Empty list (head is null)
+- Single node list
+- List with two nodes`,
       category: 'Data Structures',
       difficulty: 'medium',
       type: 'pseudocode',
       examples: [
         'Input: 1 → 2 → 3 → 4 → 5 → NULL',
         'Output: 5 → 4 → 3 → 2 → 1 → NULL',
-        'Edge Case: Empty list → NULL',
-        'Edge Case: Single node → Same node'
+        'Single Node: 1 → NULL remains same',
+        'Empty List: NULL remains NULL'
       ],
       constraints: [
-        'Cannot modify node values, only change pointers',
-        'Must use O(1) extra space (excluding recursion stack)',
-        'Should handle lists with up to 10^4 nodes'
+        'Cannot modify node values',
+        'Must use O(1) extra space',
+        'The number of nodes in the list is in range [0, 5000]'
       ]
     },
     {
       id: '2',
-      title: 'Binary Tree Level Order Traversal',
-      description: `Implement a level-order traversal (BFS) for a binary tree. Your solution should return the nodes level by level. Discuss the algorithm complexity and potential optimizations.
+      title: 'Two Sum Problem',
+      description: `PROBLEM: Given an array of integers and a target, find two numbers that add up to the target.
 
-Considerations:
-• How does BFS differ from DFS for this problem?
-• What data structure is most efficient for this traversal?
-• How would you handle very wide trees?
-• Can you implement this both iteratively and recursively?`,
-      category: 'Trees',
-      difficulty: 'medium',
-      type: 'logic',
+APPROACH:
+Use a hash map to store visited numbers:
+1. For each number in array:
+   - Calculate complement = target - current number
+   - If complement exists in map, return indices
+   - Else store current number with its index
+
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(n)
+
+EXAMPLE:
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1] because 2 + 7 = 9
+
+EDGE CASES:
+- Array with duplicate numbers
+- Negative numbers
+- Exactly one solution exists`,
+      category: 'Arrays',
+      difficulty: 'easy',
+      type: 'pseudocode',
       examples: [
-        'Input: [3,9,20,null,null,15,7]',
-        'Output: [[3],[9,20],[15,7]]',
-        'Explanation: Level 0: [3], Level 1: [9,20], Level 2: [15,7]'
+        'Input: [2,7,11,15], target=9 → Output: [0,1]',
+        'Input: [3,2,4], target=6 → Output: [1,2]',
+        'Input: [3,3], target=6 → Output: [0,1]'
       ],
       constraints: [
-        'The number of nodes in the tree is in the range [0, 2000]',
-        '-1000 <= Node.val <= 1000'
+        '2 <= nums.length <= 10^4',
+        '-10^9 <= nums[i] <= 10^9',
+        'Exactly one solution exists'
       ]
     },
     {
       id: '3',
-      title: 'Design LRU Cache',
-      description: `Design and implement a Least Recently Used (LRU) cache. The cache should support get and put operations with O(1) average time complexity.
+      title: 'Binary Tree Level Order Traversal',
+      description: `PROBLEM: Return the level order traversal of a binary tree.
 
-System Design Questions:
-• What data structures would you use to achieve O(1) operations?
-• How will you handle cache eviction when capacity is reached?
-• What are the trade-offs between different implementation approaches?
-• How would you make this implementation thread-safe?`,
-      category: 'System Design',
-      difficulty: 'hard',
-      type: 'system-design',
-      examples: [
-        'LRUCache lru = new LRUCache(2);',
-        'lru.put(1, 1); // cache is {1=1}',
-        'lru.put(2, 2); // cache is {1=1, 2=2}',
-        'lru.get(1);    // return 1, cache becomes {2=2, 1=1}',
-        'lru.put(3, 3); // evicts key 2, cache is {1=1, 3=3}'
-      ],
-      constraints: [
-        '1 <= capacity <= 3000',
-        '0 <= key <= 10^4',
-        '0 <= value <= 10^5'
-      ]
-    },
-    {
-      id: '4',
-      title: 'Find Cycle in Directed Graph',
-      description: `Given a directed graph, detect if it contains a cycle. Explain both DFS and topological sort approaches, and discuss when you would use each method.
+APPROACH:
+Use BFS with a queue:
+1. Start with root in queue
+2. While queue is not empty:
+   - Process all nodes at current level
+   - Add their children to queue
+   - Move to next level
 
-Algorithm Analysis:
-• What is the time complexity for cycle detection using DFS?
-• How does Kahn\'s algorithm (topological sort) help in cycle detection?
-• What are the memory requirements for each approach?
-• How would you handle disconnected graphs?`,
-      category: 'Graphs',
-      difficulty: 'hard',
-      type: 'pseudocode',
-      examples: [
-        'Input: [[1],[2],[0]] → True (cycle: 0→1→2→0)',
-        'Input: [[1,2],[2],[]] → False (no cycle)',
-        'Input: [[1],[2],[1]] → True (cycle: 1→2→1)'
-      ],
-      constraints: [
-        'Number of nodes: 1 to 1000',
-        'Graph may be disconnected',
-        'No self-loops or duplicate edges'
-      ]
-    },
-    {
-      id: '5',
-      title: 'Implement Trie (Prefix Tree)',
-      description: `Design a Trie data structure that supports insert, search, and startsWith operations. Explain the space-time tradeoffs and real-world use cases.
+TIME COMPLEXITY: O(n)
+SPACE COMPLEXITY: O(w) where w is maximum width
 
-Key Design Decisions:
-• What node structure would you use?',
-• How do you handle character encoding (Unicode vs ASCII)?',
-• What are the memory optimization techniques?',
-• How would you implement autocomplete functionality?'`,
-      category: 'Data Structures',
+EXAMPLE:
+Input: [3,9,20,null,null,15,7]
+Output: [[3],[9,20],[15,7]]
+
+EDGE CASES:
+- Empty tree
+- Single node tree
+- Skewed tree`,
+      category: 'Trees',
       difficulty: 'medium',
-      type: 'system-design',
+      type: 'logic',
       examples: [
-        'Trie trie = new Trie();',
-        'trie.insert("apple");',
-        'trie.search("apple");   // returns true',
-        'trie.search("app");     // returns false',
-        'trie.startsWith("app"); // returns true',
-        'trie.insert("app");',
-        'trie.search("app");     // returns true'
+        'Input: [3,9,20,null,null,15,7] → Output: [[3],[9,20],[15,7]]',
+        'Input: [1] → Output: [[1]]',
+        'Input: [] → Output: []'
       ],
       constraints: [
-        '1 <= word.length, prefix.length <= 2000',
-        'Words and prefixes consist of lowercase English letters',
-        'At most 3 * 10^4 calls will be made to insert, search, and startsWith'
+        'Number of nodes: 0 to 2000',
+        '-1000 <= Node.val <= 1000'
       ]
     }
   ];
-
-  constructor(private http: HttpClient) {}
 
   getDailyWhiteboardChallenge(): Observable<WhiteboardQuestion> {
     const randomIndex = Math.floor(Math.random() * this.questions.length);
@@ -151,14 +136,5 @@ Key Design Decisions:
 
   getAllQuestions(): Observable<WhiteboardQuestion[]> {
     return of(this.questions);
-  }
-
-  saveDrawing(userId: string, questionId: string, drawingData: any): Observable<any> {
-    return this.http.post('/api/whiteboard/save', {
-      userId,
-      questionId,
-      drawingData,
-      timestamp: new Date()
-    });
   }
 }
