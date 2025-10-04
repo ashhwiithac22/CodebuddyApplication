@@ -236,16 +236,17 @@
       </div>
 
       <!-- Achievement Alert -->
-      <div class="achievement-alert" *ngIf="userProgress.totalSolved === 0">
-        <div class="alert-content">
-          <i class="fas fa-trophy"></i>
-          <div class="alert-text">
-            <strong>Start Your Journey!</strong>
-            <span>Solve your first problem to unlock achievements</span>
-          </div>
-        </div>
-        <button class="alert-button" routerLink="/whiteboard">Start Practicing</button>
-      </div>
+     <div class="achievement-alert" *ngIf="userProgress.totalSolved === 0">
+  <div class="alert-content">
+    <i class="fas fa-palette"></i>
+    <div class="alert-text">
+      <strong>Master Visual Problem Solving</strong>
+      <span>Practice with our whiteboard to ace technical interviews</span>
+    </div>
+  </div>
+  <button class="alert-button" routerLink="/whiteboard">Try Whiteboard</button>
+</div>
+
     </div>
   </div>
 </div>

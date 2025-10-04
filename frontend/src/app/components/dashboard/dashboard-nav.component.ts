@@ -27,11 +27,11 @@ import { RouterModule } from '@angular/router';
             <div class="nav-hover-effect"></div>
           </a>
           
-          <a class="nav-item daily-challenge" routerLink="/coding-round" routerLinkActive="active">
+          <a class="nav-item whiteboard" routerLink="/whiteboard" routerLinkActive="active">
             <div class="nav-icon">
-              <i class="fas fa-calendar-day"></i>
+              <i class="fas fa-palette"></i>
             </div>
-            <span class="nav-text">Solve Daily Challenge</span>
+            <span class="nav-text">Whiteboard</span>
             <div class="nav-hover-effect"></div>
           </a>
           
@@ -129,7 +129,7 @@ import { RouterModule } from '@angular/router';
       border-bottom-color: #4cc9f0;
     }
 
-    .nav-item.daily-challenge:hover {
+    .nav-item.whiteboard:hover {
       color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.2) 0%, rgba(67, 97, 238, 0.3) 100%);
       border-bottom-color: #4cc9f0;
@@ -170,7 +170,7 @@ import { RouterModule } from '@angular/router';
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
 
-    .nav-item.active.daily-challenge {
+    .nav-item.active.whiteboard {
       border-bottom-color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
