@@ -1,16 +1,18 @@
+//frontend/src/app/components/dashboard/dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProgressService } from '../../services/progress.service';
 import { TopicService } from '../../services/topic.service';
 import { AuthService } from '../../services/auth.service';
+import { WhiteboardService } from '../../services/whiteboard.service'; // Add this import
 import { NavbarComponent } from '../layout/navbar.component';
 import { DashboardNavComponent } from './dashboard-nav.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent,DashboardNavComponent],
+  imports: [CommonModule, RouterModule, NavbarComponent, DashboardNavComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -24,11 +26,10 @@ export class DashboardComponent implements OnInit {
     totalScore: 0
   };
   
-  dailyChallenge: any = { 
-    title: 'Two Sum', 
-    difficulty: 'Easy',
-    description: 'Find two numbers that add up to a target',
-    completed: false 
+  whiteboardChallenge: any = { 
+    title: 'Reverse Linked List',
+    difficulty: 'Medium',
+    description: 'Write pseudocode or explain the logic to reverse a singly linked list. Draw node connections and show pointer changes.'
   };
   
   topics: any[] = [];
@@ -38,7 +39,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private progressService: ProgressService,
     private topicService: TopicService,
-    private authService: AuthService
+    private authService: AuthService,
+    private whiteboardService: WhiteboardService // Add this
   ) { }
 
   ngOnInit() {
@@ -46,6 +48,7 @@ export class DashboardComponent implements OnInit {
     this.username = this.getUsername();
     this.loadUserProgress();
     this.loadTopics();
+    this.loadWhiteboardChallenge();
   }
 
   // Get username from current user or return default
@@ -93,6 +96,23 @@ export class DashboardComponent implements OnInit {
           { name: 'Strings', description: 'String operations and algorithms', solved: 0, total: 8 },
           { name: 'Linked Lists', description: 'Working with linked data structures', solved: 0, total: 6 }
         ];
+      }
+    });
+  }
+
+  loadWhiteboardChallenge() {
+    this.whiteboardService.getDailyWhiteboardChallenge().subscribe({
+      next: (challenge) => {
+        this.whiteboardChallenge = challenge;
+      },
+      error: (error) => {
+        console.error('Error loading whiteboard challenge:', error);
+        // Default challenge if API fails
+        this.whiteboardChallenge = {
+          title: 'Binary Tree Traversal',
+          difficulty: 'Medium',
+          description: 'Explain different traversal methods and draw example trees.'
+        };
       }
     });
   }

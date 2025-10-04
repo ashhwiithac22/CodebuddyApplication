@@ -5,6 +5,7 @@ import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
