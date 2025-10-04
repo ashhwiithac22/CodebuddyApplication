@@ -2,14 +2,11 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit, HostListener } from '@angular/core';
 import { WhiteboardService } from '../../services/whiteboard.service';
 import { WhiteboardQuestion } from '../../models/whiteboard-question.model';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-whiteboard',
   templateUrl: './whiteboard.component.html',
-  styleUrls: ['./whiteboard.component.css'],
-  standalone: false
+  styleUrls: ['./whiteboard.component.css']
 })
 export class WhiteboardComponent implements AfterViewInit, OnInit {
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
@@ -49,7 +46,8 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
   };
   
   isLoading = true;
-  
+  showTips = true;
+
   constructor(private whiteboardService: WhiteboardService) {}
   
   ngOnInit() {
@@ -57,10 +55,7 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
   }
   
   ngAfterViewInit() {
-    // Small delay to ensure DOM is fully rendered
-    setTimeout(() => {
-      this.initializeCanvas();
-    }, 100);
+    this.initializeCanvas();
   }
 
   @HostListener('window:resize')
@@ -69,12 +64,6 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
   }
   
   private initializeCanvas() {
-    if (!this.canvas?.nativeElement) {
-      console.error('Canvas element not found - retrying...');
-      setTimeout(() => this.initializeCanvas(), 100);
-      return;
-    }
-
     const canvasEl = this.canvas.nativeElement;
     this.ctx = canvasEl.getContext('2d');
     
@@ -83,7 +72,7 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
       return;
     }
     
-    // Set canvas size
+    // Set canvas size to match container
     const container = canvasEl.parentElement;
     if (container) {
       canvasEl.width = container.clientWidth;
@@ -99,69 +88,70 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
     this.ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
     
     this.setupEventListeners();
-    console.log('Canvas initialized successfully');
   }
   
   private setupEventListeners() {
     const canvasEl = this.canvas.nativeElement;
     
-    // Remove existing listeners to avoid duplicates
-    canvasEl.replaceWith(canvasEl.cloneNode(true));
-    
-    // Get the new reference after clone
-    const newCanvas = document.querySelector('.drawing-canvas') as HTMLCanvasElement;
-    
     // Mouse events
-    newCanvas.addEventListener('mousedown', this.startDrawing.bind(this));
-    newCanvas.addEventListener('mousemove', this.draw.bind(this));
-    newCanvas.addEventListener('mouseup', this.stopDrawing.bind(this));
-    newCanvas.addEventListener('mouseout', this.stopDrawing.bind(this));
+    canvasEl.addEventListener('mousedown', this.startDrawing.bind(this));
+    canvasEl.addEventListener('mousemove', this.draw.bind(this));
+    canvasEl.addEventListener('mouseup', this.stopDrawing.bind(this));
+    canvasEl.addEventListener('mouseout', this.stopDrawing.bind(this));
     
     // Touch events for mobile
-    newCanvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-    newCanvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-    newCanvas.addEventListener('touchend', this.stopDrawing.bind(this));
-    
-    // Update the canvas reference
-    this.canvas.nativeElement = newCanvas;
+    canvasEl.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    canvasEl.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    canvasEl.addEventListener('touchend', this.stopDrawing.bind(this));
   }
   
   private startDrawing(e: MouseEvent) {
     if (!this.ctx) return;
     
     this.isDrawing = true;
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
-    this.lastX = e.clientX - rect.left;
-    this.lastY = e.clientY - rect.top;
+    this.draw(e); // Start drawing immediately
   }
   
   private draw(e: MouseEvent) {
     if (!this.isDrawing || !this.ctx) return;
     
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
-    const currentX = e.clientX - rect.left;
-    const currentY = e.clientY - rect.top;
+    const canvasEl = this.canvas.nativeElement;
+    const rect = canvasEl.getBoundingClientRect();
+    const scaleX = canvasEl.width / rect.width;
+    const scaleY = canvasEl.height / rect.height;
+    
+    const currentX = (e.clientX - rect.left) * scaleX;
+    const currentY = (e.clientY - rect.top) * scaleY;
     
     this.ctx.beginPath();
     this.ctx.moveTo(this.lastX, this.lastY);
     this.ctx.lineTo(currentX, currentY);
     this.ctx.stroke();
     
-    [this.lastX, this.lastY] = [currentX, currentY];
+    this.lastX = currentX;
+    this.lastY = currentY;
   }
   
   private stopDrawing() {
     this.isDrawing = false;
+    // Reset last coordinates
+    this.lastX = 0;
+    this.lastY = 0;
   }
   
   private handleTouchStart(e: TouchEvent) {
     e.preventDefault();
+    if (!this.ctx) return;
+    
     const touch = e.touches[0];
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
+    const canvasEl = this.canvas.nativeElement;
+    const rect = canvasEl.getBoundingClientRect();
+    const scaleX = canvasEl.width / rect.width;
+    const scaleY = canvasEl.height / rect.height;
     
     this.isDrawing = true;
-    this.lastX = touch.clientX - rect.left;
-    this.lastY = touch.clientY - rect.top;
+    this.lastX = (touch.clientX - rect.left) * scaleX;
+    this.lastY = (touch.clientY - rect.top) * scaleY;
   }
   
   private handleTouchMove(e: TouchEvent) {
@@ -169,19 +159,24 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
     if (!this.isDrawing || !this.ctx) return;
     
     const touch = e.touches[0];
-    const rect = this.canvas.nativeElement.getBoundingClientRect();
-    const currentX = touch.clientX - rect.left;
-    const currentY = touch.clientY - rect.top;
+    const canvasEl = this.canvas.nativeElement;
+    const rect = canvasEl.getBoundingClientRect();
+    const scaleX = canvasEl.width / rect.width;
+    const scaleY = canvasEl.height / rect.height;
+    
+    const currentX = (touch.clientX - rect.left) * scaleX;
+    const currentY = (touch.clientY - rect.top) * scaleY;
     
     this.ctx.beginPath();
     this.ctx.moveTo(this.lastX, this.lastY);
     this.ctx.lineTo(currentX, currentY);
     this.ctx.stroke();
     
-    [this.lastX, this.lastY] = [currentX, currentY];
+    this.lastX = currentX;
+    this.lastY = currentY;
   }
   
-  // Tool methods
+  // Public methods for template
   selectTool(tool: 'pen' | 'eraser') {
     this.currentTool = tool;
     
@@ -203,9 +198,11 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
   
   selectColor(color: string) {
     this.currentColor = color;
-    if (this.currentTool === 'pen' && this.ctx) {
-      this.ctx.strokeStyle = color;
+    this.currentTool = 'pen'; // Switch to pen when color is selected
+    if (this.ctx) {
       this.ctx.globalCompositeOperation = 'source-over';
+      this.ctx.strokeStyle = color;
+      this.ctx.lineWidth = this.lineWidth;
     }
   }
   
@@ -227,6 +224,10 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
     this.ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
   }
   
+  toggleTips() {
+    this.showTips = !this.showTips;
+  }
+  
   loadDailyChallenge() {
     this.isLoading = true;
     this.whiteboardService.getDailyWhiteboardChallenge().subscribe({
@@ -237,20 +238,8 @@ export class WhiteboardComponent implements AfterViewInit, OnInit {
       error: (error) => {
         console.error('Error loading challenge:', error);
         this.isLoading = false;
-        // Fallback question
-        this.currentQuestion = {
-          id: '1',
-          title: 'Reverse a Linked List',
-          description: 'Write pseudocode or explain the logic to reverse a singly linked list. Draw the node connections and show how pointers change.',
-          category: 'Data Structures',
-          difficulty: 'medium',
-          type: 'pseudocode',
-          examples: [
-            'Input: 1 -> 2 -> 3 -> 4 -> 5 -> NULL',
-            'Output: 5 -> 4 -> 3 -> 2 -> 1 -> NULL'
-          ],
-          constraints: ['Do not modify node values', 'Use constant extra space']
-        };
+        // Use the first question as fallback
+        this.currentQuestion = this.whiteboardService['questions'][0];
       }
     });
   }

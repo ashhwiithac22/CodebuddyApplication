@@ -1,8 +1,9 @@
+<!--frontend/src/app/components/whiteboard/whiteboard.component.html-->
 <div class="whiteboard-container">
   <!-- Header -->
   <div class="whiteboard-header">
-    <h1>🎨 Whiteboard Challenge</h1>
-    <p>Practice solving problems visually - just like in real interviews!</p>
+    <h1>🎨 Interactive Whiteboard</h1>
+    <p>Think visually. Solve strategically. Interview confidently.</p>
   </div>
 
   <div class="whiteboard-content">
@@ -17,7 +18,7 @@
         </div>
         <button class="next-btn" (click)="nextQuestion()" [disabled]="isLoading">
           <i class="fas fa-sync-alt"></i>
-          Next Challenge
+          New Challenge
         </button>
       </div>
 
@@ -26,27 +27,16 @@
         <p class="question-description">{{ currentQuestion.description }}</p>
         
         <div class="examples-section" *ngIf="currentQuestion.examples && currentQuestion.examples.length > 0">
-          <h4>Examples:</h4>
+          <h4>Test Cases & Examples</h4>
           <div class="example" *ngFor="let example of currentQuestion.examples">
             <code>{{ example }}</code>
           </div>
         </div>
         
         <div class="constraints-section" *ngIf="currentQuestion.constraints && currentQuestion.constraints.length > 0">
-          <h4>Constraints:</h4>
+          <h4>Constraints & Requirements</h4>
           <ul>
             <li *ngFor="let constraint of currentQuestion.constraints">{{ constraint }}</li>
-          </ul>
-        </div>
-
-        <div class="instructions">
-          <h4>💡 Instructions:</h4>
-          <p>Use the drawing tools below to:</p>
-          <ul>
-            <li>Write pseudocode or algorithm steps</li>
-            <li>Draw diagrams and data structures</li>
-            <li>Show pointer movements or state changes</li>
-            <li>Explain your approach visually</li>
           </ul>
         </div>
       </div>
@@ -59,52 +49,54 @@
 
     <!-- Right Panel - Whiteboard -->
     <div class="whiteboard-panel">
-      <!-- Toolbar -->
+      <!-- Enhanced Toolbar -->
       <div class="toolbar">
         <!-- Colors -->
         <div class="tool-group">
-          <label>Colors:</label>
+          <label>Colors</label>
           <div class="color-picker">
             <button 
               *ngFor="let color of colors"
               class="color-btn"
               [class.active]="currentColor === color && currentTool === 'pen'"
               [style.background]="color"
-              (click)="selectColor(color)">
+              (click)="selectColor(color)"
+              [attr.aria-label]="'Select ' + color + ' color'">
             </button>
           </div>
         </div>
 
         <!-- Tools -->
         <div class="tool-group">
-          <label>Tools:</label>
+          <label>Tools</label>
           <div class="tool-buttons">
             <button 
               class="tool-btn"
               [class.active]="currentTool === 'pen'"
               (click)="selectTool('pen')">
               <i class="fas fa-pen"></i>
-              Pen
+              Draw
             </button>
             <button 
               class="tool-btn"
               [class.active]="currentTool === 'eraser'"
               (click)="selectTool('eraser')">
               <i class="fas fa-eraser"></i>
-              Eraser
+              Erase
             </button>
           </div>
         </div>
 
         <!-- Line Width -->
         <div class="tool-group">
-          <label>Size:</label>
+          <label>Brush Size</label>
           <div class="width-picker">
             <button 
               *ngFor="let width of lineWidths"
               class="width-btn"
               [class.active]="lineWidth === width"
-              (click)="setLineWidth(width)">
+              (click)="setLineWidth(width)"
+              [attr.aria-label]="'Set brush size to ' + width">
               <div class="width-dot" [style.width.px]="width" [style.height.px]="width"></div>
             </button>
           </div>
@@ -114,25 +106,32 @@
         <div class="tool-group">
           <button class="action-btn clear-btn" (click)="clearCanvas()">
             <i class="fas fa-broom"></i>
-            Clear Board
+            Clear Canvas
           </button>
         </div>
       </div>
 
-      <!-- Canvas Container -->
+      <!-- Canvas Area -->
       <div class="canvas-container">
         <canvas 
           #canvas
           class="drawing-canvas"
           [class.drawing-mode]="currentTool === 'pen'"
-          [class.erasing-mode]="currentTool === 'eraser'">
-          Your browser does not support the canvas element.
+          [class.erasing-mode]="currentTool === 'eraser'"
+          aria-label="Whiteboard drawing area">
+          Your browser does not support the canvas element. Please upgrade to a modern browser.
         </canvas>
       </div>
 
-      <!-- Canvas Tips -->
-      <div class="canvas-tips">
-        <p><i class="fas fa-lightbulb"></i> Tip: Draw algorithms, data structures, or write pseudocode</p>
+      <!-- Interactive Tips -->
+      <div class="canvas-tips" *ngIf="showTips">
+        <p>
+          <i class="fas fa-lightbulb"></i>
+          <strong>Pro Tip:</strong> Draw data structures, write pseudocode, or visualize algorithm flow
+        </p>
+        <button class="tips-toggle" (click)="toggleTips()" aria-label="Hide tips">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
     </div>
   </div>
