@@ -1,4 +1,5 @@
 //frontend/src/app/components/dashboard/dashboard-nav.component.ts
+//frontend/src/app/components/dashboard/dashboard-nav.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -35,11 +36,11 @@ import { RouterModule } from '@angular/router';
             <div class="nav-hover-effect"></div>
           </a>
           
-          <a class="nav-item track-progress" routerLink="/progress" routerLinkActive="active">
+          <a class="nav-item flashcards" routerLink="/flashcards" routerLinkActive="active">
             <div class="nav-icon">
-              <i class="fas fa-chart-line"></i>
+              <i class="fas fa-layer-group"></i>
             </div>
-            <span class="nav-text">Track Your Progress</span>
+            <span class="nav-text">Flashcards</span>
             <div class="nav-hover-effect"></div>
           </a>
         </div>
@@ -135,7 +136,7 @@ import { RouterModule } from '@angular/router';
       border-bottom-color: #4cc9f0;
     }
 
-    .nav-item.track-progress:hover {
+    .nav-item.flashcards:hover {
       color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.2) 0%, rgba(67, 97, 238, 0.3) 100%);
       border-bottom-color: #4cc9f0;
@@ -175,7 +176,7 @@ import { RouterModule } from '@angular/router';
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
 
-    .nav-item.active.track-progress {
+    .nav-item.active.flashcards {
       border-bottom-color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
