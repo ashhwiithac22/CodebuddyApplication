@@ -1,4 +1,5 @@
 /* frontend/src/app/components/dashboard/dashboard.component.css */
+/* frontend/src/app/components/dashboard/dashboard.component.css */
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -105,16 +106,17 @@
 }
 
 /* ==================== */
-/* FLASHQUEST SUPER CARD */
+/* FLASHQUEST SUPER CARD - BLUE/PURPLE THEME */
 /* ==================== */
 .flashquest-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border-radius: 24px;
   padding: 2.5rem;
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+    0 20px 40px rgba(102, 126, 234, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
   animation: slideInLeft 0.8s ease;
@@ -127,14 +129,9 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  background: linear-gradient(90deg, #212a52, #38224e, #f093fb);
   background-size: 200% 100%;
   animation: shimmer 3s ease infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
 }
 
 .flashquest-content {
@@ -152,10 +149,10 @@
 .flash-stat {
   text-align: center;
   padding: 1.5rem 1rem;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -168,7 +165,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.6s ease;
 }
 
@@ -178,24 +175,22 @@
 
 .flash-stat:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .flash-stat .stat-number {
   font-size: 1.8rem;
   font-weight: 800;
-  color: #667eea;
+  color: white;
   margin-bottom: 0.3rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .flash-stat .stat-label {
   font-size: 0.85rem;
-  color: #718096;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -220,7 +215,10 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .deck-preview::before {
@@ -230,7 +228,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -241,12 +239,13 @@
 
 .deck-preview:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .deck-icon {
   font-size: 2.5rem;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
   z-index: 2;
 }
 
@@ -275,10 +274,10 @@
   gap: 1rem;
   margin-bottom: 2.5rem;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .feature {
@@ -293,14 +292,14 @@
 }
 
 .feature:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
 .feature i {
   font-size: 1.5rem;
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.1);
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -311,15 +310,15 @@
 
 .feature span {
   font-size: 0.9rem;
-  color: #4a5568;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
 }
 
 /* FlashQuest Button */
 .flashquest-button {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
   border: none;
   padding: 1.2rem 2rem;
   border-radius: 16px;
@@ -333,7 +332,7 @@
   gap: 0.8rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
 }
 
 .flashquest-button::before {
@@ -343,7 +342,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
   transition: left 0.6s ease;
 }
 
@@ -354,8 +353,9 @@
 .flashquest-button:hover {
   transform: translateY(-3px);
   box-shadow: 
-    0 15px 40px rgba(102, 126, 234, 0.6),
-    0 0 0 3px rgba(102, 126, 234, 0.1);
+    0 15px 40px rgba(255, 255, 255, 0.4),
+    0 0 0 3px rgba(255, 255, 255, 0.2);
+  background: white;
 }
 
 .flashquest-button:active {
@@ -363,14 +363,15 @@
 }
 
 /* ==================== */
-/* PRACTICE CARDS */
+/* PRACTICE CARDS - GREEN/TEAL THEME */
 /* ==================== */
 .practice-cards {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(135deg, #4f4adf 0%, #4f4adf  100%);
+  color: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   animation: slideInLeft 0.8s ease 0.2s both;
 }
 
@@ -383,10 +384,11 @@
 .practice-card {
   padding: 2rem;
   border-radius: 16px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 }
@@ -398,7 +400,7 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: #667eea;
+  background: #10b981;
   transform: scaleY(0);
   transition: transform 0.3s ease;
 }
@@ -409,8 +411,9 @@
 
 .practice-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .practice-card.algorithm:hover {
@@ -422,18 +425,19 @@
 }
 
 .practice-card.system-design:hover {
-  border-color: #f59e0b;
+  border-color: #22d3ee;
 }
 
 .practice-card.system-design::before {
-  background: #f59e0b;
+  background: #22d3ee;
 }
 
 .practice-card .practice-icon {
   font-size: 2.5rem;
-  color: #667eea;
+  color: white;
   margin-bottom: 1.2rem;
   transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
 }
 
 .practice-card:hover .practice-icon {
@@ -445,18 +449,19 @@
 }
 
 .practice-card.system-design .practice-icon {
-  color: #f59e0b;
+  color: #22d3ee;
 }
 
 .practice-content h4 {
   margin: 0 0 0.8rem 0;
-  color: #1a202c;
+  color: white;
   font-size: 1.3rem;
   font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .practice-content p {
-  color: #718096;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 1.2rem;
   font-size: 0.95rem;
   line-height: 1.5;
@@ -469,7 +474,7 @@
 }
 
 .pattern-list li {
-  color: #4a5568;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.85rem;
   margin-bottom: 0.4rem;
   padding-left: 1rem;
@@ -480,19 +485,19 @@
   content: '▸';
   position: absolute;
   left: 0;
-  color: #667eea;
+  color: #10b981;
   font-weight: bold;
 }
 
 /* ==================== */
-/* WHITEBOARD CHALLENGE */
+/* WHITEBOARD CHALLENGE - ORANGE/AMBER THEME */
 /* ==================== */
 .whiteboard-challenge-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #722370 0%, #722370 100%);
   color: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
   position: relative;
   overflow: hidden;
   animation: slideInRight 0.8s ease;
@@ -505,13 +510,8 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
   animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(180deg); }
 }
 
 .challenge-header {
@@ -533,6 +533,7 @@
   padding: 0.6rem 1.2rem;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .difficulty-tag {
@@ -542,9 +543,13 @@
   font-size: 0.85rem;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.difficulty-tag.medium { background: rgba(249, 199, 79, 0.3); }
+.difficulty-tag.medium { 
+  background: rgba(251, 191, 36, 0.3); 
+  color: #fef3c7;
+}
 
 .challenge-content {
   position: relative;
@@ -556,6 +561,7 @@
   font-weight: 700;
   margin-bottom: 1rem;
   line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .challenge-description {
@@ -563,6 +569,7 @@
   line-height: 1.6;
   margin-bottom: 1.8rem;
   font-size: 1rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .challenge-features {
@@ -582,6 +589,7 @@
   border-radius: 12px;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .feature:hover {
@@ -599,12 +607,13 @@
   padding: 1rem 1.2rem;
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .challenge-button {
   width: 100%;
   background: white;
-  color: #667eea;
+  color: #ccab73;
   border: none;
   padding: 1.2rem 2rem;
   border-radius: 16px;
@@ -618,16 +627,17 @@
   position: relative;
   z-index: 2;
   font-size: 1.05rem;
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .challenge-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3);
   background: #f8fafc;
 }
 
 /* ==================== */
-/* QUICK ACTIONS */
+/* QUICK ACTIONS - MULTI-COLOR THEME */
 /* ==================== */
 .quick-actions-card {
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -681,30 +691,45 @@
   border-color: rgba(102, 126, 234, 0.3);
 }
 
-/* Action Card Colors */
+/* Action Card Colors - Different colors for each */
+.action-card.learn-topics {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%);
+  border: 2px solid rgba(74, 222, 128, 0.3);
+}
+
 .action-card.learn-topics:hover {
-  border-color: #4cc9f0;
-  background: linear-gradient(135deg, #f0fdff 0%, #ffffff 100%);
+  border-color: #4ade80;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+}
+
+.action-card.take-interviews {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+  border: 2px solid rgba(248, 113, 113, 0.3);
 }
 
 .action-card.take-interviews:hover {
-  border-color: #f72585;
-  background: linear-gradient(135deg, #fff0f8 0%, #ffffff 100%);
+  border-color: #f87171;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%);
+}
+
+.action-card.whiteboard-action {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border: 2px solid rgba(96, 165, 250, 0.3);
 }
 
 .action-card.whiteboard-action:hover {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+  border-color: #60a5fa;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
 }
 
 .action-card.flashcards-action {
-  background: linear-gradient(135deg, #8b5cf6, #a855f7);
-  color: white;
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 2px solid rgba(192, 132, 252, 0.3);
 }
 
 .action-card.flashcards-action:hover {
-  background: linear-gradient(135deg, #7c3aed, #9333ea);
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: #c084fc;
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
 }
 
 .action-icon {
@@ -721,24 +746,23 @@
 }
 
 .action-card.learn-topics .action-icon {
-  background: linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%);
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
   color: white;
 }
 
 .action-card.take-interviews .action-icon {
-  background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
   color: white;
 }
 
 .action-card.whiteboard-action .action-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: white;
 }
 
 .action-card.flashcards-action .action-icon {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
   color: white;
-  backdrop-filter: blur(10px);
 }
 
 .action-card:hover .action-icon {
@@ -763,10 +787,6 @@
   margin: 0;
 }
 
-.action-card.flashcards-action .action-content p {
-  color: rgba(255, 255, 255, 0.8);
-}
-
 .action-hover {
   color: #a0aec0;
   transition: all 0.3s ease;
@@ -780,19 +800,16 @@
   color: currentColor;
 }
 
-.action-card.flashcards-action .action-hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
 /* ==================== */
-/* TIPS CARD */
+/* TIPS CARD - RED/PINK THEME */
 /* ==================== */
 .tips-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(135deg, #4f8cba 0%, #4f8cba 100%);
+  color: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 40px rgba(34, 50, 66, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   animation: slideInRight 0.8s ease 0.4s both;
 }
 
@@ -804,7 +821,7 @@
   display: flex;
   gap: 1.2rem;
   padding: 1.5rem 0;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
@@ -819,21 +836,24 @@
 .tip-icon {
   font-size: 1.8rem;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  color: white;
 }
 
 .tip-content strong {
   display: block;
-  color: #1a202c;
+  color: white;
   margin-bottom: 0.5rem;
   font-size: 1.05rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .tip-content p {
-  color: #718096;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.92rem;
   margin: 0;
   line-height: 1.6;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* ==================== */
@@ -870,6 +890,16 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
 }
 
 /* ==================== */
