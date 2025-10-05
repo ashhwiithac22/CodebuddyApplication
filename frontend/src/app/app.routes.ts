@@ -13,5 +13,5 @@ export const routes: Routes = [
   { path: 'voice-interview', component: VoiceInterviewComponent },
   { path: 'whiteboard', component: WhiteboardComponent },
   { path: 'flashcards', component: FlashquestComponent },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: '**', redirectTo: '/login' }
 ];
