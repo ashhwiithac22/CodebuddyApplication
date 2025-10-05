@@ -1,5 +1,5 @@
 // frontend/src/app/components/layout/navbar.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class NavbarComponent implements OnInit {
   username: string = '';
   isLoggedIn: boolean = false;
-  menuOpen: boolean = false; // Add this property
+  menuOpen: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -22,16 +22,32 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Check if user is logged in
-    this.isLoggedIn = this.authService.isLoggedIn();
+    this.updateAuthState();
     
-    // Get username from current user
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.username = user?.username || '';
+    });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.hamburger-menu') && !target.closest('.dropdown-menu')) {
+      this.menuOpen = false;
+    }
+  }
+
+  private updateAuthState(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
     const currentUser = this.authService.getCurrentUser();
     this.username = currentUser?.username || '';
   }
 
-  // Add these missing methods
-  toggleMenu(): void {
+  toggleMenu(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.menuOpen = !this.menuOpen;
   }
 
@@ -44,8 +60,23 @@ export class NavbarComponent implements OnInit {
     this.closeMenu();
   }
 
-  logout() {
+  logout(): void {
+    console.log('🚪 Logout initiated');
+    
+    // Close menu first
+    this.closeMenu();
+    
+    // Clear authentication
     this.authService.logout();
-    this.router.navigate(['/login']);
+    
+    // Update local state
+    this.updateAuthState();
+    
+    console.log('🔄 Navigating to login...');
+    
+    // Use window.location for guaranteed redirect
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 100);
   }
 }

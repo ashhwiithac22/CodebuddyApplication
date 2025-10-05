@@ -5,8 +5,6 @@ import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -38,8 +36,15 @@ export class AppComponent implements OnInit {
           return;
         }
         
+        // FIX: Don't redirect if user is on login page (even if logged in)
+        // This allows logout to work properly
+        if ((event.url === '/login' || event.url === '/register') && this.authService.isLoggedIn()) {
+          console.log('User is logged in but on auth page - allowing access for logout flow');
+          return; // Don't redirect - let the user stay on login page
+        }
+        
         // PREVENT accessing protected routes without authentication
-        const protectedRoutes = ['/dashboard', '/topics', '/coding-round', '/mock-interview', '/progress'];
+        const protectedRoutes = ['/dashboard', '/topics', '/voice-interview', '/whiteboard', '/flashcards'];
         const isProtectedRoute = protectedRoutes.some(route => event.url.startsWith(route));
         
         if (isProtectedRoute && !this.authService.isLoggedIn()) {
@@ -47,11 +52,8 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/login']);
         }
         
-        // Redirect to dashboard if trying to access login while already authenticated
-        if ((event.url === '/login' || event.url === '/register') && this.authService.isLoggedIn()) {
-          console.log('Already logged in, redirecting to dashboard...');
-          this.router.navigate(['/dashboard']);
-        }
+        // FIX: REMOVED the auto-redirect to dashboard for logged-in users
+        // This was causing the logout issue
       }
     });
   }

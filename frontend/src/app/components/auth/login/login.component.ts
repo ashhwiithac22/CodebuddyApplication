@@ -21,23 +21,25 @@ export class LoginComponent {
   returnUrl: string;
   error = '';
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService
-  ) {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
-    }
-    
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-    });
-    
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+constructor(
+  private formBuilder: FormBuilder,
+  private route: ActivatedRoute,
+  private router: Router,
+  private authService: AuthService
+) {
+  // FIX: Only redirect if user is logged in AND not already on login page
+  // Don't auto-redirect if we're already on login page
+  if (this.authService.isLoggedIn() && !this.router.url.includes('/login')) {
+    this.router.navigate(['/dashboard']);
   }
+  
+  this.loginForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  });
+  
+  this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+}
 
   get f() { return this.loginForm.controls; }
 

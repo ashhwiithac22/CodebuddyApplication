@@ -14,10 +14,12 @@ export class AuthGuard implements CanActivate {
     if (this.authService.isLoggedIn()) {
       return true;
     } else {
-      // Redirect to login page with return url
-      this.router.navigate(['/login'], { 
-        queryParams: { returnUrl: state.url } 
-      });
+      // FIX: Only redirect to login if not already going to login
+      if (!state.url.includes('/login')) {
+        this.router.navigate(['/login'], { 
+          queryParams: { returnUrl: state.url } 
+        });
+      }
       return false;
     }
   }
