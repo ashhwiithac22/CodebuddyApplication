@@ -1,0 +1,210 @@
+<app-navbar></app-navbar>
+
+<div class="flashquest-container">
+  <!-- Confetti Celebration -->
+  <div *ngIf="confettiActive" class="confetti-container">
+    <div class="confetti" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"></div>
+  </div>
+
+  <!-- Deck Selection View -->
+  <div *ngIf="!selectedDeck" class="decks-view">
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">🚀 FlashQuest</h1>
+        <p class="hero-subtitle">Master tech interviews with interactive flashcards</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">{{ getTotalCards() }}</span>
+            <span class="stat-label">Total Cards</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">{{ decks.length }}</span>
+            <span class="stat-label">Study Decks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decks Grid -->
+    <div class="decks-section">
+      <h2 class="section-title">📚 Choose Your Study Deck</h2>
+      <div class="decks-grid">
+        <div *ngFor="let deck of decks" 
+             class="deck-card" 
+             (click)="selectDeck(deck)"
+             [style.--deck-color]="deck.color">
+          <div class="deck-glow"></div>
+          <div class="deck-content">
+            <div class="deck-icon">{{ deck.icon }}</div>
+            <h3 class="deck-name">{{ deck.name }}</h3>
+            <p class="deck-description">{{ deck.description }}</p>
+            <div class="deck-stats">
+              <span class="card-count">{{ deck.cards.length }} cards</span>
+              <div class="difficulty-mix">
+                <span *ngFor="let diff of ['easy', 'medium', 'hard']" 
+                      class="difficulty-dot" 
+                      [class]="diff"
+                      [title]="diff">
+                </span>
+              </div>
+            </div>
+            <div class="deck-action">
+              <span class="action-text">Start Learning →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Learning Session -->
+  <div *ngIf="selectedDeck" class="learning-session">
+    <!-- Session Header -->
+    <div class="session-header">
+      <button class="back-button" (click)="selectedDeck = null">
+        <span class="back-arrow">←</span>
+        Back to Decks
+      </button>
+      
+      <div class="session-info">
+        <div class="deck-info">
+          <span class="deck-icon-small" [style.background]="selectedDeck.color">
+            {{ selectedDeck.icon }}
+          </span>
+          <span class="deck-name-small">{{ selectedDeck.name }}</span>
+        </div>
+        
+        <div class="progress-section">
+          <div class="progress-text">
+            Card {{ currentCardIndex + 1 }} of {{ selectedDeck.cards.length }}
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width]="getProgressPercent() + '%'"></div>
+          </div>
+        </div>
+
+        <div class="session-stats">
+          <div class="stat">
+            <span class="stat-value">{{ sessionScore }}</span>
+            <span class="stat-label">Score</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</span>
+            <span class="stat-label">Accuracy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="flashcard-scene" [class.flipped]="isFlipped">
+      <div class="flashcard" [class.entering]="cardState === 'entering'" 
+                           [class.exiting]="cardState === 'exiting'">
+        <!-- Front of Card -->
+        <div class="card-face card-front">
+          <div class="card-header">
+            <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty">
+              {{ getCurrentCard()?.difficulty }}
+            </span>
+            <span class="card-category">{{ getCurrentCard()?.category }}</span>
+          </div>
+          
+          <div class="card-content">
+            <div class="question-text">
+              {{ getCurrentCard()?.question }}
+            </div>
+            
+            <div *ngIf="getCurrentCard()?.codeExample" class="code-preview">
+              <pre><code>{{ getCurrentCard()?.codeExample }}</code></pre>
+            </div>
+
+            <div class="action-hint">
+              <div class="hint-item">
+                <span class="keyboard-key">SPACE</span>
+                <span>Flip Card</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="flip-button" (click)="flipCard()">
+              <span class="button-icon">🔄</span>
+              Reveal Answer
+            </button>
+          </div>
+        </div>
+
+        <!-- Back of Card -->
+        <div class="card-face card-back">
+          <div class="card-header">
+            <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty">
+              {{ getCurrentCard()?.difficulty }}
+            </span>
+            <span class="answer-label">ANSWER</span>
+          </div>
+          
+          <div class="card-content">
+            <div class="answer-text">
+              {{ getCurrentCard()?.answer }}
+            </div>
+            
+            <div *ngIf="getCurrentCard()?.explanation" class="explanation">
+              <h4>💡 Explanation</h4>
+              <p>{{ getCurrentCard()?.explanation }}</p>
+            </div>
+
+            <div class="tags-container">
+              <span *ngFor="let tag of getCurrentCard()?.tags" class="tag">
+                #{{ tag }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rating Buttons -->
+          <div class="card-footer" *ngIf="!showRating">
+            <button class="action-button primary" (click)="showRating = true">
+              How did you do?
+            </button>
+          </div>
+
+          <!-- Rating Options -->
+          <div class="rating-section" *ngIf="showRating">
+            <h4>Rate your recall:</h4>
+            <div class="rating-buttons">
+              <button class="rating-btn incorrect" (click)="rateCard(false)">
+                <span class="rating-emoji">😕</span>
+                <span class="rating-text">Need Practice</span>
+              </button>
+              <button class="rating-btn correct" (click)="rateCard(true)">
+                <span class="rating-emoji">🎯</span>
+                <span class="rating-text">Got It!</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session Complete -->
+    <div *ngIf="currentCardIndex >= selectedDeck.cards.length" class="session-complete">
+      <div class="completion-card">
+        <div class="completion-icon">🏆</div>
+        <h2>Deck Complete!</h2>
+        <p>You've finished all cards in this deck</p>
+        <div class="completion-stats">
+          <div class="completion-stat">
+            <span class="stat-value">{{ sessionScore }}</span>
+            <span class="stat-label">Final Score</span>
+          </div>
+          <div class="completion-stat">
+            <span class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</span>
+            <span class="stat-label">Accuracy</span>
+          </div>
+        </div>
+        <button class="restart-button" (click)="selectDeck(selectedDeck)">
+          🔄 Study Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
