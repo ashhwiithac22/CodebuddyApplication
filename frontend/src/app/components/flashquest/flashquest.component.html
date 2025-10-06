@@ -34,48 +34,70 @@
 
   <!-- Deck Selection View -->
   <div *ngIf="!selectedDeck" class="decks-view">
-    <div class="hero-section">
-      <div class="hero-content">
-        <h1 class="hero-title">🚀 FlashQuest</h1>
-        <p class="hero-subtitle">Master tech interviews with interactive flashcards</p>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-number">{{ getTotalCards() }}</span>
-            <span class="stat-label">Total Cards</span>
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <i class="fas fa-layer-group"></i>
+          FlashQuest
+        </h1>
+        <p class="page-subtitle">Master technical concepts with interactive flashcards</p>
+        
+        <div class="header-stats">
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-info">
+              <div class="stat-number">{{ getTotalCards() }}</div>
+              <div class="stat-label">Total Cards</div>
+            </div>
           </div>
-          <div class="stat">
-            <span class="stat-number">{{ decks.length }}</span>
-            <span class="stat-label">Study Decks</span>
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-info">
+              <div class="stat-number">{{ decks.length }}</div>
+              <div class="stat-label">Study Decks</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Decks Grid -->
-    <div class="decks-section">
-      <h2 class="section-title">📚 Choose Your Study Deck</h2>
+    <div class="decks-container">
+      <div class="section-header">
+        <h2>Available Study Decks</h2>
+        <p>Choose a deck to start your learning journey</p>
+      </div>
+
       <div class="decks-grid">
         <div *ngFor="let deck of decks" 
              class="deck-card" 
              (click)="selectDeck(deck)"
-             [style.--deck-color]="deck.color">
-          <div class="deck-glow"></div>
-          <div class="deck-content">
-            <div class="deck-icon">{{ deck.icon }}</div>
-            <h3 class="deck-name">{{ deck.name }}</h3>
-            <p class="deck-description">{{ deck.description }}</p>
+             [style.background]="deck.color + '20'"
+             [style.border-left-color]="deck.color">
+          <div class="deck-header">
+            <div class="deck-icon" [style.background]="deck.color">
+              {{ deck.icon }}
+            </div>
+            <div class="deck-info">
+              <h3 class="deck-name">{{ deck.name }}</h3>
+              <p class="deck-description">{{ deck.description }}</p>
+            </div>
+          </div>
+          
+          <div class="deck-footer">
             <div class="deck-stats">
-              <span class="card-count">{{ deck.cards.length }} cards</span>
-              <div class="difficulty-mix">
-                <span *ngFor="let diff of ['easy', 'medium', 'hard']" 
-                      class="difficulty-dot" 
-                      [class]="diff"
-                      [title]="diff">
-                </span>
+              <span class="card-count">
+                <i class="fas fa-cards"></i>
+                {{ deck.cards.length }} cards
+              </span>
+              <div class="difficulty-levels">
+                <span class="difficulty-label">Mixed levels</span>
               </div>
             </div>
             <div class="deck-action">
-              <span class="action-text">Start Learning →</span>
+              <span class="action-text">Start Learning</span>
+              <i class="fas fa-arrow-right"></i>
             </div>
           </div>
         </div>
@@ -87,124 +109,133 @@
   <div *ngIf="selectedDeck" class="learning-session">
     <!-- Session Header -->
     <div class="session-header">
-      <button class="back-button" (click)="selectedDeck = null">
-        <span class="back-arrow">←</span>
-        Back to Decks
-      </button>
-      
-      <div class="session-info">
-        <div class="deck-info">
-          <span class="deck-icon-small" [style.background]="selectedDeck.color">
-            {{ selectedDeck.icon }}
-          </span>
-          <span class="deck-name-small">{{ selectedDeck.name }}</span>
-        </div>
+      <div class="header-content">
+        <button class="back-btn" (click)="selectedDeck = null">
+          <i class="fas fa-arrow-left"></i>
+          Back to Decks
+        </button>
         
-        <div class="progress-section">
-          <div class="progress-text">
-            Card {{ currentCardIndex + 1 }} of {{ selectedDeck.cards.length }}
+        <div class="session-progress">
+          <div class="progress-info">
+            <span class="deck-name">{{ selectedDeck.name }}</span>
+            <span class="progress-text">
+              Card {{ currentCardIndex + 1 }} of {{ selectedDeck.cards.length }}
+            </span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill" [style.width]="getProgressPercent() + '%'"></div>
+            <div class="progress-track">
+              <div class="progress-fill" [style.width]="getProgressPercent() + '%'"></div>
+            </div>
           </div>
         </div>
 
         <div class="session-stats">
           <div class="stat">
-            <span class="stat-value">{{ sessionScore }}</span>
-            <span class="stat-label">Score</span>
+            <div class="stat-value">{{ sessionScore }}</div>
+            <div class="stat-label">Score</div>
           </div>
           <div class="stat">
-            <span class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</span>
-            <span class="stat-label">Accuracy</span>
+            <div class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</div>
+            <div class="stat-label">Accuracy</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Flashcard -->
-    <div class="flashcard-scene" [class.flipped]="isFlipped">
-      <div class="flashcard" [class.entering]="cardState === 'entering'" 
-                           [class.exiting]="cardState === 'exiting'">
-        <!-- Front of Card -->
-        <div class="card-face card-front">
-          <div class="card-header">
-            <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty">
-              {{ getCurrentCard()?.difficulty }}
-            </span>
-            <span class="card-category">{{ getCurrentCard()?.category }}</span>
-          </div>
+    <!-- Flashcard Area -->
+    <div class="flashcard-area">
+      <div class="flashcard-container" [class.flipped]="isFlipped">
+        <div class="flashcard" [class.entering]="cardState === 'entering'" 
+                             [class.exiting]="cardState === 'exiting'">
           
-          <div class="card-content">
-            <div class="question-text">
-              {{ getCurrentCard()?.question }}
+          <!-- Front of Card -->
+          <div class="card-side front">
+            <div class="card-header">
+              <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty || 'medium'">
+                {{ getCurrentCard()?.difficulty || 'Medium' }}
+              </span>
+              <span class="category-tag">{{ getCurrentCard()?.category || 'General' }}</span>
             </div>
             
-            <div *ngIf="getCurrentCard()?.codeExample" class="code-preview">
-              <pre><code>{{ getCurrentCard()?.codeExample }}</code></pre>
-            </div>
+            <div class="card-body">
+              <div class="question-content">
+                <h3 class="question-text">{{ getCurrentCard()?.question || 'Loading question...' }}</h3>
+                
+                <div *ngIf="getCurrentCard()?.codeExample" class="code-section">
+                  <div class="code-header">
+                    <i class="fas fa-code"></i>
+                    <span>Code Example</span>
+                  </div>
+                  <pre class="code-block"><code>{{ getCurrentCard()?.codeExample }}</code></pre>
+                </div>
+              </div>
 
-            <div class="action-hint">
-              <div class="hint-item">
-                <span class="keyboard-key">SPACE</span>
-                <span>Flip Card</span>
+              <div class="card-hint">
+                <i class="fas fa-lightbulb"></i>
+                <span>Click the card or press SPACE to reveal answer</span>
               </div>
             </div>
+
+            <div class="card-footer">
+              <button class="flip-btn" (click)="flipCard()">
+                <i class="fas fa-sync-alt"></i>
+                Reveal Answer
+              </button>
+            </div>
           </div>
 
-          <div class="card-footer">
-            <button class="flip-button" (click)="flipCard()">
-              <span class="button-icon">🔄</span>
-              Reveal Answer
-            </button>
-          </div>
-        </div>
-
-        <!-- Back of Card -->
-        <div class="card-face card-back">
-          <div class="card-header">
-            <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty">
-              {{ getCurrentCard()?.difficulty }}
-            </span>
-            <span class="answer-label">ANSWER</span>
-          </div>
-          
-          <div class="card-content">
-            <div class="answer-text">
-              {{ getCurrentCard()?.answer }}
+          <!-- Back of Card -->
+          <div class="card-side back">
+            <div class="card-header">
+              <span class="difficulty-badge" [class]="getCurrentCard()?.difficulty || 'medium'">
+                {{ getCurrentCard()?.difficulty || 'Medium' }}
+              </span>
+              <span class="answer-label">Answer</span>
             </div>
             
-            <div *ngIf="getCurrentCard()?.explanation" class="explanation">
-              <h4>💡 Explanation</h4>
-              <p>{{ getCurrentCard()?.explanation }}</p>
-            </div>
+            <div class="card-body">
+              <div class="answer-content">
+                <div class="answer-text">
+                  {{ getCurrentCard()?.answer || 'Answer not available' }}
+                </div>
+                
+                <div *ngIf="getCurrentCard()?.explanation" class="explanation-section">
+                  <h4 class="explanation-title">
+                    <i class="fas fa-info-circle"></i>
+                    Explanation
+                  </h4>
+                  <p class="explanation-text">{{ getCurrentCard()?.explanation }}</p>
+                </div>
 
-            <div class="tags-container">
-              <span *ngFor="let tag of getCurrentCard()?.tags" class="tag">
-                #{{ tag }}
-              </span>
-            </div>
-          </div>
+                <div *ngIf="getCurrentCard()?.tags && getCurrentCard()!.tags.length > 0" class="tags-section">
+                  <div class="tags-container">
+                    <span *ngFor="let tag of getCurrentCard()!.tags" class="tag">
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-          <!-- Rating Buttons -->
-          <div class="card-footer" *ngIf="!showRating">
-            <button class="action-button primary" (click)="showRating = true">
-              How did you do?
-            </button>
-          </div>
+              <!-- Rating Section -->
+              <div class="rating-section" *ngIf="!showRating">
+                <button class="rate-btn" (click)="showRating = true">
+                  How well did you know this?
+                </button>
+              </div>
 
-          <!-- Rating Options -->
-          <div class="rating-section" *ngIf="showRating">
-            <h4>Rate your recall:</h4>
-            <div class="rating-buttons">
-              <button class="rating-btn incorrect" (click)="rateCard(false)">
-                <span class="rating-emoji">😕</span>
-                <span class="rating-text">Need Practice</span>
-              </button>
-              <button class="rating-btn correct" (click)="rateCard(true)">
-                <span class="rating-emoji">🎯</span>
-                <span class="rating-text">Got It!</span>
-              </button>
+              <div class="rating-options" *ngIf="showRating">
+                <h4>Rate your understanding:</h4>
+                <div class="rating-buttons">
+                  <button class="rating-btn wrong" (click)="rateCard(false)">
+                    <i class="fas fa-times"></i>
+                    <span>Need Practice</span>
+                  </button>
+                  <button class="rating-btn correct" (click)="rateCard(true)">
+                    <i class="fas fa-check"></i>
+                    <span>Got It Right</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -212,23 +243,28 @@
     </div>
 
     <!-- Session Complete -->
-    <div *ngIf="currentCardIndex >= selectedDeck.cards.length" class="session-complete">
+    <div *ngIf="currentCardIndex >= selectedDeck.cards.length" class="completion-view">
       <div class="completion-card">
-        <div class="completion-icon">🏆</div>
-        <h2>Deck Complete!</h2>
-        <p>You've finished all cards in this deck</p>
+        <div class="completion-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h2 class="completion-title">Deck Complete! 🎉</h2>
+        <p class="completion-message">You've successfully completed all cards in this deck</p>
+        
         <div class="completion-stats">
           <div class="completion-stat">
-            <span class="stat-value">{{ sessionScore }}</span>
-            <span class="stat-label">Final Score</span>
+            <div class="stat-value">{{ sessionScore }}</div>
+            <div class="stat-label">Final Score</div>
           </div>
           <div class="completion-stat">
-            <span class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</span>
-            <span class="stat-label">Accuracy</span>
+            <div class="stat-value">{{ getSessionAccuracy() | number:'1.0-0' }}%</div>
+            <div class="stat-label">Accuracy</div>
           </div>
         </div>
-        <button class="restart-button" (click)="selectDeck(selectedDeck)">
-          🔄 Study Again
+        
+        <button class="restart-btn" (click)="selectDeck(selectedDeck)">
+          <i class="fas fa-redo"></i>
+          Study Again
         </button>
       </div>
     </div>
