@@ -2,9 +2,14 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { WhiteboardService } from '../../services/whiteboard.service';
 import { WhiteboardQuestion } from '../../models/whiteboard-question.model';
+import { RouterModule } from '@angular/router'; // Add this import
+import { CommonModule } from '@angular/common'; // Add this import
+import { NavbarComponent } from '../layout/navbar.component';
 
 @Component({
   selector: 'app-whiteboard',
+  standalone:true,
+  imports: [CommonModule, RouterModule, NavbarComponent], // Add RouterModule here
   templateUrl: './whiteboard.component.html',
   styleUrls: ['./whiteboard.component.css']
 })

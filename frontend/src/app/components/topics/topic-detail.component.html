@@ -1,7 +1,8 @@
-<!-- Topics Page Navigation Menu -->
+<!--frontend/src/app/components/topics/topic-detail.component.html-->
+<!-- frontend/src/app/components/topics/topic-detail.component.html -->
 <app-navbar></app-navbar>
 
-<!-- Topic Detail Navigation Menu -->
+<!-- Fixed Navigation Menu - With Proper Router Links -->
 <nav class="dashboard-nav">
   <div class="nav-container">
     <div class="nav-menu">
@@ -17,9 +18,9 @@
         <i class="fas fa-microphone"></i>
         <span>Interviews</span>
       </a>
-      <a class="nav-item" routerLink="/progress" routerLinkActive="active">
-        <i class="fas fa-chart-line"></i>
-        <span>Progress</span>
+      <a class="nav-item" routerLink="/flashcards" routerLinkActive="active">
+        <i class="fas fa-layer-group"></i>
+        <span>Flashcards</span>
       </a>
     </div>
   </div>
@@ -63,11 +64,16 @@
         </div>
         <div class="card-body">
           <div *ngIf="topic.commonProblems && topic.commonProblems.length > 0; else noProblems">
-            <div class="list-group">
+            <div class="common-problems-list">
               <div *ngFor="let problem of topic.commonProblems; let i = index" 
-                   class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ problem }}</span>
-                <span class="badge bg-primary rounded-pill">{{ i + 1 }}</span>
+                   class="problem-item">
+                <span class="problem-text">{{ problem }}</span>
+                <span class="problem-difficulty" 
+                      [class.easy]="i === 0" 
+                      [class.medium]="i === 1" 
+                      [class.hard]="i === 2">
+                  {{ i === 0 ? '🔴' : i === 1 ? '🔵' : i === 2 ? '🔶' : '🔷' }}
+                </span>
               </div>
             </div>
           </div>
@@ -98,23 +104,23 @@
                 <button class="btn btn-outline-primary btn-sm" 
                         (click)="previousHint()" 
                         [disabled]="activeHintIndex === 0">
-                  <i class="fas fa-chevron-left"></i> Previous
+                  <i class="fas fa-chevron-left me-1"></i>Previous
                 </button>
                 <button class="btn btn-outline-primary btn-sm" 
                         (click)="nextHint()" 
                         [disabled]="activeHintIndex === (topic.hints.length - 1)">
-                  Next <i class="fas fa-chevron-right"></i>
+                  Next<i class="fas fa-chevron-right ms-1"></i>
                 </button>
               </div>
             </div>
 
             <!-- Current Hint Content -->
             <div *ngIf="activeHint" class="hint-content">
-              <h6 class="text-primary">{{ activeHint.title }}</h6>
-              <p class="mb-3">{{ activeHint.description }}</p>
+              <h6 class="text-primary mb-3">{{ activeHint.title }}</h6>
+              <p class="hint-description">{{ activeHint.description }}</p>
               
               <!-- Fixed Code Snippet Section -->
-              <div *ngIf="activeHint.codeSnippet" class="code-snippet-container mt-3">
+              <div *ngIf="activeHint.codeSnippet" class="code-snippet-container mt-4">
                 <div class="code-header d-flex justify-content-between align-items-center bg-dark text-white px-3 py-2 rounded-top">
                   <span class="small">
                     <i class="fas fa-code me-1"></i>Code Example
@@ -145,7 +151,7 @@
     <div class="col-12 text-center">
       <div class="d-grid gap-2 d-md-block">
         <button class="btn btn-primary btn-lg me-md-2" (click)="takeTest()">
-          <i class="fas fa-play-circle me-2"></i>Start Test
+          <i class="fas fa-play-circle me-2"></i>Take Test
         </button>
         <button class="btn btn-outline-secondary btn-lg" routerLink="/topics">
           <i class="fas fa-arrow-left me-2"></i>Back to Topics
