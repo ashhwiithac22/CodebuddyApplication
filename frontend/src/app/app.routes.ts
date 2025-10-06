@@ -1,5 +1,4 @@
 //frontend/src/app/app.routes.ts
-// frontend/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { TopicListComponent } from './components/topics/topic-list.component';
@@ -9,6 +8,7 @@ import { VoiceInterviewComponent } from './components/voice-interview/voice-inte
 import { WhiteboardComponent } from './components/whiteboard/whiteboard.component';
 import { FlashquestComponent } from './components/flashquest/flashquest.component';
 import { LoginComponent } from './components/auth/login/login.component';
+import { RegisterComponent } from './components/auth/register/register.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -22,5 +22,6 @@ export const routes: Routes = [
   { path: 'whiteboard', component: WhiteboardComponent, canActivate: [AuthGuard] },
   { path: 'flashcards', component: FlashquestComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
+  { path : 'register', component: RegisterComponent },
   { path: '**', redirectTo: '/dashboard' }
 ];
