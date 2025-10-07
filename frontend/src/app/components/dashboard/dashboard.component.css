@@ -1,5 +1,4 @@
 /* frontend/src/app/components/dashboard/dashboard.component.css */
-/* frontend/src/app/components/dashboard/dashboard.component.css */
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -424,140 +423,266 @@
 }
 
 /* ==================== */
-/* PRACTICE CARDS - UPDATED TO NAVBAR THEME */
+/* VOICE INTERVIEW CARD - NAVBAR THEME */
 /* ==================== */
-.practice-cards {
+.voice-interview-card {
   background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
   color: white;
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(67, 97, 238, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(67, 97, 238, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: slideInLeft 0.8s ease 0.2s both;
-}
-
-.practice-grid {
-  display: grid;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.practice-card {
-  padding: 2.2rem;
-  border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  animation: slideInLeft 0.8s ease 0.4s both;
 }
 
-.practice-card::before {
+.voice-interview-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 5px;
-  height: 100%;
-  background: #4cc9f0;
-  transform: scaleY(0);
-  transition: transform 0.4s ease;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4361ee, #3a0ca3, #4cc9f0);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease infinite;
 }
 
-.practice-card:hover::before {
-  transform: scaleY(1);
+.voice-interview-content {
+  margin-top: 1.5rem;
 }
 
-.practice-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 
-    0 25px 50px rgba(255, 255, 255, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+/* Voice Interview Stats */
+.voice-interview-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.voice-stat {
+  text-align: center;
+  padding: 1.8rem 1rem;
   background: rgba(255, 255, 255, 0.15);
-}
-
-.practice-card.algorithm:hover {
-  border-color: #4cc9f0;
-}
-
-.practice-card.algorithm::before {
-  background: #4cc9f0;
-}
-
-.practice-card.system-design:hover {
-  border-color: #f72585;
-}
-
-.practice-card.system-design::before {
-  background: #f72585;
-}
-
-.practice-card .practice-icon {
-  font-size: 2.8rem;
-  color: white;
-  margin-bottom: 1.5rem;
-  transition: all 0.4s ease;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-}
-
-.practice-card:hover .practice-icon {
-  transform: scale(1.15) rotate(8deg);
-}
-
-.practice-card.algorithm .practice-icon {
-  color: #4cc9f0;
-}
-
-.practice-card.system-design .practice-icon {
-  color: #f72585;
-}
-
-.practice-content h4 {
-  margin: 0 0 1rem 0;
-  color: white;
-  font-size: 1.3rem;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.practice-content p {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  font-weight: 500;
-}
-
-.pattern-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.pattern-list li {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
-  padding-left: 1.2rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
-  font-weight: 500;
+  overflow: hidden;
 }
 
-.pattern-list li::before {
-  content: '▸';
+.voice-stat::before {
+  content: '';
   position: absolute;
-  left: 0;
-  color: #4cc9f0;
-  font-weight: bold;
-  transition: transform 0.3s ease;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
 }
 
-.practice-card:hover .pattern-list li::before {
-  transform: translateX(3px);
+.voice-stat:hover::before {
+  left: 100%;
+}
+
+.voice-stat:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.voice-stat .stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  display: block;
+}
+
+.voice-stat .stat-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Voice Interview Features */
+.voice-interview-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding: 1.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.voice-interview-features .feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+  padding: 1.2rem;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.voice-interview-features .feature:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+}
+
+.voice-interview-features .feature i {
+  font-size: 1.5rem;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.voice-interview-features .feature:hover i {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.voice-interview-features .feature span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+/* Interview Domains */
+.interview-domains {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.domain-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.domain-type:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+}
+
+.domain-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.domain-type span:last-child {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Voice Interview Button */
+.voice-interview-button {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #4361ee;
+  border: none;
+  padding: 1.4rem 2rem;
+  border-radius: 18px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 15px 35px rgba(255, 255, 255, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.voice-interview-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(67, 97, 238, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.voice-interview-button:hover::before {
+  left: 100%;
+}
+
+.voice-interview-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 20px 45px rgba(255, 255, 255, 0.4),
+    0 0 0 3px rgba(255, 255, 255, 0.2);
+  background: white;
+}
+
+.voice-interview-button:active {
+  transform: translateY(-1px);
+}
+
+/* Voice Interview Action Card Styles */
+.action-card.voice-interview-action {
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+}
+
+.action-card.voice-interview-action:hover {
+  border-color: #4361ee;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+}
+
+.action-card.voice-interview-action .action-icon {
+  background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+  color: white;
+}
+
+.action-card.voice-interview-action .action-content p {
+  color: #4361ee;
+}
+
+.action-card.voice-interview-action .action-hover {
+  color: #4361ee;
 }
 
 /* ==================== */
@@ -719,163 +844,158 @@
 /* QUICK ACTIONS - KEEP ORIGINAL COLORS */
 /* ==================== */
 .quick-actions-card {
-background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-border-radius: 24px;
-padding: 2.5rem;
-box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-border: 1px solid rgba(255, 255, 255, 0.6);
-animation: slideInRight 0.8s ease 0.2s both;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: slideInRight 0.8s ease 0.2s both;
 }
 
 .actions-grid {
-display: flex;
-flex-direction: column;
-gap: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 .action-card {
-position: relative;
-display: flex;
-align-items: center;
-gap: 1.2rem;
-padding: 1.5rem;
-background: rgba(255, 255, 255, 0.8);
-border-radius: 16px;
-text-decoration: none;
-color: #2d3748;
-transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-border: 2px solid transparent;
-overflow: hidden;
-backdrop-filter: blur(10px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  text-decoration: none;
+  color: #2d3748;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 2px solid transparent;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .action-card::before {
-content: '';
-position: absolute;
-top: 0;
-left: -100%;
-width: 100%;
-height: 100%;
-background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-transition: left 0.6s ease;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
 }
 
 .action-card:hover::before {
-left: 100%;
+  left: 100%;
 }
 
 .action-card:hover {
-transform: translateY(-5px) scale(1.02);
-box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
 }
 
 /* Action Card Colors */
 .action-card.learn-topics:hover {
-border-color: #4cc9f0;
-background: linear-gradient(135deg, #f0fdff 0%, #ffffff 100%);
+  border-color: #4cc9f0;
+  background: linear-gradient(135deg, #f0fdff 0%, #ffffff 100%);
 }
 
-.action-card.take-interviews:hover {
-border-color: #f72585;
-background: linear-gradient(135deg, #fff0f8 0%, #ffffff 100%);
+.action-card.voice-interview-action:hover {
+  border-color: #4361ee;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
 }
 
 .action-card.whiteboard-action:hover {
-border-color: #667eea;
-background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
 }
 
 .action-card.flashcards-action {
-  /* Adjusted background to match gradient style, using a purple/pink theme */
-background: linear-gradient(135deg, #fbe9f6 0%, #ffffff 100%);
-border-color: #e57373; /* A soft red/pink for the border */
+  background: linear-gradient(135deg, #fbe9f6 0%, #ffffff 100%);
+  border-color: #e57373;
 }
 
 .action-card.flashcards-action:hover {
-border-color: #e57373; /* Maintain the same border color on hover */
-background: linear-gradient(135deg, #fbe9f6 0%, #ffffff 100%); /* You can make this slightly different on hover if desired */
+  border-color: #e57373;
+  background: linear-gradient(135deg, #fbe9f6 0%, #ffffff 100%);
 }
 
-
 .action-icon {
-width: 60px;
-height: 60px;
-border-radius: 16px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 1.5rem;
-transition: all 0.3s ease;
-z-index: 2;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .action-card.learn-topics .action-icon {
-background: linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%);
-color: white;
+  background: linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%);
+  color: white;
 }
 
-.action-card.take-interviews .action-icon {
-background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
-color: white;
+.action-card.voice-interview-action .action-icon {
+  background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+  color: white;
 }
 
 .action-card.whiteboard-action .action-icon {
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
 .action-card.flashcards-action .action-icon {
-  /* Adjusted to a gradient background like the others, using a complementary pink/purple */
-background: linear-gradient(135deg, #ff80ab 0%, #e040fb 100%);
-color: white;
-backdrop-filter: none; /* Remove blur as it's not needed with a solid gradient */
+  background: linear-gradient(135deg, #ff80ab 0%, #e040fb 100%);
+  color: white;
+  backdrop-filter: none;
 }
 
 .action-card:hover .action-icon {
-transform: scale(1.1) rotate(5deg);
-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .action-content {
-flex: 1;
-z-index: 2;
+  flex: 1;
+  z-index: 2;
 }
 
 .action-content h4 {
-font-weight: 700;
-margin-bottom: 0.3rem;
-font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
 }
 
 .action-content p {
-color: #718096;
-font-size: 0.9rem;
-margin: 0;
+  color: #718096;
+  font-size: 0.9rem;
+  margin: 0;
 }
 
 .action-card.flashcards-action .action-content p {
-  /* Adjusted paragraph color to better suit the new card background */
-color: #8e24aa; /* A darker shade of purple for better contrast */
+  color: #8e24aa;
 }
 
 .action-hover {
-color: #a0aec0;
-transition: all 0.3s ease;
-transform: translateX(0);
-z-index: 2;
-font-size: 1.2rem;
+  color: #a0aec0;
+  transition: all 0.3s ease;
+  transform: translateX(0);
+  z-index: 2;
+  font-size: 1.2rem;
 }
 
 .action-card:hover .action-hover {
-transform: translateX(8px);
-color: currentColor;
+  transform: translateX(8px);
+  color: currentColor;
 }
 
 .action-card.flashcards-action .action-hover {
-  /* Adjusted hover arrow color to match the new theme */
-color: #e040fb; /* A vibrant purple */
+  color: #e040fb;
 }
 
 /* ==================== */
@@ -991,7 +1111,8 @@ color: #e040fb; /* A vibrant purple */
     text-align: center;
   }
   
-  .flashquest-stats {
+  .flashquest-stats,
+  .voice-interview-stats {
     grid-template-columns: repeat(3, 1fr);
   }
   
@@ -999,9 +1120,14 @@ color: #e040fb; /* A vibrant purple */
     grid-template-columns: 1fr;
   }
   
-  .flashquest-features {
+  .flashquest-features,
+  .voice-interview-features {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+  
+  .interview-domains {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1019,11 +1145,8 @@ color: #e040fb; /* A vibrant purple */
     width: 100%;
   }
   
-  .flashquest-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .practice-grid {
+  .flashquest-stats,
+  .voice-interview-stats {
     grid-template-columns: 1fr;
   }
   
@@ -1044,7 +1167,7 @@ color: #e040fb; /* A vibrant purple */
   }
   
   .flashquest-card,
-  .practice-cards,
+  .voice-interview-card,
   .whiteboard-challenge-card,
   .quick-actions-card,
   .tips-card {
@@ -1078,7 +1201,7 @@ color: #e040fb; /* A vibrant purple */
   }
   
   .flashquest-card,
-  .practice-cards,
+  .voice-interview-card,
   .whiteboard-challenge-card,
   .quick-actions-card,
   .tips-card {

@@ -19,6 +19,11 @@ export const routes: Routes = [
   { path: 'test/:id', component: TopicTestComponent, canActivate: [AuthGuard] },
   { path: 'whiteboard', component: WhiteboardComponent, canActivate: [AuthGuard] },
   { path: 'flashcards', component: FlashquestComponent, canActivate: [AuthGuard] },
+  { 
+    path: 'voice-interview', 
+    loadComponent: () => import('./components/voice-interview/voice-interview.component').then(m => m.VoiceInterviewComponent), 
+    canActivate: [AuthGuard] 
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: '**', redirectTo: '/dashboard' }
