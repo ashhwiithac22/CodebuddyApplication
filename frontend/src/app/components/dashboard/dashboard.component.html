@@ -78,6 +78,65 @@
         </div>
       </div>
 
+      <!-- Voice Interview Card -->
+      <div class="voice-interview-card">
+        <div class="section-header">
+          <h2><i class="fas fa-microphone"></i> Voice Interview</h2>
+        </div>
+        
+        <div class="voice-interview-content">
+          <div class="voice-interview-stats">
+            <div class="voice-stat">
+              <div class="stat-number">8</div>
+              <div class="stat-label">Domains</div>
+            </div>
+            <div class="voice-stat">
+              <div class="stat-number">100+</div>
+              <div class="stat-label">Questions</div>
+            </div>
+            <div class="voice-stat">
+              <div class="stat-number">AI</div>
+              <div class="stat-label">Powered</div>
+            </div>
+          </div>
+
+          <div class="voice-interview-features">
+            <div class="feature">
+              <i class="fas fa-robot"></i>
+              <span>AI Interviewer</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-volume-up"></i>
+              <span>Voice Response</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-chart-line"></i>
+              <span>Real-time Feedback</span>
+            </div>
+          </div>
+
+          <div class="interview-domains">
+            <div class="domain-type">
+              <span class="type-icon">⚡</span>
+              <span>JavaScript</span>
+            </div>
+            <div class="domain-type">
+              <span class="type-icon">🔗</span>
+              <span>Data Structures</span>
+            </div>
+            <div class="domain-type">
+              <span class="type-icon">🎯</span>
+              <span>System Design</span>
+            </div>
+          </div>
+
+          <button class="voice-interview-button" routerLink="/voice-interview">
+            <i class="fas fa-microphone"></i>
+            Start Voice Interview
+          </button>
+        </div>
+      </div>
+
       <!-- Quick Practice Cards -->
       <div class="practice-cards">
         <div class="section-header">
@@ -177,12 +236,13 @@
             </div>
           </a>
 
-          <a class="action-card take-interviews" routerLink="/voice-interview">
+          <!-- Voice Interview Action -->
+          <a class="action-card voice-interview-action" routerLink="/voice-interview">
             <div class="action-icon">
               <i class="fas fa-microphone"></i>
             </div>
             <div class="action-content">
-              <h4>Take Interview</h4>
+              <h4>Voice Interview</h4>
               <p>Practice with AI interviewer</p>
             </div>
             <div class="action-hover">
@@ -209,6 +269,7 @@
             </div>
             <div class="action-content">
               <h4>Flashcards</h4>
+              <p>Master concepts quickly</p>
             </div>
             <div class="action-hover">
               <i class="fas fa-arrow-right"></i>

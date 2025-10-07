@@ -1,5 +1,4 @@
 //frontend/src/app/components/dashboard/dashboard-nav.component.ts
-//frontend/src/app/components/dashboard/dashboard-nav.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -20,11 +19,11 @@ import { RouterModule } from '@angular/router';
             <div class="nav-hover-effect"></div>
           </a>
           
-          <a class="nav-item take-interviews" routerLink="/voice-interview" routerLinkActive="active">
+          <a class="nav-item bug-hunter" routerLink="/bug-hunter" routerLinkActive="active">
             <div class="nav-icon">
-              <i class="fas fa-microphone"></i>
+              <i class="fas fa-bug"></i>
             </div>
-            <span class="nav-text">Take Interviews</span>
+            <span class="nav-text">Bug Hunter</span>
             <div class="nav-hover-effect"></div>
           </a>
           
@@ -124,7 +123,7 @@ import { RouterModule } from '@angular/router';
       border-bottom-color: #4cc9f0;
     }
 
-    .nav-item.take-interviews:hover {
+    .nav-item.bug-hunter:hover {
       color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.2) 0%, rgba(67, 97, 238, 0.3) 100%);
       border-bottom-color: #4cc9f0;
@@ -166,7 +165,7 @@ import { RouterModule } from '@angular/router';
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
 
-    .nav-item.active.take-interviews {
+    .nav-item.active.bug-hunter {
       border-bottom-color: #4cc9f0;
       background: linear-gradient(135deg, rgba(76, 201, 240, 0.3) 0%, rgba(67, 97, 238, 0.4) 100%);
     }
