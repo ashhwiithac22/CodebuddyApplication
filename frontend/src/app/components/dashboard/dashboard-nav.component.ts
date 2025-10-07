@@ -19,11 +19,11 @@ import { RouterModule } from '@angular/router';
             <div class="nav-hover-effect"></div>
           </a>
           
-          <a class="nav-item bug-hunter" routerLink="/bug-hunter" routerLinkActive="active">
+          <a class="nav-item voice-interview" routerLink="/voice-interview" routerLinkActive="active">
             <div class="nav-icon">
-              <i class="fas fa-bug"></i>
+              <i class="fas fa-microphone"></i>
             </div>
-            <span class="nav-text">Bug Hunter</span>
+            <span class="nav-text">Voice Interview</span>
             <div class="nav-hover-effect"></div>
           </a>
           

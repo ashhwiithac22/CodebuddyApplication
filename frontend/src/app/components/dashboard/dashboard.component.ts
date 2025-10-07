@@ -4,14 +4,18 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TopicService } from '../../services/topic.service';
 import { AuthService } from '../../services/auth.service';
-
 import { NavbarComponent } from '../layout/navbar.component';
 import { DashboardNavComponent } from './dashboard-nav.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent, DashboardNavComponent],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    NavbarComponent, 
+    DashboardNavComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

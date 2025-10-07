@@ -1,5 +1,5 @@
 /* frontend/src/app/components/voice-interview/voice-interview.component.css */
-voice-interview-container {
+.voice-interview-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem;
@@ -17,6 +17,8 @@ voice-interview-container {
   width: 100%;
   max-width: 1200px;
   min-height: 700px;
+  display: flex;
+  flex-direction: column;
 }
 
 .interview-header {
@@ -24,6 +26,12 @@ voice-interview-container {
   color: white;
   padding: 2.5rem;
   text-align: center;
+  width: 100%;
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .header-content h1 {
@@ -51,6 +59,9 @@ voice-interview-container {
 
 .interview-content {
   padding: 2.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Browser Warning */
@@ -61,6 +72,16 @@ voice-interview-container {
   padding: 2rem;
   text-align: center;
   margin-bottom: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.warning-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .warning-content i {
@@ -83,11 +104,16 @@ voice-interview-container {
 /* Domain Selection */
 .domain-selection {
   text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .selection-content {
   max-width: 800px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .voice-icon {
@@ -126,6 +152,10 @@ voice-interview-container {
 .domain-section, .difficulty-section {
   margin-bottom: 2rem;
   text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .section-label {
@@ -134,6 +164,7 @@ voice-interview-container {
   color: #2d3748;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
+  text-align: left;
 }
 
 .domain-select {
@@ -144,6 +175,7 @@ voice-interview-container {
   font-size: 1rem;
   background: white;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .domain-select:focus {
@@ -172,6 +204,7 @@ voice-interview-container {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  min-width: 120px;
 }
 
 .difficulty-btn.active {
@@ -192,17 +225,23 @@ voice-interview-container {
   padding: 2rem;
   margin: 2rem 0;
   text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .domain-info h4 {
   color: #2d3748;
   margin-bottom: 0.5rem;
   font-size: 1.3rem;
+  text-align: center;
 }
 
 .domain-info p {
   color: #718096;
   margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .skills-section {
@@ -217,17 +256,20 @@ voice-interview-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: flex-start;
 }
 
 .skills-column ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .skills-column li {
   padding: 0.5rem 0;
   color: #4a5568;
   border-bottom: 1px solid #e2e8f0;
+  text-align: left;
 }
 
 .skills-column li:last-child {
@@ -247,8 +289,11 @@ voice-interview-container {
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .start-button:hover:not(:disabled) {
@@ -267,6 +312,7 @@ voice-interview-container {
   display: flex;
   flex-direction: column;
   height: 600px;
+  width: 100%;
 }
 
 .voice-header {
@@ -277,6 +323,14 @@ voice-interview-container {
   background: #f8fafc;
   border-radius: 12px;
   margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.voice-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .voice-info h3 {
@@ -327,7 +381,9 @@ voice-interview-container {
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .end-button:hover:not(:disabled) {
@@ -345,11 +401,13 @@ voice-interview-container {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
+  width: 100%;
 }
 
 .audio-visualizer {
   border-radius: 10px;
   background: #1a202c;
+  display: block;
 }
 
 /* Messages Container */
@@ -363,6 +421,8 @@ voice-interview-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .message {
@@ -409,6 +469,7 @@ voice-interview-container {
   border-radius: 18px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 100%;
+  word-wrap: break-word;
 }
 
 .ai-message .message-content {
@@ -425,6 +486,7 @@ voice-interview-container {
   line-height: 1.5;
   margin-bottom: 0.5rem;
   word-wrap: break-word;
+  text-align: left;
 }
 
 .message-meta {
@@ -444,6 +506,7 @@ voice-interview-container {
 .typing-indicator {
   color: #718096;
   font-style: italic;
+  text-align: left;
 }
 
 /* Voice Controls */
@@ -452,13 +515,17 @@ voice-interview-container {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .controls-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
+  width: 100%;
 }
 
 .voice-button {
@@ -473,9 +540,9 @@ voice-interview-container {
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   min-width: 200px;
-  justify-content: center;
 }
 
 .voice-button.recording {
@@ -496,6 +563,7 @@ voice-interview-container {
 .voice-instructions {
   text-align: center;
   color: #718096;
+  width: 100%;
 }
 
 .voice-instructions p {
@@ -520,11 +588,16 @@ voice-interview-container {
 .interview-completed {
   text-align: center;
   padding: 3rem 2rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .completed-content {
   max-width: 500px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .success-icon {
@@ -565,6 +638,7 @@ voice-interview-container {
 
 .stat-item {
   text-align: center;
+  flex: 1;
 }
 
 .stat-number {
@@ -594,7 +668,10 @@ voice-interview-container {
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  flex: 1;
+  max-width: 200px;
 }
 
 .review-button {
@@ -617,10 +694,61 @@ voice-interview-container {
   transform: translateY(-2px);
 }
 
+/* Dashboard Navigation */
+.dashboard-nav {
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  color: #718096;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  color: #4361ee;
+}
+
+.nav-item.active {
+  color: #4361ee;
+  border-bottom-color: #4361ee;
+}
+
+.nav-item i {
+  font-size: 1.1rem;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .voice-interview-container {
     padding: 1rem;
+  }
+  
+  .interview-card {
+    min-height: auto;
   }
   
   .interview-header {
@@ -633,6 +761,8 @@ voice-interview-container {
   
   .header-content h1 {
     font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
   .skills-section {
@@ -650,6 +780,10 @@ voice-interview-container {
     text-align: center;
   }
   
+  .voice-info {
+    align-items: center;
+  }
+  
   .message {
     max-width: 90%;
   }
@@ -661,6 +795,24 @@ voice-interview-container {
   
   .action-buttons {
     flex-direction: column;
+    align-items: center;
+  }
+  
+  .review-button, .restart-button {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .nav-menu {
+    gap: 1rem;
+  }
+  
+  .nav-item {
+    padding: 0.75rem 1rem;
+  }
+  
+  .domain-section, .difficulty-section {
+    max-width: 100%;
   }
 }
 
@@ -681,4 +833,51 @@ voice-interview-container {
     min-width: auto;
     width: 100%;
   }
+  
+  .nav-menu {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .selection-content h2 {
+    font-size: 1.75rem;
+  }
+  
+  .skills-column h5 {
+    justify-content: center;
+  }
+  
+  .skills-column li {
+    text-align: center;
+  }
+}
+
+/* Additional alignment fixes */
+.interview-content > * {
+  width: 100%;
+}
+
+.domain-selection, .voice-interface, .interview-completed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure proper text alignment */
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+}
+
+p, span, div {
+  text-align: center;
+}
+
+/* Center all content in the main container */
+.interview-content > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
