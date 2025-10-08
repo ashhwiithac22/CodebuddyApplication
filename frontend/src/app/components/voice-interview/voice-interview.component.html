@@ -1,0 +1,223 @@
+<!-- frontend/src/app/components/voice-interview/voice-interview.component.html -->
+<nav class="dashboard-nav">
+  <div class="nav-container">
+    <div class="nav-menu">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <i class="fas fa-home"></i>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" routerLink="/topics" routerLinkActive="active">
+        <i class="fas fa-book"></i>
+        <span>Topics</span>
+      </a>
+      <a class="nav-item" routerLink="/voice-interview" routerLinkActive="active">
+        <i class="fas fa-microphone"></i>
+        <span>Voice Interview</span>
+      </a>
+      <a class="nav-item" routerLink="/flashcards" routerLinkActive="active">
+        <i class="fas fa-layer-group"></i>
+        <span>Flashcards</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="voice-interview-container">
+  <!-- Header -->
+  <div class="interview-header">
+    <h1>Voice Interview Assistant</h1>
+    <p>Practice technical interviews with AI-powered voice interactions</p>
+  </div>
+
+  <!-- Setup Section -->
+  <div *ngIf="!isInterviewStarted" class="setup-section">
+    <div class="domain-selection">
+      <h2>Select Interview Domain</h2>
+      
+      <div class="form-group">
+        <label for="domain">Technical Domain:</label>
+        <select id="domain" [(ngModel)]="selectedDomain" (change)="onDomainChange()" class="form-select">
+          <option *ngFor="let domain of domains" [value]="domain.id">
+            {{ domain.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="difficulty">Difficulty Level:</label>
+        <select id="difficulty" [(ngModel)]="difficulty" class="form-select">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+
+      <!-- Domain Info -->
+      <div *ngIf="currentDomain" class="domain-info">
+        <h3>{{ currentDomain.name }}</h3>
+        <p>{{ currentDomain.description }}</p>
+        
+        <div class="skills-section">
+          <div class="skills-column">
+            <h4>Technical Skills</h4>
+            <ul>
+              <li *ngFor="let skill of getTechnicalSkills()">{{ skill }}</li>
+            </ul>
+          </div>
+          <div class="skills-column">
+            <h4>Soft Skills</h4>
+            <ul>
+              <li *ngFor="let skill of getSoftSkills()">{{ skill }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Browser Support Check -->
+      <div *ngIf="!isVoiceSupported()" class="browser-warning">
+        <div class="warning-icon">⚠️</div>
+        <p>Voice features are not fully supported in your browser. Please use Chrome or Edge for the best experience.</p>
+      </div>
+
+      <!-- Start Button -->
+      <button 
+        class="btn btn-primary start-btn" 
+        (click)="startInterview()"
+        [disabled]="isLoading">
+        {{ isLoading ? 'Starting Interview...' : 'Start Voice Interview' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Interview Section -->
+  <div *ngIf="isInterviewStarted" class="interview-section">
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-info">
+        <span>Question {{ userMessagesCount + 1 }} of {{ getProgressInfo().total }}</span>
+        <span>{{ getProgressPercentage() | number:'1.0-0' }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div #messageContainer class="messages-container">
+      <div 
+        *ngFor="let message of messages" 
+        class="message" 
+        [class.user-message]="message.type === 'user'" 
+        [class.ai-message]="message.type === 'ai'">
+        
+        <div class="message-header">
+          <span class="message-sender">
+            {{ message.type === 'user' ? 'You' : 'Interviewer' }}
+          </span>
+          <span class="message-time">
+            {{ formatTime(message.timestamp) }}
+          </span>
+          <span *ngIf="message.isAudio" class="audio-indicator">🎤</span>
+        </div>
+        
+        <div class="message-content">
+          {{ message.content }}
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="loading-message">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p>Interviewer is thinking...</p>
+      </div>
+    </div>
+
+    <!-- Audio Visualizer -->
+    <div *ngIf="isRecording" class="audio-visualizer-section">
+      <canvas #audioVisualizer width="300" height="80" class="visualizer-canvas"></canvas>
+      <p class="recording-text">🎤 Listening... Speak now</p>
+    </div>
+
+    <!-- Input Section -->
+    <div class="input-section">
+      <!-- Voice Recording Button -->
+      <button 
+        *ngIf="canRecord()"
+        class="btn voice-btn" 
+        [class.recording]="isRecording"
+        (click)="toggleRecording()"
+        [disabled]="!canRecord()">
+        <span class="btn-icon">
+          {{ isRecording ? '⏹️' : '🎤' }}
+        </span>
+        {{ isRecording ? 'Stop Recording' : 'Voice Answer' }}
+      </button>
+
+      <!-- Text Input -->
+      <div class="text-input-container" *ngIf="canType()">
+        <textarea
+          #textInput
+          [(ngModel)]="textResponse"
+          (keypress)="onTextInputKeyPress($event)"
+          placeholder="Type your answer here... (Press Enter to send)"
+          class="text-input"
+          rows="3"
+          [disabled]="!canType()">
+        </textarea>
+        <button 
+          class="btn send-btn" 
+          (click)="sendTextResponse()"
+          [disabled]="!textResponse.trim() || !canType()">
+          Send
+        </button>
+      </div>
+
+      <!-- Status Messages -->
+      <div class="status-messages">
+        <div *ngIf="isAiSpeaking" class="status speaking-status">
+          🗣️ Interviewer is speaking...
+        </div>
+        <div *ngIf="isWaitingForAnswer && !isRecording" class="status waiting-status">
+          💬 Waiting for your response...
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-section">
+      <button 
+        class="btn btn-secondary" 
+        (click)="endInterview()"
+        [disabled]="isInterviewEnded">
+        End Interview
+      </button>
+      
+      <button 
+        class="btn btn-outline" 
+        (click)="restartInterview()">
+        Restart Interview
+      </button>
+    </div>
+
+    <!-- Interview Completed -->
+    <div *ngIf="isInterviewEnded" class="completion-section">
+      <div class="completion-card">
+        <h2>🎉 Interview Completed!</h2>
+        <p>You've completed the {{ getDomainName(selectedDomain) }} interview.</p>
+        <p><strong>Questions Answered:</strong> {{ userMessagesCount }}</p>
+        <div class="completion-actions">
+          <button class="btn btn-primary" (click)="restartInterview()">
+            Start New Interview
+          </button>
+          <button class="btn btn-outline" routerLink="/dashboard">
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

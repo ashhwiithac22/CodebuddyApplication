@@ -1,10 +1,10 @@
 // frontend/src/app/services/voice-interview.service.ts
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, Observable, of, tap, catchError, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface InterviewMessage {
-  type: 'ai' | 'user';
+  type: 'user' | 'ai';
   content: string;
   timestamp: Date;
   isAudio?: boolean;
@@ -19,410 +19,647 @@ export interface InterviewDomain {
 }
 
 export interface InterviewResponse {
-  success: boolean;
-  message?: string;
-  question?: string;
+  question: string;
   feedback?: string;
+  isCompleted?: boolean;
+  requiresAnswer?: boolean;
+}
+
+export interface OpenAIMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class VoiceInterviewService {
+  
   private messagesSubject = new BehaviorSubject<InterviewMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
-
+  
   private audioRecordingSubject = new BehaviorSubject<boolean>(false);
   public audioRecording$ = this.audioRecordingSubject.asObservable();
-
+  
   private aiSpeakingSubject = new BehaviorSubject<boolean>(false);
   public aiSpeaking$ = this.aiSpeakingSubject.asObservable();
 
-  private speechRecognition: any = null;
-  private speechSynthesis = window.speechSynthesis;
-  private isListening = false;
+  // Interview state
+  private currentDomain: string = 'javascript';
+  private currentDifficulty: string = 'medium';
+  private conversationHistory: OpenAIMessage[] = [];
+  private recognition: any;
+  private synthesis: SpeechSynthesis;
+  private interviewStage: number = 0;
+  private isRecognitionActive: boolean = false;
 
-  // Interview domains data
   public interviewDomains: InterviewDomain[] = [
     {
       id: 'javascript',
-      name: 'JavaScript',
-      description: 'Frontend development with modern JavaScript, ES6+, and browser APIs',
-      technicalSkills: ['ES6+ Features', 'DOM Manipulation', 'Async Programming', 'Event Handling', 'Browser APIs'],
-      softSkills: ['Problem Solving', 'Communication', 'Team Collaboration', 'Adaptability']
+      name: 'JavaScript Fundamentals',
+      description: 'Core JavaScript concepts, ES6+ features, and modern JS practices',
+      technicalSkills: ['ES6+ Features', 'Async/Await', 'Closures', 'Prototypes'],
+      softSkills: ['Problem Solving', 'Communication', 'Technical Explanation']
     },
     {
-      id: 'angular',
-      name: 'Angular',
-      description: 'Modern Angular framework with TypeScript, components, and state management',
-      technicalSkills: ['Components', 'Services', 'RxJS', 'Routing', 'Forms', 'State Management'],
-      softSkills: ['Architecture Planning', 'Code Organization', 'Debugging', 'Performance Optimization']
+      id: 'data-structures',
+      name: 'Data Structures',
+      description: 'Fundamental data structures and their implementations',
+      technicalSkills: ['Arrays/Lists', 'Trees/Graphs', 'Hash Tables', 'Big O Notation'],
+      softSkills: ['Analytical Thinking', 'Optimization', 'Algorithm Design']
     },
     {
-      id: 'react',
-      name: 'React',
-      description: 'React library with hooks, context, and modern development patterns',
-      technicalSkills: ['Hooks', 'Component Lifecycle', 'State Management', 'Context API', 'JSX'],
-      softSkills: ['UI/UX Thinking', 'Component Design', 'State Management', 'Code Reusability']
+      id: 'algorithms',
+      name: 'Algorithms',
+      description: 'Algorithm design, analysis, and optimization techniques',
+      technicalSkills: ['Sorting', 'Searching', 'DP', 'Recursion'],
+      softSkills: ['Logical Reasoning', 'Pattern Recognition', 'Efficiency Analysis']
     },
     {
-      id: 'nodejs',
-      name: 'Node.js',
-      description: 'Server-side JavaScript with Express, databases, and API development',
-      technicalSkills: ['Express.js', 'REST APIs', 'Middleware', 'Database Integration', 'Authentication'],
-      softSkills: ['Backend Architecture', 'API Design', 'Security Awareness', 'Scalability Planning']
+      id: 'system-design',
+      name: 'System Design',
+      description: 'Designing scalable and efficient software systems',
+      technicalSkills: ['Architecture', 'Scalability', 'Databases', 'APIs'],
+      softSkills: ['System Thinking', 'Trade-off Analysis', 'Communication']
     },
     {
-      id: 'python',
-      name: 'Python',
-      description: 'Python programming with data structures, algorithms, and web frameworks',
-      technicalSkills: ['Data Structures', 'Algorithms', 'Django/Flask', 'OOP', 'File Handling'],
-      softSkills: ['Logical Thinking', 'Algorithm Design', 'Code Efficiency', 'Testing']
+      id: 'frontend',
+      name: 'Frontend Development',
+      description: 'Modern frontend technologies and frameworks',
+      technicalSkills: ['React/Angular/Vue', 'CSS/HTML', 'State Management', 'Performance'],
+      softSkills: ['UI/UX Understanding', 'Attention to Detail', 'User Focus']
     },
     {
-      id: 'java',
-      name: 'Java',
-      description: 'Java development with Spring Boot, OOP principles, and enterprise patterns',
-      technicalSkills: ['OOP', 'Spring Boot', 'Collections', 'Multithreading', 'Design Patterns'],
-      softSkills: ['Enterprise Thinking', 'Design Patterns', 'System Architecture', 'Code Maintainability']
+      id: 'backend',
+      name: 'Backend Development',
+      description: 'Server-side development and API design',
+      technicalSkills: ['Node.js/Python/Java', 'Databases', 'APIs', 'Security'],
+      softSkills: ['Architecture Planning', 'Security Mindset', 'Performance Optimization']
     }
   ];
 
   constructor() {
+    this.synthesis = window.speechSynthesis;
     this.initializeSpeechRecognition();
   }
 
-  /**
-   * Initialize speech recognition if available
-   */
   private initializeSpeechRecognition(): void {
-    if (this.isSpeechRecognitionSupported()) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      this.speechRecognition = new SpeechRecognition();
-      
-      this.speechRecognition.continuous = false;
-      this.speechRecognition.interimResults = true;
-      this.speechRecognition.lang = 'en-US';
-      this.speechRecognition.maxAlternatives = 1;
+    if (!('webkitSpeechRecognition' in window)) {
+      console.error('Speech recognition not supported in this browser');
+      return;
+    }
 
-      this.speechRecognition.onstart = () => {
+    try {
+      this.recognition = new (window as any).webkitSpeechRecognition();
+      this.recognition.continuous = false;
+      this.recognition.interimResults = true;
+      this.recognition.lang = 'en-US';
+      this.recognition.maxAlternatives = 1;
+      
+      this.recognition.onstart = () => {
+        console.log('🎤 Speech recognition started');
+        this.isRecognitionActive = true;
         this.audioRecordingSubject.next(true);
       };
-
-      this.speechRecognition.onend = () => {
+      
+      this.recognition.onend = () => {
+        console.log('🎤 Speech recognition ended');
+        this.isRecognitionActive = false;
         this.audioRecordingSubject.next(false);
-        this.isListening = false;
       };
-
-      this.speechRecognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        this.audioRecordingSubject.next(false);
-        this.isListening = false;
-      };
-
-      this.speechRecognition.onresult = (event: any) => {
-        let finalTranscript = '';
-        let interimTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          } else {
-            interimTranscript += transcript;
+      
+      this.recognition.onresult = (event: any) => {
+        console.log('🎤 Speech recognition result received');
+        if (event.results.length > 0) {
+          const transcript = event.results[0][0].transcript;
+          if (transcript && transcript.trim()) {
+            console.log('🎤 User said:', transcript);
+            this.processUserResponse(transcript).subscribe();
           }
         }
-
-        if (finalTranscript) {
-          this.addUserMessage(finalTranscript);
-          this.processUserResponse(finalTranscript);
+      };
+      
+      this.recognition.onerror = (event: any) => {
+        console.error('🎤 Speech recognition error:', event.error);
+        this.isRecognitionActive = false;
+        this.audioRecordingSubject.next(false);
+        
+        // Show user-friendly error messages
+        if (event.error === 'not-allowed') {
+          alert('❌ Microphone access denied. Please allow microphone permissions in your browser settings.');
+        } else if (event.error === 'no-speech') {
+          console.log('🎤 No speech detected - user might not have spoken');
         }
       };
+      
+    } catch (error) {
+      console.error('Error initializing speech recognition:', error);
     }
   }
 
-  /**
-   * Check if speech recognition is supported
-   */
+  // Public methods
   isSpeechRecognitionSupported(): boolean {
-    return !!(window as any).SpeechRecognition || !!(window as any).webkitSpeechRecognition;
+    return 'webkitSpeechRecognition' in window;
   }
 
-  /**
-   * Check if speech synthesis is supported
-   */
   isSpeechSynthesisSupported(): boolean {
     return 'speechSynthesis' in window;
   }
 
-  /**
-   * Start voice interview
-   */
   startVoiceInterview(domain: string, difficulty: string): Observable<InterviewResponse> {
-    // Clear previous messages
     this.clearMessages();
+    this.currentDomain = domain;
+    this.currentDifficulty = difficulty;
+    this.interviewStage = 0;
+    
+    // Initialize conversation with system prompt
+    const systemPrompt = this.generateSystemPrompt(domain, difficulty);
+    this.conversationHistory = [
+      {
+        role: 'system',
+        content: systemPrompt
+      }
+    ];
 
-    // Simulate API call delay
-    return of({
-      success: true,
-      message: `Starting ${domain} interview at ${difficulty} level`
-    }).pipe(
-      delay(1000),
-      tap(() => {
-        // Add welcome message
-        const welcomeMessage = this.generateWelcomeMessage(domain, difficulty);
-        this.addAiMessage(welcomeMessage);
-        
-        // Speak the welcome message
-        this.speakMessage(welcomeMessage);
-        
-        // Add first question after a delay
+    const welcomeMessage = `Welcome to your ${this.getDomainName(domain)} interview at the ${difficulty} level! I'll be asking you ${this.getQuestionCount()} technical questions. Let's begin.`;
+    this.addMessage('ai', welcomeMessage);
+    this.speakMessage(welcomeMessage);
+
+    // Generate first question
+    return this.generateAIQuestion('Start the interview with an appropriate technical question.').pipe(
+      tap((response: InterviewResponse) => {
         setTimeout(() => {
-          const firstQuestion = this.generateQuestion(domain, difficulty, 1);
-          this.addAiMessage(firstQuestion);
-          this.speakMessage(firstQuestion);
+          this.addMessage('ai', response.question);
+          this.speakMessage(response.question);
         }, 2000);
       })
     );
   }
 
-  /**
-   * End interview
-   */
-  endInterview(): Observable<InterviewResponse> {
-    this.stopListening();
-    this.stopSpeaking();
+  private generateSystemPrompt(domain: string, difficulty: string): string {
+    const domainName = this.getDomainName(domain);
+    const questionCount = this.getQuestionCount();
+    
+    return `You are a professional technical interviewer conducting a ${difficulty.toLowerCase()} level interview for ${domainName}.
 
-    const endMessage = "Thank you for completing the voice interview! Your responses have been recorded and you can review the conversation.";
-    this.addAiMessage(endMessage);
+INTERVIEW STRUCTURE:
+- Conduct exactly ${questionCount} technical questions
+- Ask one question at a time
+- Wait for the candidate's complete answer before responding
+- Provide brief, constructive feedback after each answer
+- End the interview after ${questionCount} questions with personalized feedback
 
-    return of({
-      success: true,
-      message: 'Interview ended successfully'
+DOMAIN: ${domainName}
+DIFFICULTY: ${difficulty}
+QUESTIONS: ${questionCount}
+
+DIFFICULTY GUIDELINES:
+${this.getDifficultyGuidelines(difficulty)}
+
+RESPONSE FORMAT: Return ONLY JSON in this exact format:
+{
+  "question": "The next question to ask",
+  "feedback": "Brief feedback on previous answer (if any)",
+  "isCompleted": false/true,
+  "requiresAnswer": true/false
+}
+
+IMPORTANT: 
+- Be professional but encouraging
+- Ask practical, real-world questions
+- Provide specific, actionable feedback
+- Adapt question complexity based on candidate performance
+- For the final response, set "isCompleted": true and provide summary feedback`;
+  }
+
+  private getDifficultyGuidelines(difficulty: string): string {
+    const guidelines = {
+      easy: `- Focus on fundamental concepts and definitions
+- Ask straightforward, practical questions
+- Expect basic implementation knowledge
+- Provide encouraging feedback`,
+      medium: `- Mix conceptual and practical questions
+- Include scenario-based problems
+- Expect understanding of trade-offs
+- Provide constructive technical feedback`,
+      hard: `- Ask complex, multi-part questions
+- Include system design and optimization
+- Expect deep technical knowledge
+- Challenge with edge cases and scalability`
+    };
+    
+    return guidelines[difficulty.toLowerCase() as keyof typeof guidelines] || guidelines.medium;
+  }
+
+  private getQuestionCount(): number {
+    return 5;
+  }
+
+  private generateAIQuestion(userInput?: string): Observable<InterviewResponse> {
+    if (userInput) {
+      this.conversationHistory.push({
+        role: 'user',
+        content: userInput
+      });
+    }
+
+    this.interviewStage++;
+
+    const recentMessages = this.conversationHistory.slice(-10);
+
+    // Use Gemini AI
+    return this.callGeminiAI(recentMessages).pipe(
+      switchMap((response: any) => {
+        let aiResponse: string;
+        
+        // Extract response from Gemini format
+        if (response.candidates && response.candidates[0]?.content?.parts[0]?.text) {
+          aiResponse = response.candidates[0].content.parts[0].text;
+        } else {
+          throw new Error('No response from Gemini AI');
+        }
+
+        // Add AI response to conversation history
+        this.conversationHistory.push({
+          role: 'assistant',
+          content: aiResponse
+        });
+
+        // Parse JSON response
+        try {
+          const parsedResponse: InterviewResponse = JSON.parse(aiResponse);
+          return of(parsedResponse);
+        } catch {
+          // If not JSON, treat as a question
+          return of({
+            question: aiResponse,
+            requiresAnswer: true,
+            isCompleted: this.interviewStage >= this.getQuestionCount()
+          });
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Gemini API error:', error);
+        // Fallback to enhanced mock questions
+        return of(this.generateEnhancedMockQuestion());
+      })
+    );
+  }
+
+  private callGeminiAI(messages: OpenAIMessage[]): Observable<any> {
+    const apiKey = environment.geminiApiKey;
+    
+    // If no API key or using placeholder, use mock responses
+    if (!apiKey || apiKey === 'your-actual-gemini-api-key-here') {
+      console.log('🔧 Using enhanced mock questions');
+      return of({
+        candidates: [{
+          content: {
+            parts: [{
+              text: JSON.stringify(this.generateEnhancedMockQuestion())
+            }]
+          }
+        }]
+      });
+    }
+
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    
+    // Convert to Gemini prompt format
+    const prompt = this.convertToGeminiPrompt(messages);
+    
+    return new Observable(observer => {
+      fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 500,
+          }
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Gemini API error: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        observer.next(data);
+        observer.complete();
+      })
+      .catch(error => {
+        console.error('Gemini API call failed:', error);
+        // Fallback to mock responses
+        observer.next({
+          candidates: [{
+            content: {
+              parts: [{
+                text: JSON.stringify(this.generateEnhancedMockQuestion())
+              }]
+            }
+          }]
+        });
+        observer.complete();
+      });
     });
   }
 
-  /**
-   * Start listening to user speech
-   */
-  startListening(): void {
-    if (this.speechRecognition && !this.isListening) {
-      try {
-        this.speechRecognition.start();
-        this.isListening = true;
-      } catch (error) {
-        console.error('Error starting speech recognition:', error);
+  private convertToGeminiPrompt(messages: OpenAIMessage[]): string {
+    let prompt = '';
+    messages.forEach(msg => {
+      if (msg.role === 'system') {
+        prompt += `SYSTEM: ${msg.content}\n\n`;
+      } else if (msg.role === 'user') {
+        prompt += `USER: ${msg.content}\n\n`;
+      } else if (msg.role === 'assistant') {
+        prompt += `ASSISTANT: ${msg.content}\n\n`;
       }
+    });
+    
+    prompt += 'ASSISTANT: ';
+    return prompt;
+  }
+
+  private generateEnhancedMockQuestion(): InterviewResponse {
+    const userMessages = this.conversationHistory.filter(msg => msg.role === 'user').length;
+    const isCompleted = userMessages >= this.getQuestionCount();
+
+    if (isCompleted) {
+      return {
+        question: "🎉 Excellent! Interview completed successfully.",
+        feedback: `You demonstrated strong ${this.currentDifficulty} level knowledge in ${this.getDomainName(this.currentDomain)}. Your answers showed good technical depth and practical understanding.`,
+        isCompleted: true,
+        requiresAnswer: false
+      };
+    }
+
+    const questions = this.getSmartQuestions();
+    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+
+    // Provide feedback every 2nd question
+    const shouldGiveFeedback = userMessages > 0 && userMessages % 2 === 0;
+
+    if (shouldGiveFeedback) {
+      const feedbacks = [
+        "Good explanation! You covered the key points well.",
+        "That's a solid approach. Consider mentioning more real-world examples.",
+        "Well structured answer. You're thinking systematically about the problem.",
+        "Good technical depth. Try to connect it to business impact.",
+        "Clear communication. You explained complex concepts simply and effectively."
+      ];
+      
+      const randomFeedback = feedbacks[Math.floor(Math.random() * feedbacks.length)];
+
+      return {
+        question: randomQuestion,
+        feedback: randomFeedback,
+        requiresAnswer: true,
+        isCompleted: false
+      };
+    }
+
+    return {
+      question: randomQuestion,
+      requiresAnswer: true,
+      isCompleted: false
+    };
+  }
+
+  private getSmartQuestions(): string[] {
+    const questions = {
+      javascript: {
+        easy: [
+          "What is the difference between let, const, and var in JavaScript?",
+          "How do arrow functions differ from regular functions?",
+          "What are template literals and why are they useful?",
+          "Explain what destructuring assignment is.",
+          "What is the spread operator and how is it used?"
+        ],
+        medium: [
+          "How does the event loop work in JavaScript?",
+          "What are closures and can you provide a practical example?",
+          "Explain promise chaining and error handling with async/await.",
+          "What is the difference between call, apply, and bind?",
+          "How would you deep clone an object in JavaScript?"
+        ],
+        hard: [
+          "Implement a debounce function from scratch.",
+          "How does JavaScript handle memory management and garbage collection?",
+          "Explain the module system in JavaScript (ES6 vs CommonJS).",
+          "What are Web Workers and when would you use them?",
+          "How would you implement a custom event emitter?"
+        ]
+      },
+      'data-structures': {
+        easy: [
+          "What is the time complexity of array insertion and deletion?",
+          "Explain the difference between arrays and linked lists.",
+          "What is a stack and what are its common use cases?",
+          "How does a queue work?",
+          "What are the basic operations on a hash table?"
+        ],
+        medium: [
+          "Implement a binary search tree insertion method.",
+          "What are the different types of tree traversals?",
+          "Explain how a min-heap works.",
+          "What is the difference between BFS and DFS?",
+          "How would you detect a cycle in a linked list?"
+        ],
+        hard: [
+          "Design an LRU cache implementation.",
+          "What are self-balancing trees and why are they important?",
+          "Explain the A* search algorithm.",
+          "How would you implement a trie data structure?",
+          "What are the trade-offs between different sorting algorithms?"
+        ]
+      },
+      'system-design': {
+        easy: [
+          "What are the main components of a web application?",
+          "Explain the client-server architecture.",
+          "What is a database and why is it important?",
+          "What are APIs and how are they used?",
+          "What is caching and why is it useful?"
+        ],
+        medium: [
+          "How would you design a URL shortening service?",
+          "What is load balancing and why is it important?",
+          "Explain database indexing and its benefits.",
+          "What are microservices and their advantages?",
+          "How would you handle database migrations?"
+        ],
+        hard: [
+          "Design a system for real-time collaborative editing.",
+          "How would you architect a social media platform?",
+          "Explain the CAP theorem and its implications.",
+          "Design a recommendation system for an e-commerce platform.",
+          "How would you handle system scalability for millions of users?"
+        ]
+      }
+    };
+
+    const domainData = (questions as any)[this.currentDomain] || questions.javascript;
+    const difficultyData = domainData[this.currentDifficulty] || domainData.medium;
+    
+    return difficultyData.length > 0 ? difficultyData : [
+      "Tell me about your experience with this technology.",
+      "What challenges have you faced while working with this?",
+      "How do you stay updated with the latest developments?",
+      "What's your approach to learning new technologies?",
+      "Can you describe a project where you used this technology?"
+    ];
+  }
+
+  // Process both voice and text responses
+  processUserResponse(userResponse: string, isAudio: boolean = false): Observable<InterviewResponse> {
+    this.addMessage('user', userResponse, isAudio);
+    
+    return this.generateAIQuestion(userResponse).pipe(
+      tap((aiResponse: InterviewResponse) => {
+        if (aiResponse.feedback) {
+          this.addMessage('ai', aiResponse.feedback!);
+          this.speakMessage(aiResponse.feedback!);
+          
+          if (aiResponse.question && !aiResponse.isCompleted) {
+            setTimeout(() => {
+              this.addMessage('ai', aiResponse.question);
+              this.speakMessage(aiResponse.question);
+            }, 2000);
+          }
+        } else if (aiResponse.question) {
+          this.addMessage('ai', aiResponse.question);
+          this.speakMessage(aiResponse.question);
+        }
+      })
+    );
+  }
+
+  // Voice recording methods
+  startListening(): void {
+    if (!this.recognition) {
+      console.error('Speech recognition not initialized');
+      alert('Speech recognition is not available in your browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    if (this.isRecognitionActive) {
+      console.log('Speech recognition already active');
+      return;
+    }
+
+    try {
+      console.log('🎤 Starting speech recognition...');
+      this.recognition.start();
+    } catch (error) {
+      console.error('Error starting speech recognition:', error);
+      alert('Error starting microphone. Please check your microphone permissions and try again.');
     }
   }
 
-  /**
-   * Stop listening to user speech
-   */
   stopListening(): void {
-    if (this.speechRecognition && this.isListening) {
+    if (this.recognition && this.isRecognitionActive) {
       try {
-        this.speechRecognition.stop();
-        this.isListening = false;
+        console.log('🎤 Stopping speech recognition...');
+        this.recognition.stop();
+        this.isRecognitionActive = false;
       } catch (error) {
         console.error('Error stopping speech recognition:', error);
       }
     }
   }
 
-  /**
-   * Speak a message using speech synthesis
-   */
-  speakMessage(message: string): void {
-    if (!this.isSpeechSynthesisSupported()) {
-      console.warn('Speech synthesis not supported');
-      return;
+  // Text input method
+  sendTextResponse(textResponse: string): Observable<InterviewResponse> {
+    if (!textResponse || textResponse.trim() === '') {
+      console.log('Empty text response');
+      return of();
     }
+    
+    console.log('📝 Sending text response:', textResponse);
+    return this.processUserResponse(textResponse, false);
+  }
 
-    this.stopSpeaking();
+  speakMessage(text: string): void {
+    if (!this.isSpeechSynthesisSupported()) return;
+    
+    this.synthesis.cancel();
     this.aiSpeakingSubject.next(true);
-
-    const utterance = new SpeechSynthesisUtterance(message);
+    
+    const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
-    utterance.pitch = 1;
-    utterance.volume = 0.8;
-
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
     utterance.onend = () => {
       this.aiSpeakingSubject.next(false);
     };
-
-    utterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
+    
+    utterance.onerror = () => {
       this.aiSpeakingSubject.next(false);
     };
-
-    this.speechSynthesis.speak(utterance);
+    
+    this.synthesis.speak(utterance);
   }
 
-  /**
-   * Stop speaking
-   */
   stopSpeaking(): void {
-    if (this.speechSynthesis.speaking) {
-      this.speechSynthesis.cancel();
-      this.aiSpeakingSubject.next(false);
-    }
+    this.synthesis.cancel();
+    this.aiSpeakingSubject.next(false);
   }
 
-  /**
-   * Process user response and generate AI reply
-   */
-  private processUserResponse(userMessage: string): void {
-    // Simulate AI thinking delay
-    setTimeout(() => {
-      const currentDomain = this.interviewDomains.find(d => d.id === 'javascript'); // Default domain for demo
-      const questionCount = this.messagesSubject.value.filter(m => m.type === 'ai').length;
-      
-      if (questionCount < 5) {
-        // Generate next question
-        const nextQuestion = this.generateQuestion(currentDomain?.id || 'javascript', 'medium', questionCount + 1);
-        this.addAiMessage(nextQuestion);
-        this.speakMessage(nextQuestion);
-      } else {
-        // End of interview
-        const feedback = this.generateFeedback(userMessage);
-        this.addAiMessage(feedback);
-        this.speakMessage(feedback);
-      }
-    }, 2000);
-  }
-
-  /**
-   * Generate welcome message
-   */
-  private generateWelcomeMessage(domain: string, difficulty: string): string {
-    const domainName = this.interviewDomains.find(d => d.id === domain)?.name || domain;
-    return `Welcome to your ${domainName} voice interview at the ${difficulty} level. I'll be asking you ${difficulty === 'easy' ? '3' : difficulty === 'medium' ? '5' : '7'} questions to assess your knowledge. Please speak your answers clearly. Let's begin with your first question.`;
-  }
-
-  /**
-   * Generate interview question based on domain and difficulty
-   */
-  private generateQuestion(domain: string, difficulty: string, questionNumber: number): string {
-    const questions: { [key: string]: { [key: string]: string[] } } = {
-      javascript: {
-        easy: [
-          "What is the difference between let, const, and var in JavaScript?",
-          "Can you explain what a closure is in JavaScript?",
-          "How does event delegation work in JavaScript?",
-          "What is the difference between == and === operators?",
-          "How do you handle asynchronous operations in JavaScript?"
-        ],
-        medium: [
-          "Explain the concept of prototypal inheritance in JavaScript.",
-          "What are promises and how do they differ from callbacks?",
-          "How does the 'this' keyword work in different contexts?",
-          "What are arrow functions and how do they differ from regular functions?",
-          "Explain the event loop and how it handles asynchronous code."
-        ],
-        hard: [
-          "Explain the microtask and macrotask queues in the event loop.",
-          "How does JavaScript handle memory management and garbage collection?",
-          "What are Web Workers and when would you use them?",
-          "Explain the Module Pattern and its variations in JavaScript.",
-          "How would you implement a debounce function from scratch?"
-        ]
-      },
-      angular: {
-        easy: [
-          "What are the main building blocks of an Angular application?",
-          "What is the difference between components and directives?",
-          "How do you handle data binding in Angular?",
-          "What is dependency injection in Angular?",
-          "How do you create and use services in Angular?"
-        ],
-        medium: [
-          "Explain the component lifecycle hooks in Angular.",
-          "What is the difference between reactive and template-driven forms?",
-          "How does change detection work in Angular?",
-          "What are observables and how are they used in Angular?",
-          "Explain the concept of lazy loading in Angular routing."
-        ],
-        hard: [
-          "How would you optimize the performance of an Angular application?",
-          "Explain the difference between pure and impure pipes.",
-          "How do you implement route guards for authentication?",
-          "What is the Ivy renderer and what improvements does it bring?",
-          "How would you handle state management in a large Angular application?"
-        ]
-      },
-      // Add questions for other domains...
-    };
-
-    const domainQuestions = questions[domain] || questions['javascript'];
-    const difficultyQuestions = domainQuestions[difficulty] || domainQuestions['medium'];
-    const questionIndex = (questionNumber - 1) % difficultyQuestions.length;
+  endInterview(): Observable<InterviewResponse> {
+    const summaryMessage = "Interview session ended. Thank you for your participation!";
+    this.addMessage('ai', summaryMessage);
+    this.speakMessage(summaryMessage);
     
-    return `Question ${questionNumber}: ${difficultyQuestions[questionIndex]}`;
+    return of({
+      question: summaryMessage,
+      isCompleted: true,
+      requiresAnswer: false
+    });
   }
 
-  /**
-   * Generate feedback for user response
-   */
-  private generateFeedback(userMessage: string): string {
-    return `Thank you for your answer. That was the final question in this interview. You've demonstrated good understanding of the concepts. Practice areas to focus on: deepening your knowledge of advanced patterns and real-world implementation scenarios. Great job overall!`;
-  }
-
-  /**
-   * Add AI message to the conversation
-   */
-  private addAiMessage(content: string): void {
-    const message: InterviewMessage = {
-      type: 'ai',
-      content: content,
+  addMessage(type: 'user' | 'ai', content: string, isAudio: boolean = false): void {
+    const messages = this.messagesSubject.value;
+    const newMessage: InterviewMessage = {
+      type,
+      content,
       timestamp: new Date(),
-      isAudio: true
+      isAudio
     };
-    
-    const currentMessages = this.messagesSubject.value;
-    this.messagesSubject.next([...currentMessages, message]);
+    this.messagesSubject.next([...messages, newMessage]);
   }
 
-  /**
-   * Add user message to the conversation
-   */
-  private addUserMessage(content: string): void {
-    const message: InterviewMessage = {
-      type: 'user',
-      content: content,
-      timestamp: new Date(),
-      isAudio: true
-    };
-    
-    const currentMessages = this.messagesSubject.value;
-    this.messagesSubject.next([...currentMessages, message]);
-  }
-
-  /**
-   * Clear all messages
-   */
   clearMessages(): void {
     this.messagesSubject.next([]);
+    this.conversationHistory = [];
+    this.currentDomain = 'javascript';
+    this.interviewStage = 0;
   }
 
-  /**
-   * Get current messages
-   */
-  getMessages(): InterviewMessage[] {
-    return this.messagesSubject.value;
+  getDomainName(domainId: string): string {
+    const domain = this.interviewDomains.find(d => d.id === domainId);
+    return domain ? domain.name : 'Technical';
   }
 
-  /**
-   * Check if currently recording audio
-   */
-  isRecordingAudio(): boolean {
-    return this.audioRecordingSubject.value;
+  getCurrentProgress(): { current: number; total: number } {
+    const userMessages = this.messagesSubject.value.filter(m => m.type === 'user').length;
+    return {
+      current: userMessages,
+      total: this.getQuestionCount()
+    };
   }
 
-  /**
-   * Check if AI is currently speaking
-   */
-  isAiSpeaking(): boolean {
-    return this.aiSpeakingSubject.value;
+  // Check if voice recording is currently active
+  isRecording(): boolean {
+    return this.isRecognitionActive;
   }
 }
