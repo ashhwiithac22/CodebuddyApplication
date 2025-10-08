@@ -1,4 +1,4 @@
-//frontend/src/app/app.routes.ts
+// frontend/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { TopicListComponent } from './components/topics/topic-list.component';

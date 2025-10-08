@@ -1,0 +1,2 @@
+ngOnInit - voice-interview.component.ts, dashboard.component.ts, topic-detail.component.ts
+ngOnDestroy - voice-interview.component.ts
