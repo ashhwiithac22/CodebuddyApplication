@@ -1,3 +1,4 @@
+//frontend/src/app/components/topics/topic-test.component.ts
 import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';

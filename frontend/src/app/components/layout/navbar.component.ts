@@ -61,20 +61,24 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    console.log('🚪 Logout initiated');
+    console.log('🚪 LOGOUT INITIATED - FORCE CLEARING ALL DATA');
     
-    // Close menu first
+    // 1. Close menu
     this.closeMenu();
     
-    // Clear authentication
+    // 2. Aggressively clear ALL storage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // 3. Clear service state
     this.authService.logout();
     
-    // Update local state
+    // 4. Update local state
     this.updateAuthState();
     
-    console.log('🔄 Navigating to login...');
+    console.log('✅ All auth data cleared, redirecting to login...');
     
-    // Use window.location for guaranteed redirect
+    // 5. FORCE redirect using window.location (bypass Angular router)
     setTimeout(() => {
       window.location.href = '/login';
     }, 100);

@@ -130,7 +130,7 @@ export class VoiceInterviewService {
       
       this.recognition.onresult = (event: any) => {
         console.log('🎤 Speech recognition result received');
-        if (event.results.length > 0) {
+        if (event.results && event.results.length > 0) {
           const transcript = event.results[0][0].transcript;
           if (transcript && transcript.trim()) {
             console.log('🎤 User said:', transcript);
@@ -662,4 +662,4 @@ IMPORTANT:
   isRecording(): boolean {
     return this.isRecognitionActive;
   }
-}
+} 
