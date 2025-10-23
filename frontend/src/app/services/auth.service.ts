@@ -29,7 +29,8 @@ export interface RegisterRequest {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/api/auth`;
+  // FIX: Remove the duplicate /api - environment.apiUrl already includes /api
+  private apiUrl = `${environment.apiUrl}/auth`; // NOT `${environment.apiUrl}/api/auth`
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

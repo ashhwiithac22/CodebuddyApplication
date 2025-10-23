@@ -1,0 +1,30 @@
+/* You can keep this file empty or add global styles */.app-container {
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.app-header {
+  background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo-section h1 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 2.5rem;
+}
+
+.logo-section p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.angular-logo {
+  max-width: 120px;
+  height: auto;
+}
+
+.app-main {
+  padding: 2rem;
+}
