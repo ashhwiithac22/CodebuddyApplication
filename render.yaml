@@ -1,0 +1,18 @@
+# backend/render.yaml
+services:
+  - type: web
+    name: codebuddy-backend
+    env: node
+    plan: free
+    region: ohio  # or your preferred region
+    branch: main
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: codebuddy-database
+          property: connectionString

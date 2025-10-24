@@ -6,56 +6,33 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr": "node dist/frontend/server/server.mjs",
-    "dev:ssr": "ng run frontend:serve-ssr",
-    "build:ssr": "ng build && ng run frontend:server",
-    "prerender": "ng run frontend:prerender"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "20.2.4",
-    "@angular/common": "20.2.4",
-    "@angular/core": "20.2.4",
-    "@angular/forms": "20.2.4",
-    "@angular/platform-browser": "20.2.4",
-    "@angular/platform-browser-dynamic": "20.2.4",
-    "@angular/router": "20.2.4",
-    "bootstrap": "5.3.8",
-    "chart.js": "4.5.0",
-    "ng2-charts": "8.0.0",
-    "rxjs": "7.8.0",
+    "@angular/animations": "^20.2.0",
+    "@angular/common": "^20.2.0",
+    "@angular/core": "^20.2.0",
+    "@angular/forms": "^20.2.0",
+    "@angular/platform-browser": "^20.2.0",
+    "@angular/platform-browser-dynamic": "^20.2.0",
+    "@angular/router": "^20.2.0",
+    "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "socket.io-client": "^4.7.5",
-    "zone.js": "0.15.0",
-    "recordrtc": "^5.6.2"
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "20.2.2",
-    "@angular/cli": "20.2.2",
-    "@angular/compiler": "^20.2.4",
-    "@angular/compiler-cli": "^20.2.4",
-    "@types/chart.js": "2.9.41",
-    "@types/jasmine": "5.1.0",
-    "@types/node": "20.10.5",
-    "jasmine-core": "5.9.0",
-    "karma": "6.4.0",
-    "karma-chrome-launcher": "3.2.0",
-    "karma-coverage": "2.2.0",
-    "karma-jasmine": "5.1.0",
-    "karma-jasmine-html-reporter": "2.1.0",
-    "typescript": "5.9.2"
+    "@angular-devkit/build-angular": "^20.2.0",
+    "@angular/cli": "^20.2.0",
+    "@angular/compiler-cli": "^20.2.0",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^18.18.0",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-headless": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.4.0"
   }
 }
