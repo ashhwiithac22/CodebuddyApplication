@@ -148,3 +148,7 @@ Method	Endpoint	Description
 - GET	/api/flashcards/decks	    -  Get all decks
 - POST	/api/flashcards/progress	 - Update progress
 
+---
+### 🌐 Live Demo
+**Backend (Render):** [https://codebuddy-backend-oind.onrender.com/](https://codebuddy-backend-oind.onrender.com/)
+
